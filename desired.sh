@@ -6,7 +6,7 @@ INFRA_ROOT=$(realpath "$(dirname "$0")"/../..)
 . "$INFRA_ROOT"/Sh/terraform-setup.sh
 
 set +e
-"${TERRAFORM[@]}" plan -detailed-exitcode -var-file="$INFRA_TARGET_ENDPOINT/target.tfvars"
+"${TERRAFORM[@]}" plan -detailed-exitcode -compact-warnings -var-file="$INFRA_TARGET_ENDPOINT/target.tfvars" "$@"
 rc=$?
 set -e
 
