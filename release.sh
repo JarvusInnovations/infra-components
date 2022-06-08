@@ -11,6 +11,11 @@ test "$INFRA_TARGET_NAME" || required_missing+=('INFRA_TARGET_NAME')
 
 export INFRA_TARGET_NAME
 
+if [[ ! -e $INFRA_ROOT/targets/terraform/"$INFRA_TARGET_NAME" ]]; then
+  printf 'terraform-release: warn: no target environment: %s; skipping release\n' "$INFRA_TARGET_NAME" >&2
+  exit 0
+fi
+
 for endpoint in "$INFRA_ROOT"/targets/terraform/"$INFRA_TARGET_NAME"/*; do
 
   unset  INFRA_DEPLOYMENT_NAME
