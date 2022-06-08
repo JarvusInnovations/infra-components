@@ -18,6 +18,11 @@ if [[ $(pwd) != $INFRA_ROOT ]]; then
   cd "$INFRA_ROOT"
 fi
 
+if [[ ! -e targets/terraform/"$INFRA_TARGET_NAME" ]]; then
+  printf 'terraform-report: warn: no target environment: %s; skipping report\n' "$INFRA_TARGET_NAME" >&2
+  return 0
+fi
+
 for endpoint in targets/terraform/"$INFRA_TARGET_NAME"/*; do
 
   unset  INFRA_DEPLOYMENT_NAME
