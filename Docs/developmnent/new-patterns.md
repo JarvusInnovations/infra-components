@@ -2,7 +2,7 @@
 
 Each new [deployment pattern](../concetps/deployments.md) will require several
 component implementations in order to support the standard
-[infrastructure as code workflow]().
+[infrastructure as code workflow](../guides/github-workflow.md).
 
 ## Target Endpoint Pathing
 
