@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-INFRA_ROOT=$(realpath "$(dirname "$0")/..")
+INFRA_ROOT=$(realpath "$(dirname "$0")"/../..)
 
 . "$INFRA_ROOT"/Sh/terraform-setup.sh
 
