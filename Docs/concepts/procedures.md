@@ -1,9 +1,9 @@
 # procedures
 
 A procedure is a script with a standardized interface which implements a
-specific operation for a particular [deployment pattern](). The two standard
-operations which each pattern can implement via procedures are "converge" and
-"desired". Procedures follow the conventional name
+specific operation for a particular [deployment pattern](./deployments.md). The
+two standard operations which each pattern can implement via procedures are
+"converge" and "desired". Procedures follow the conventional name
 `procedures/{pattern}-{operation}.sh`. Procedures accept a standard set of
 inputs and produce a standard set of outputs and/or results.
 
