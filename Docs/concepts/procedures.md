@@ -50,3 +50,20 @@ indication that changes were applied with some summary of the applied changes.
 
 - `0`: All changes were applies successfully
 - >= `1`: One or more changes failed to apply
+
+## Operation: release
+
+A release procedure is a free-form one which orchestrates a converge operation
+for a particular pattern. What it means to "orchestrate" a converge will vary by
+pattern, but an example of a simple release operation might be to run a
+"desired" operation followed by a "converge" operation if the "desired"
+operation reports pending changes.
+
+### accepts
+
+Implementation defined
+
+### exit codes
+
+- `0`: Release operation was successful
+- >= `1`: The release operation halted on a failure
