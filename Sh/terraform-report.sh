@@ -28,7 +28,7 @@ for endpoint in targets/terraform/"$INFRA_TARGET_NAME"/*; do
   . "$INFRA_ROOT"/Sh/terraform-setup.sh
 
   set +e
-  changes=$($INFRA_ROOT/procedures/terraform/desired.sh)
+  changes=$($INFRA_ROOT/procedures/terraform/desired.sh -no-color)
   rc=$?
   set -e
 

@@ -8,7 +8,8 @@ produce a standard set of outputs and/or results.
 
 ## Available Inputs
 
-Procedure inputs are accepted as environment variables. Arguments are ignored.
+Procedure inputs are accepted as environment variables. Arguments are processed
+on a per-implementation basis.
 
 - `INFRA_DEPLOYMENT_NAME`: The name of the deployment which the procedure shall
  perform. This must correspond to a directory name in `deployments/{pattern}`,
