@@ -13,7 +13,7 @@ COMPONENT_VERSION=$2
 COMPONENT_PATH=
 
 # NOTE: git-subtree-split will fail on absolute paths, so COMPONENT_PATH must
-# be relativw ro PROJECT_ROOT
+# be relative ro PROJECT_ROOT
 test ! -d "$PROJECT_ROOT/$COMPONENT_NAME"             || COMPONENT_PATH=$COMPONENT_NAME
 test ! -d "$PROJECT_ROOT/deployments/$COMPONENT_NAME" || COMPONENT_PATH=deployments/$COMPONENT_NAME
 test "$PUBLISH_REMOTE"                                || PUBLISH_REMOTE=$(git config --get --default "$(git remote | head -n1)" publish.remote)
