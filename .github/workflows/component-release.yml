@@ -38,7 +38,7 @@ jobs:
               version=$(basename "${branch#releases/}")
               printf 'info: publishing component: %s %s\n' "$component" "$version"
               "$GITHUB_WORKSPACE"/.sh/publish-component.sh "$component" "$version"
-              git push --delete "$PUBLISH_REMOTE" "$ref"
+              git push --delete "$PUBLISH_REMOTE" "$branch"
             done
 
             printf 'info: done publishing components.\n'
