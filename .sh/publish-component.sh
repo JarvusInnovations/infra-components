@@ -16,7 +16,7 @@ COMPONENT_PATH=
 # be relative ro PROJECT_ROOT
 test ! -d "$PROJECT_ROOT/$COMPONENT_NAME"             || COMPONENT_PATH=$COMPONENT_NAME
 test ! -d "$PROJECT_ROOT/deployments/$COMPONENT_NAME" || COMPONENT_PATH=deployments/$COMPONENT_NAME
-test "$PUBLISH_REMOTE"                                || PUBLISH_REMOTE=$(git config --get --default "$(git remote | head -n1)" publish.remote)
+test "$PUBLISH_REMOTE"                                || PUBLISH_REMOTE=$(git config --get --default '' publish.remote)
 
 if ! [[ $COMPONENT_PATH ]]; then
   printf '%s: fatal: component not found: %s\n' "$SCRIPT" "$COMPONENT_NAME" >&2
@@ -25,11 +25,6 @@ fi
 
 if ! [[ $COMPONENT_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
   printf '%s: fatal: invalid version specifier: %s\n' "$SCRIPT" "$COMPONENT_VERSION"
-  exit 1
-fi
-
-if ! [[ $PUBLISH_REMOTE ]]; then
-  printf '%s: fatal: no remote found. Configure one or set PUBLISH_REMOTE.\n' >&2
   exit 1
 fi
 
@@ -55,4 +50,9 @@ fi
 printf '%s: info: release base: %s\n' "$SCRIPT" "$LAST_RELEASE"
 
 git tag -m "$(git shortlog "$LAST_RELEASE".."$PUBLISH_REV")" "$PUBLISH_TAG" "$PUBLISH_REV"
-git push "$PUBLISH_REMOTE" "$PUBLISH_TAG"
+
+if [[ $PUBLISH_REMOTE ]]; then
+  git push "$PUBLISH_REMOTE" "$PUBLISH_TAG"
+else
+  printf '%s: notice: no PUBLISH_REMOTE configured; skipping tag push\n' "$SCRIPT"
+fi
