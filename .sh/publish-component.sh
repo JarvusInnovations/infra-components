@@ -37,19 +37,14 @@ PUBLISH_TAG=$COMPONENT_NAME/$COMPONENT_VERSION
 LAST_RELEASE=$(git describe --abbrev=0 --always "$PUBLISH_REV")
 
 if [[ $LAST_RELEASE =~ [a-f0-9]{40} ]]; then
-  max_distance=0
-  for root_rev in $(git rev-list --max-parents=0 "$PUBLISH_REV"); do
-    this_distance=$(git rev-list --count "$root_rev".."$PUBLISH_REV")
-    if [[ $this_distance -gt $max_distance ]]; then
-      max_distance=$this_distance
-      LAST_RELEASE=$root_rev
-    fi
-  done
+  printf '%s: info: first release: %s: %s\n' "$SCRIPT" "$COMPONENT_NAME" "$COMPONENT_VERSION"
+  RELEASE_CHANGELOG=$(git shortlog "$PUBLISH_REV")
+else
+  printf '%s: info: new release: %s: %s -> %s\n' "$SCRIPT" "$COMPONENT_NAME" "$(basename "$LAST_RELEASE")" "$COMPONENT_VERSION"
+  RELEASE_CHANGELOG=$(git shortlog "$LAST_RELEASE".."$PUBLISH_REV")
 fi
 
-printf '%s: info: release base: %s\n' "$SCRIPT" "$LAST_RELEASE"
-
-git tag -m "$(git shortlog "$LAST_RELEASE".."$PUBLISH_REV")" "$PUBLISH_TAG" "$PUBLISH_REV"
+git tag -m "$RELEASE_CHANGELOG" "$PUBLISH_TAG" "$PUBLISH_REV"
 
 if [[ $PUBLISH_REMOTE ]]; then
   git push "$PUBLISH_REMOTE" "$PUBLISH_TAG"
