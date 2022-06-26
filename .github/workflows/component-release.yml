@@ -22,8 +22,8 @@ jobs:
         env:
           PUBLISH_REMOTE: origin
         run: |
-          git config user.name  "$(git log -1 --format=%cn)"
-          git config user.email "$(git log -1 --format=%ce)"
+          git config user.name  "$(git log -1 --format=%cn "$GITHUB_REF")"
+          git config user.email "$(git log -1 --format=%ce "$GITHUB_REF")"
           parents=( $(git log -1 --format=%P "$GITHUB_REF") )
           if [[ ${#parents[*]} -gt 1 ]]; then
 
