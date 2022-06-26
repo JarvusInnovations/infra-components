@@ -1,0 +1,51 @@
+name: Publish a versioned release of an infrastructure component
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+
+  publish-component:
+
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: publish
+        shell: bash
+        env:
+          PUBLISH_REMOTE: origin
+        run: |
+          git config user.name  "$(git log -1 --format=%cn)"
+          git config user.email "$(git log -1 --format=%ce)"
+          parents=( $(git log -1 --format=%P "$GITHUB_REF") )
+          if [[ ${#parents[*]} -gt 1 ]]; then
+
+            # NOTE: This workflow assumes all merges will have exactly two parents.
+            # Octopus merges break this assumption and should be avoided.
+            merge_head_rev=${parents[1]}
+            release_refs=( $(git show-ref | grep "$merge_head_rev" | awk '{print $2}' | grep "^refs/remotes/$PUBLISH_REMOTE/releases/" || true) )
+
+            for ref in "${release_refs[@]}"; do
+              branch=${ref#refs/remotes/$PUBLISH_REMOTE/}
+              component=$(dirname "${branch#releases/}")
+              version=$(basename "${branch#releases/}")
+              printf 'info: publishing component: %s %s\n' "$component" "$version"
+              "$GITHUB_WORKSPACE"/.sh/publish-component.sh "$component" "$version"
+              git push --delete "$PUBLISH_REMOTE" "$ref"
+            done
+
+            printf 'info: done publishing components.\n'
+
+          else
+
+            printf 'warn: HEAD is not a merge; skipping release\n'
+            exit 0
+
+          fi
