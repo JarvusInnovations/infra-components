@@ -20,7 +20,8 @@ jobs:
       - name: publish
         shell: bash
         env:
-          PUBLISH_REMOTE: origin
+          PUBLISH_REMOTE  : origin
+          RELEASE_CHANNEL : latest
         run: |
           git config user.name  "$(git log -1 --format=%cn "$GITHUB_REF")"
           git config user.email "$(git log -1 --format=%ce "$GITHUB_REF")"
@@ -37,7 +38,7 @@ jobs:
               component=$(dirname "${branch#releases/}")
               version=$(basename "${branch#releases/}")
               printf 'info: publishing component: %s %s\n' "$component" "$version"
-              "$GITHUB_WORKSPACE"/.sh/publish-component.sh "$component" "$version"
+              "$GITHUB_WORKSPACE"/.sh/publish-component.sh "$component" "$version" "$RELEASE_CHANNEL"
               git push --delete "$PUBLISH_REMOTE" "$branch"
             done
 
