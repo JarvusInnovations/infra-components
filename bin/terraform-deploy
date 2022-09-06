@@ -24,6 +24,8 @@ fi
 
 for endpoint in "$INFRA_ENV_ROOT"/*; do
 
+  test ! -f "$endpoint" || continue
+
   unset  INFRA_DEPLOYMENT_NAME
   export INFRA_DEPLOYMENT_NAME=$(basename "$endpoint")
 
