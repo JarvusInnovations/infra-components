@@ -15,12 +15,16 @@ test "$INFRA_TARGET_NAME" || required_missing+=('INFRA_TARGET_NAME')
 
 export INFRA_TARGET_NAME
 
-if [[ ! -e $CONTENT_ROOT/targets/"$INFRA_TARGET_NAME"/terraform ]]; then
+INFRA_ENV_ROOT=$CONTENT_ROOT/terraform/targets/$INFRA_TARGET_NAME
+
+if [[ ! -e $INFRA_ENV_ROOT ]]; then
   printf 'terraform-deploy: warn: no target environment: %s; skipping release\n' "$INFRA_TARGET_NAME" >&2
   exit 0
 fi
 
-for endpoint in "$CONTENT_ROOT"/targets/"$INFRA_TARGET_NAME"/terraform/*; do
+for endpoint in "$INFRA_ENV_ROOT"/*; do
+
+  test ! -f "$endpoint" || continue
 
   unset  INFRA_DEPLOYMENT_NAME
   export INFRA_DEPLOYMENT_NAME=$(basename "$endpoint")
