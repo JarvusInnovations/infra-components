@@ -10,6 +10,9 @@ test "$ENGINE_ROOT"       || { printf 'FATAL BUG: ENGINE_ROOT is not defined!\n'
 test "$CONTENT_ROOT"      || { printf 'FATAL BUG: CONTENT_ROOT is not defined!\n' >&2; exit 1; }
 test "$INFRA_TARGET_NAME" || required_missing+=('INFRA_TARGET_NAME')
 
+ENGINE_ROOT=$(realpath "$ENGINE_ROOT")
+CONTENT_ROOT=$(realpath "$CONTENT_ROOT")
+
 . "$ENGINE_ROOT"/lib/sh/validate-required.sh
 
 declare -A target_endpoint_changes
