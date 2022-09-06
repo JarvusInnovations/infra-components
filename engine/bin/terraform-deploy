@@ -1,8 +1,11 @@
 #!/bin/bash
 set -e
 
-ENGINE_ROOT=$(realpath "$(dirname "$0")"/..)
-CONTENT_ROOT=$(realpath "$ENGINE_ROOT"/..)
+test "$ENGINE_ROOT"  || ENGINE_ROOT=$(realpath "$(dirname "$0")"/..)
+test "$CONTENT_ROOT" || CONTENT_ROOT=$(realpath "$ENGINE_ROOT"/..)
+
+ENGINE_ROOT=$(realpath "$ENGINE_ROOT")
+CONTENT_ROOT=$(realpath "$CONTENT_ROOT")
 
 required_missing=()
 
