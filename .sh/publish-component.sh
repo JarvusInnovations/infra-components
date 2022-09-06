@@ -24,7 +24,13 @@ if ! [[ $COMPONENT_PATH ]]; then
   exit 1
 fi
 
-if ! [[ $COMPONENT_VERSION =~ ^([a-z][-\.]?)?[0-9]([.-]*[0-9])*$ ]]; then
+# Version numbers:
+# * May start with a lowercase letter
+# * Leading letter may be followed by - or .
+# * First - or . must be followed by a digit
+# * Any amount of subsequent digits may be added, any of which may be prefixed with - or .
+# * Any - or . after the first may be followed by a lowecase letter
+if ! [[ $COMPONENT_VERSION =~ ^([a-z][-.]?)?[0-9](([-.][a-z])?([-.]?[0-9])*)*$ ]]; then
   printf '%s: fatal: invalid version specifier: %s\n' "$SCRIPT" "$COMPONENT_VERSION"
   exit 1
 fi
