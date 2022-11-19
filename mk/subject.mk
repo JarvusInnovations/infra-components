@@ -4,6 +4,10 @@ ifeq ($(SUBJECT_NAME),)
 SUBJECT_NAME   := $(shell basename "`realpath .`")
 endif
 
+ifeq ($(SUBJECT_DIR),)
+SUBJECT_DIR    := $(shell realpath .)
+endif
+
 ifeq ($(STAGE_NAME),)
 STAGE_NAME     := $(shell basename "`realpath ..`")
 endif
