@@ -16,6 +16,10 @@ ifeq ($(LIFECYCLE_NAME),)
 LIFECYCLE_NAME := $(shell basename "`realpath ../..`")
 endif
 
+ifeq ($(LIFECYCLE_DIR),)
+LIFECYCLE_DIR  := $(shell realpath '$(SUBJECT_DIR)'/../..)
+endif
+
 help:
 	@echo
 	@echo Activities:
