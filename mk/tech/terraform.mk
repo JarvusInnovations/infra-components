@@ -37,7 +37,7 @@ ifneq ($(TERRAFORM_ENV_VAR_FILES),)
 TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_ENV_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
 endif
 
-TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(TERRAFORM_ROOT_MODULE)/.terraform,.terraform)
+TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(shell realpath --relative-to=. '$(TERRAFORM_ROOT_MODULE)')/.terraform,.terraform)
 
 $(TERRAFORM_DOTDIR):
 	$(TERRAFORM) init $(if $(TERRAFORM_BACKEND_CONFIG),'-backend-config=$(TERRAFORM_BACKEND_CONFIG)')
