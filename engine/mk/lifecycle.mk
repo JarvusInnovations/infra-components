@@ -8,8 +8,8 @@ ifeq ($(LIFECYCLE_DIR),)
 LIFECYCLE_DIR  := $(LIFECYCLE_HOME)/$(LIFECYCLE_NAME)
 endif
 
-ifeq ($(ENGINE_STAGES),)
-ENGINE_STAGES  := $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
+ifeq ($(SELECT_STAGES),)
+SELECT_STAGES  := $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
 endif
 
 export LIFECYCLE_NAME
