@@ -1,7 +1,7 @@
 GIT     ?= git
 
 ifeq ($(GIT_DIR),)
-GIT_DIR := $(shell $(GIT) rev-parse --absolute-git-dir)
+GIT_DIR := $(shell $(GIT) rev-parse --git-dir --path-format=relative)
 endif
 
 LIFECYCLE_CONFS := $(wildcard $(LIFECYCLE_DIR)/*.conf)
