@@ -28,3 +28,11 @@ help:
 	@echo
 
 include $(MK)/config.mk
+
+test:
+clean:
+stage:
+
+.PHONY: test
+.PHONY: clean
+.PHONY: stage
