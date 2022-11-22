@@ -18,9 +18,9 @@ help:
 	@echo '    new-subject  (LIFECYCLE=, SUBJECT=) - create a new subject within the specified lifecycle '
 	@echo
 
-init: $(ENGINE_ENV_DIR)
+init: $(ENGINE_ENV_DIR) $(LIFECYCLE_HOME)
 
-$(ENGINE_ENV_DIR):
+$(ENGINE_ENV_DIR) $(LIFECYCLE_HOME):
 	mkdir -p '$@'
 
 # new-pipeline, new-subject dynamic processing
@@ -45,7 +45,7 @@ SUBJECT_MAKEFILES    := $(patsubst %,%/Makefile,$(SUBJECT_DIRS))
 new-subject: $(SUBJECT_MAKEFILES)
 $(SUBJECT_MAKEFILES): $(SUBJECT_DIRS)
 	echo 'include ../../../$(ENGINE_SYSTEM)/mk/subject.mk' > '$@'
-$(SUBJECT_DIRS):
+$(SUBJECT_DIRS): $(LIFECYCLE_MAKEFILE)
 	mkdir -p '$@'
 endif
 
@@ -68,7 +68,7 @@ $(PIPELINE_STAGE_DIRS): $(LIFECYCLE_MAKEFILE)
 $(LIFECYCLE_MAKEFILE): $(LIFECYCLE_DIR)
 	echo 'include ../$(ENGINE_SYSTEM)/mk/patterns/$(PATTERN).mk' > '$@'
 
-$(LIFECYCLE_DIR):
+$(LIFECYCLE_DIR): $(LIFECYCLE_HOME)
 	mkdir -p '$@'
 endif
 endif
