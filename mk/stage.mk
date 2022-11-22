@@ -18,3 +18,12 @@ endif
 export STAGE_NAME
 export LIFECYCLE_NAME
 export SELECTED_ALL
+
+SUBJECT_TARGETS := $(patsubst %,subject-%,$(SELECT_SUBJECTS))
+
+$(MAKECMDGOALS): $(SUBJECT_TARGETS)
+
+subject-%:
+	$(MAKE) -C '$*' $(MAKECMDGOALS)
+
+.PHONY: $(MAKECMDGOALS)
