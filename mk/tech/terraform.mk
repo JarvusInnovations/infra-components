@@ -48,5 +48,13 @@ terraform-plan: $(TERRAFORM_DOTDIR)
 terraform-apply: $(TERRAFORM_DOTDIR)
 	$(TERRAFORM) apply -auto-approve $(TERRAFORM_VAR_FILES)
 
+terraform-validate: $(TERRAFORM_DOTDIR)
+	$(TERRAFORM) validate
+
+terraform-clean:
+	rm -vrf $(TERRAFORM_DOTDIR)
+
 .PHONY: terraform-plan
 .PHONY: terraform-apply
+.PHONY: terraform-validate
+.PHONY: terraform-clean
