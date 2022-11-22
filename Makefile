@@ -1,4 +1,4 @@
-ENGINE_ENV_DIR ?= $(shell git -C .. rev-parse --absolute-git-dir)/engine
+ENGINE_ENV_DIR ?= ../$(shell git -C .. rev-parse --git-dir --path-format=relative)/engine
 
 help:
 	@echo
