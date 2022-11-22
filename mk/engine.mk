@@ -17,7 +17,7 @@ ENGINE_ENV      := local
 endif
 
 ifeq ($(ENGINE_ENV_DIR),)
-ENGINE_ENV_DIR  := $(shell git rev-parse --absolute-git-dir)/engine
+ENGINE_ENV_DIR  := $(shell git rev-parse --git-dir --path-format=relative)/engine
 endif
 
 ifeq ($(LIFECYCLE_HOME),)
