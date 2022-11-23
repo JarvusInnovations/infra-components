@@ -42,13 +42,13 @@ else
 EXISTING_STAGE_DIRS  := $(shell find '$(LIFECYCLE_DIR)' -mindepth 1 -maxdepth 1 -type d ! -name '.*')
 SUBJECT_DIRS         := $(patsubst %,%/$(SUBJECT),$(EXISTING_STAGE_DIRS))
 SUBJECT_MAKEFILES    := $(patsubst %,%/Makefile,$(SUBJECT_DIRS))
+
 new-subject: $(SUBJECT_MAKEFILES)
-$(SUBJECT_MAKEFILES): $(SUBJECT_DIRS)
+$(SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
 	echo 'include ../../../$(ENGINE_SYSTEM)/mk/subject.mk' > '$@'
-$(SUBJECT_DIRS): $(LIFECYCLE_MAKEFILE)
+$(SUBJECT_DIRS): | $(LIFECYCLE_MAKEFILE)
 	mkdir -p '$@'
 endif
-
 ifeq ($(filter $(VALID_PATTERNS),$(PATTERN)),)
 new-pipeline:
 	$(error FATAL: PATTERN= must be one of: $(VALID_PATTERNS))
@@ -59,16 +59,16 @@ PIPELINE_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PIPELINE_STAGE_DIRS))
 
 new-pipeline: $(PIPELINE_STAGE_MAKEFILES)
 
-$(PIPELINE_STAGE_MAKEFILES): $(PIPELINE_STAGE_DIRS)
+$(PIPELINE_STAGE_MAKEFILES): | $(PIPELINE_STAGE_DIRS)
 	echo 'include ../../$(ENGINE_SYSTEM)/mk/stage.mk' > '$@'
 
-$(PIPELINE_STAGE_DIRS): $(LIFECYCLE_MAKEFILE)
+$(PIPELINE_STAGE_DIRS): | $(LIFECYCLE_MAKEFILE)
 	mkdir -p '$@'
 
-$(LIFECYCLE_MAKEFILE): $(LIFECYCLE_DIR)
+$(LIFECYCLE_MAKEFILE): | $(LIFECYCLE_DIR)
 	echo 'include ../$(ENGINE_SYSTEM)/mk/patterns/$(PATTERN).mk' > '$@'
 
-$(LIFECYCLE_DIR): $(LIFECYCLE_HOME)
+$(LIFECYCLE_DIR): | $(LIFECYCLE_HOME)
 	mkdir -p '$@'
 endif
 endif
