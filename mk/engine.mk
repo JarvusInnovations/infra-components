@@ -28,6 +28,10 @@ endif
 # returns        : <engine-env-dir>/<subpath>
 env_pathjoin     = $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR)')/$(1)
 
+# call signature : $(call env_pathstrip,<env-path>)
+# returns        : <env-subpath>
+env_pathstrip    = $(patsubst $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR)')/%,%,$(1))
+
 export ENGINE_SYSTEM
 export ENGINE_HOME
 export ENGINE_ENV_DIR
