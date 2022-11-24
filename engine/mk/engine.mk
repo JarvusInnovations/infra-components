@@ -24,6 +24,10 @@ ifeq ($(LIFECYCLE_HOME),)
 LIFECYCLE_HOME  := $(ENGINE_HOME)/lifecycles
 endif
 
+# call signature : $(call env_pathjoin,<subpath>)
+# returns        : <engine-env-dir>/<subpath>
+env_pathjoin     = $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR)')/$(1)
+
 export ENGINE_SYSTEM
 export ENGINE_HOME
 export ENGINE_ENV_DIR
