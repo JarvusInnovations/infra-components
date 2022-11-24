@@ -1,6 +1,6 @@
 include $(MK)/tech/gcloud.mk
 
-GCP_SECRETS_PATHS          ?= $(call env_config_path,gcpSecretFile,--get-all)
+GCP_SECRETS_PATHS          ?= $(foreach subpath,$(call env_config,gcpSecretFile,--get-all),$(call env_pathjoin,$(subpath)))
 
 ifeq ($(GCP_SECRETS_IDS),)
 GCP_SECRETS_IDS            := $(foreach path,$(GCP_SECRETS_PATHS),$(basename $(notdir $(path))))
@@ -25,7 +25,7 @@ endif
 ifneq ($(GCP_SECRETS_UPDATE_TARGETS),)
 gcp-secrets-upload: $(GCP_SECRETS_UPDATE_TARGETS)
 gcp-secrets-upload-%: gcp-secrets-create
-	$(GCLOUD) secrets versions add '$*' --data-file='$(call env_config_path,gcpSecretFile '$(call gcpSecretFile_id_valpattern,$*)',--get)'
+	$(GCLOUD) secrets versions add '$*' --data-file='$(call env_pathjoin,$(call env_config,gcpSecretFile '$(call gcpSecretFile_id_valpattern,$*)',--get))'
 endif
 
 ifneq ($(GCP_SECRETS_PATHS),)
