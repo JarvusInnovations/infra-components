@@ -20,14 +20,14 @@ ifneq ($(ENV_CONFS),)
 GIT += $(patsubst %, -c 'include.path=%',$(ENV_CONFS))
 endif
 
-GIT_CONFIG := $(GIT) config -f /dev/null
+GIT_CONFIG := $(GIT) config
 
 # call signature : $(call subject_config,<varname> [git-config-value-pattern],<git-config-opts>)
 # expands to     : git config <git-config-opts> subject.<lifecycle-name/subject-name>.<varname> [git-config-value-pattern]
 # returns        : <varname-value>
-subject_config  = $(shell $(GIT) config $(2) subject.$(LIFECYCLE_NAME)/$(SUBJECT_NAME).$(1))
+subject_config  = $(shell $(GIT_CONFIG) $(2) subject.$(LIFECYCLE_NAME)/$(SUBJECT_NAME).$(1))
 
 # call signature : $(call env_config,<varname> [git-config-value-pattern],<git-config-opts>)
 # expands to     : git config <git-config-opts> env.<engine-env>.<varname> [git-config-value-pattern]
 # returns        : <varname-value>
-env_config      = $(shell $(GIT) config $(2) env.$(ENGINE_ENV).$(1))
+env_config      = $(shell $(GIT_CONFIG) $(2) env.$(ENGINE_ENV).$(1))
