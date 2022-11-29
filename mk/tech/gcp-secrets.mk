@@ -30,7 +30,7 @@ gcpSecret_name_fromfile = $(shell $(GIT_CONFIG) --get-regex 'gcpSecret\.[^.]+\.f
 ifneq ($(GCP_SECRETS_CREATE_TARGETS),)
 gcp-secrets-create: $(GCP_SECRETS_CREATE_TARGETS)
 gcp-secrets-create-%:
-	$(if $(shell $(GCLOUD) secrets versions describe latest --secret='$(call gcpSecret_id,$*)' 2>/dev/null),,$(GCLOUD) secrets create '$(call gcpSecret_id,$*)' --replication-policy=automatic)
+	$(if $(shell $(GCLOUD) secrets describe '$(call gcpSecret_id,$*)' 2>/dev/null),,$(GCLOUD) secrets create '$(call gcpSecret_id,$*)' --replication-policy=automatic)
 endif
 
 ifneq ($(GCP_SECRETS_UPDATE_TARGETS),)
