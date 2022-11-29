@@ -18,7 +18,7 @@ pipeline:
 	$(MAKE) ci cd
 
 ci:
-	$(if $(filter develop,   $(SELECT_STAGES)), $(MAKE) -C develop test         )
+	$(if $(filter develop,   $(SELECT_STAGES)), $(MAKE) -C develop   stage test )
 	$(if $(filter integrate, $(SELECT_STAGES)), $(MAKE) -C integrate stage test )
 
 cd:
