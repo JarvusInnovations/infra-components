@@ -36,7 +36,7 @@ endif
 ifneq ($(GCP_SECRETS_UPDATE_TARGETS),)
 gcp-secrets-upload: $(GCP_SECRETS_UPDATE_TARGETS)
 gcp-secrets-upload-%: gcp-secrets-create
-	$(GCLOUD) secrets versions add '$*' --data-file='$(call gcpSecret_path,$*)'
+	$(GCLOUD) secrets versions add '$(call gcpSecret_id,$*)' --data-file='$(call gcpSecret_path,$*)'
 endif
 
 ifneq ($(GCP_SECRETS_PATHS),)
