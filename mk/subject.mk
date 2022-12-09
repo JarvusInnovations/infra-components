@@ -22,14 +22,15 @@ endif
 
 help:
 	@echo
-	@echo 'Activities:                                                          '
-	@echo '                                                                     '
-	@echo '    help  - show this message                                        '
-	@echo '    test  - run tests for this stage                                 '
-	@echo '    clean - remove files cached by this stage                        '
-	@echo '    stage - execute this stage                                       '
-	@echo '                                                                     '
-	@echo 'To view all available activities, open: $(shell realpath .)/Makefile '
+	@echo 'Activities:                                                           '
+	@echo '                                                                      '
+	@echo '    help   - show this message                                        '
+	@echo '    test   - run tests for this stage                                 '
+	@echo '    clean  - remove files cached by this stage                        '
+	@echo '    stage  - execute this stage                                       '
+	@echo '    report - publish stage-specific information to an external system '
+	@echo '                                                                      '
+	@echo 'To view all available activities, open: $(shell realpath .)/Makefile  '
 	@echo
 
 include $(MK)/config.mk
@@ -37,6 +38,7 @@ include $(MK)/config.mk
 test:
 clean:
 stage:
+report:
 
 .PHONY: help
 .PHONY: test
