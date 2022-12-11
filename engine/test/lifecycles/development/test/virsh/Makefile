@@ -11,8 +11,8 @@ ifneq ($(VIRSH_BASE_SNAPSHOT),)
 	$(MAKE) virsh-domain-reset
 	$(MAKE) virsh-domain-stop
 else
-	$(call test_skip,virshBaseSnapshot)
+	$(call test_skip_subject,virshBaseSnapshot)
 endif
 else
-	$(call test_skip,virshDomain)
+	$(call test_skip_subject,virshDomain)
 endif
