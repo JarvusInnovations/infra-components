@@ -21,9 +21,11 @@ export SELECTED_ALL
 
 SUBJECT_TARGETS := $(patsubst %,subject-%,$(SELECT_SUBJECTS))
 
+subject_exists = $(shell find . -mindepth 1 -maxdepth 1 -type d -name $(1))
+
 $(MAKECMDGOALS): $(SUBJECT_TARGETS)
 
 subject-%:
-	$(MAKE) -C '$*' $(MAKECMDGOALS)
+	$(if $(call subject_exists,$*),$(MAKE) -C '$*' $(MAKECMDGOALS))
 
 .PHONY: $(MAKECMDGOALS)
