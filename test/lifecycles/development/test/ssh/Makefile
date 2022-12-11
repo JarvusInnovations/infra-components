@@ -6,5 +6,5 @@ stage:
 ifneq ($(SSH_CONFIG),)
 	$(SSH) test-machine true
 else
-	$(call test_skip,sshConfig)
+	$(call test_skip_env,sshConfig)
 endif
