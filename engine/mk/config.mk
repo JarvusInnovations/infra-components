@@ -13,7 +13,7 @@ GIT += $(patsubst %, -c 'include.path=%',$(LIFECYCLE_CONFS))
 endif
 
 ifneq ($(SUBJECT_CONFS),)
-GIT += $(patsubst %, -c 'include.path=%',$(SUBJECT_CONFS))
+GIT += $(patsubst %, -c 'include.path=$(shell realpath .)/%',$(SUBJECT_CONFS))
 endif
 
 ifneq ($(ENV_CONFS),)
