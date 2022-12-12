@@ -1,3 +1,4 @@
+-include local.mk
 PIPELINES_HOME ?= ../pipelines
 ENGINE_ENV_DIR ?= $(shell git -C '$(PIPELINES_HOME)' rev-parse --git-path engine)
 ENGINE_SYSTEM  ?= $(shell realpath --relative-to='$(PIPELINES_HOME)' .)
