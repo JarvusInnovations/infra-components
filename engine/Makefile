@@ -1,78 +1,128 @@
-LIFECYCLE_HOME ?= ../lifecycles
-ENGINE_ENV_DIR ?= ../$(shell git -C .. rev-parse --git-dir --path-format=relative)/engine
-ENGINE_SYSTEM  ?= $(shell realpath --relative-to='$(LIFECYCLE_HOME)' .)
+-include local.mk
+PIPELINES_HOME ?= ../pipelines
+ENGINE_ENV_DIR ?= $(shell git -C '$(PIPELINES_HOME)' rev-parse --absolute-git-dir)/engine
 
-# new-pipeline
-LIFECYCLE ?=
-PATTERN   ?=
+PIPELINE ?=
+PATTERN  ?=
+STAGE    ?=
+STAGES   ?=
+SUBJECT  ?=
 
-VALID_PATTERNS := cicd
-STAGES_cicd    := develop integrate deploy operate
+VALID_PATTERNS := cicd setup
+STAGES_cicd    := accept build test deliver deploy
+STAGES_setup   := secrets
 
 help:
 	@echo
-	@echo 'Actions:                                                                                      '
-	@echo '                                                                                              '
-	@echo '    init                                - setup a new engine project                          '
-	@echo '    new-pipeline (LIFECYCLE=, PATTERN=) - create a new lifecycle pipeline in engine project   '
-	@echo '    new-subject  (LIFECYCLE=, SUBJECT=) - create a new subject within the specified lifecycle '
+	@echo 'Actions:                                                                                                            '
+	@echo '                                                                                                                    '
+	@echo '    init                                        - setup a new engine project                                        '
+	@echo '    new-pipeline (PIPELINE=, PATTERN=)          - create a new pipeline from a pattern template ($(VALID_PATTERNS)) '
+	@echo '    new-stage    (STAGE=, PIPELINE=)            - create a new stage within the specified pipeline                  '
+	@echo '    new-subject  (SUBJECT=, PIPELINE=, STAGES=) - create a new subject within the specified pipeline stages         '
 	@echo
 
-init: $(ENGINE_ENV_DIR) $(LIFECYCLE_HOME)
+PIPELINE_DIR          := $(PIPELINES_HOME)/$(PIPELINE)
+PIPELINE_MAKEFILE     := $(PIPELINE_DIR)/Makefile
 
-$(ENGINE_ENV_DIR) $(LIFECYCLE_HOME):
-	mkdir -p '$@'
+ifdef PIPELINE
 
-# new-pipeline, new-subject dynamic processing
-ifndef LIFECYCLE
+SYSTEM_RELTO_PIPELINE := $(shell realpath --relative-to='$(PIPELINE_DIR)' .)
+
+ifeq ($(shell echo '$(SYSTEM_RELTO_PIPELINE)' | head -c 1),)
+$(error FATAL: SYSTEM_RELTO_PIPELINE must be a relative path; got the absolute path $(SYSTEM_RELTO_PIPELINE))
+endif
+
+# wrap these checks in dir function because the pipeline dir may not yet exist
+ifeq ($(shell cd '$(dir $(PIPELINE_DIR))' && stat '$(dir $(SYSTEM_RELTO_PIPELINE))'),)
+$(error FATAL: cannot stat $(SYSTEM_RELTO_PIPELINE) from $(PIPELINE_DIR))
+endif
+
+endif
+
+EXISTING_STAGE_DIRS        := $(shell find '$(PIPELINE_DIR)' -mindepth 1 -maxdepth 1 -type d ! -name '.*' 2>/dev/null)
+DEFAULT_SUBJECT_DIRS       := $(patsubst %,%/$(SUBJECT),$(EXISTING_STAGE_DIRS))
+DEFAULT_SUBJECT_MAKEFILES  := $(patsubst %,%/Makefile,$(DEFAULT_SUBJECT_DIRS))
+SELECTED_SUBJECT_DIRS      := $(patsubst %,$(PIPELINE_DIR)/%/$(SUBJECT),$(STAGES))
+SELECTED_SUBJECT_MAKEFILES := $(patsubst %,%/Makefile,$(SELECTED_SUBJECT_DIRS))
+
+NEW_STAGE_DIR           := $(PIPELINE_DIR)/$(STAGE)
+NEW_STAGE_MAKEFILE      := $(NEW_STAGE_DIR)/Makefile
+
+PATTERN_STAGES          := $(STAGES_$(PATTERN))
+PATTERN_STAGE_DIRS      := $(patsubst %,$(PIPELINE_DIR)/%,$(PATTERN_STAGES))
+PATTERN_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PATTERN_STAGE_DIRS))
+
+init:
+	mkdir -pv '$(ENGINE_ENV_DIR)'
+	mkdir -pv '$(PIPELINES_HOME)'
+
 new-pipeline:
-	$(error FATAL: LIFECYCLE= is required)
+ifdef PIPELINE
+ifdef PATTERN
+new-pipeline: $(PATTERN_STAGE_MAKEFILES)
 
-new-subject:
-	$(error FATAL: LIFECYCLE= is required)
+$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
+	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/patterns/$(PATTERN).mk' > '$@'
 else
+new-pipeline: $(PIPELINE_MAKEFILE)
 
-LIFECYCLE_DIR        := $(LIFECYCLE_HOME)/$(LIFECYCLE)
-LIFECYCLE_MAKEFILE   := $(LIFECYCLE_DIR)/Makefile
+$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
+	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/pipeline.mk' > '$@'
+endif
+else
+	$(error FATAL: PIPELINE= is required)
+endif
 
-ifndef SUBJECT
+new-stage:
+ifdef PIPELINE
+ifdef STAGE
+new-stage: $(NEW_STAGE_MAKEFILE)
+else
+	$(error FATAL: STAGE= is required)
+endif
+else
+	$(error FATAL: PIPELINE= is required)
+endif
+
 new-subject:
+ifdef SUBJECT
+ifdef PIPELINE
+ifdef STAGES
+new-subject: $(SELECTED_SUBJECT_MAKEFILES)
+else
+new-subject: $(DEFAULT_SUBJECT_MAKEFILES)
+endif
+else
+	$(error FATAL: PIPELINE= is required)
+endif
+else
 	$(error FATAL: SUBJECT= is required)
-else
-EXISTING_STAGE_DIRS  := $(shell find '$(LIFECYCLE_DIR)' -mindepth 1 -maxdepth 1 -type d ! -name '.*')
-SUBJECT_DIRS         := $(patsubst %,%/$(SUBJECT),$(EXISTING_STAGE_DIRS))
-SUBJECT_MAKEFILES    := $(patsubst %,%/Makefile,$(SUBJECT_DIRS))
-
-new-subject: $(SUBJECT_MAKEFILES)
-$(SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
-	echo 'include ../../../$(ENGINE_SYSTEM)/mk/subject.mk' > '$@'
-$(SUBJECT_DIRS): | $(LIFECYCLE_MAKEFILE)
-	mkdir -p '$@'
 endif
-ifeq ($(filter $(VALID_PATTERNS),$(PATTERN)),)
-new-pipeline:
-	$(error FATAL: PATTERN= must be one of: $(VALID_PATTERNS))
-else
-PIPELINE_STAGES          := $(STAGES_$(PATTERN))
-PIPELINE_STAGE_DIRS      := $(patsubst %,$(LIFECYCLE_DIR)/%,$(PIPELINE_STAGES))
-PIPELINE_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PIPELINE_STAGE_DIRS))
 
-new-pipeline: $(PIPELINE_STAGE_MAKEFILES)
-
-$(PIPELINE_STAGE_MAKEFILES): | $(PIPELINE_STAGE_DIRS)
-	echo 'include ../../$(ENGINE_SYSTEM)/mk/stage.mk' > '$@'
-
-$(PIPELINE_STAGE_DIRS): | $(LIFECYCLE_MAKEFILE)
+$(PIPELINE_DIR): | $(PIPELINES_HOME)
 	mkdir -p '$@'
 
-$(LIFECYCLE_MAKEFILE): | $(LIFECYCLE_DIR)
-	echo 'include ../$(ENGINE_SYSTEM)/mk/patterns/$(PATTERN).mk' > '$@'
+$(PATTERN_STAGE_MAKEFILES): | $(PATTERN_STAGE_DIRS)
+	echo 'include ../$(SYSTEM_RELTO_PIPELINE)/mk/stage.mk' > '$@'
 
-$(LIFECYCLE_DIR): | $(LIFECYCLE_HOME)
+$(PATTERN_STAGE_DIRS): | $(PIPELINE_MAKEFILE)
 	mkdir -p '$@'
-endif
-endif
+
+$(NEW_STAGE_MAKEFILE): | $(NEW_STAGE_DIR)
+	echo 'include ../$(SYSTEM_RELTO_PIPELINE)/mk/stage.mk' > '$@'
+
+$(NEW_STAGE_DIR):
+	mkdir -p '$@'
+
+$(SELECTED_SUBJECT_MAKEFILES) $(DEFAULT_SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
+	echo 'include ../../$(SYSTEM_RELTO_PIPELINE)/mk/subject.mk' > '$@'
+
+$(SUBJECT_DIRS): | $(PIPELINE_MAKEFILE)
+	mkdir -p '$@'
 
 .PHONY: help
 .PHONY: init
 .PHONY: new-pipeline
+.PHONY: new-stage
+.PHONY: new-subject
