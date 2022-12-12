@@ -61,8 +61,14 @@ new-pipeline:
 ifdef PIPELINE
 ifdef PATTERN
 new-pipeline: $(PATTERN_STAGE_MAKEFILES)
+
+$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
+	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/patterns/$(PATTERN).mk' > '$@'
 else
 new-pipeline: $(PIPELINE_MAKEFILE)
+
+$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
+	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/pipeline.mk' > '$@'
 endif
 else
 	$(error FATAL: PIPELINE= is required)
@@ -93,9 +99,6 @@ endif
 else
 	$(error FATAL: SUBJECT= is required)
 endif
-
-$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
-	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/patterns/$(PATTERN).mk' > '$@'
 
 $(PIPELINE_DIR): | $(PIPELINES_HOME)
 	mkdir -p '$@'
