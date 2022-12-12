@@ -31,3 +31,5 @@ subject_config  = $(shell $(GIT_CONFIG) $(2) subject.$(LIFECYCLE_NAME)/$(SUBJECT
 # expands to     : git config <git-config-opts> env.<engine-env>.<varname> [git-config-value-pattern]
 # returns        : <varname-value>
 env_config      = $(shell $(GIT_CONFIG) $(2) env.$(ENGINE_ENV).$(1))
+
+env_config_path = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
