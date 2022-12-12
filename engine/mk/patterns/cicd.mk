@@ -18,15 +18,13 @@ pipeline:
 	$(MAKE) ci cd
 
 ci:
-	$(if $(filter accept, $(SELECT_STAGES)), $(MAKE) -C accept stage )
-	$(if $(filter build,  $(SELECT_STAGES)), $(MAKE) -C build  stage )
-	$(if $(filter test,   $(SELECT_STAGES)), $(MAKE) -C test   stage )
+	$(call run_stage,accept)
+	$(call run_stage,build)
+	$(call run_stage,test)
 
 cd:
-	$(if $(filter deliver, $(SELECT_STAGES)), $(MAKE) -C deliver  stage )
-	$(if $(filter deploy,  $(SELECT_STAGES)), $(MAKE) -C deploy   stage )
+	$(call run_stage,deliver)
+	$(call run_stage,deploy)
 
-.PHONY: help
-.PHONY: pipeline
 .PHONY: ci
 .PHONY: cd
