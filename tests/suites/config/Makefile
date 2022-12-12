@@ -1,11 +1,11 @@
-PIPELINE_DIR := $(shell realpath .)
+PIPELINE_DIR   := $(shell realpath .)
 include ../../../mk/pipeline.mk
 
 help:
 	@echo
 	@echo 'Orchestrations:                                                 '
 	@echo '                                                                '
-	@echo '    pipeline - run full development pipeline over selections    '
+	@echo '    run - execute test suite                                    '
 	@echo '                                                                '
 	@echo 'Selections:                                                     '
 	@echo '                                                                '
@@ -13,22 +13,10 @@ help:
 	@echo '    SELECT_SUBJECTS = list of subjects to include in each stage '
 	@echo
 
-pipeline:
-	$(MAKE) setup test clean
-
-setup test:
-	$(MAKE) -C $@ stage
-
-PASSTHROUGH_GOALS  := $(filter-out help pipeline setup test,$(MAKECMDGOALS))
-PASSTHROUGH_STAGES := $(patsubst %,stage-%,$(SELECT_STAGES))
-ifneq ($(PASSTHROUGH_GOALS),)
-.PHONY: $(PASSTHROUGH_GOALS)
-$(PASSTHROUGH_GOALS): $(PASSTHROUGH_STAGES)
-stage-%:
-	$(MAKE) -C '$*' $(PASSTHROUGH_GOALS)
-endif
+run:
+	$(if $(filter setup,    $(SELECT_STAGES)),$(MAKE) -C setup    stage )
+	$(if $(filter cases,    $(SELECT_STAGES)),$(MAKE) -C cases    stage )
+	$(if $(filter teardown, $(SELECT_STAGES)),$(MAKE) -C teardown stage )
 
 .PHONY: help
-.PHONY: pipeline
-.PHONY: setup
-.PHONY: test
+.PHONY: run
