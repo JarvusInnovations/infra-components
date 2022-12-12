@@ -18,7 +18,7 @@ help:
 	@echo '                                                                                                                    '
 	@echo '    init                                        - setup a new engine project                                        '
 	@echo '    new-pipeline (PIPELINE=, PATTERN=)          - create a new pipeline from a pattern template ($(VALID_PATTERNS)) '
-	@echo '    new-stage    (STAGE=, PIPELINE=)            - create a new stage within the specified pipeline                  ' # TODO: Implement
+	@echo '    new-stage    (STAGE=, PIPELINE=)            - create a new stage within the specified pipeline                  '
 	@echo '    new-subject  (SUBJECT=, PIPELINE=, STAGES=) - create a new subject within the specified pipeline stages         '
 	@echo
 
@@ -46,6 +46,9 @@ DEFAULT_SUBJECT_MAKEFILES  := $(patsubst %,%/Makefile,$(DEFAULT_SUBJECT_DIRS))
 SELECTED_SUBJECT_DIRS      := $(patsubst %,$(PIPELINE_DIR)/%/$(SUBJECT),$(STAGES))
 SELECTED_SUBJECT_MAKEFILES := $(patsubst %,%/Makefile,$(SELECTED_SUBJECT_DIRS))
 
+NEW_STAGE_DIR           := $(PIPELINE_DIR)/$(STAGE)
+NEW_STAGE_MAKEFILE      := $(NEW_STAGE_DIR)/Makefile
+
 PATTERN_STAGES          := $(STAGES_$(PATTERN))
 PATTERN_STAGE_DIRS      := $(patsubst %,$(PIPELINE_DIR)/%,$(PATTERN_STAGES))
 PATTERN_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PATTERN_STAGE_DIRS))
@@ -60,6 +63,17 @@ ifdef PATTERN
 new-pipeline: $(PATTERN_STAGE_MAKEFILES)
 else
 new-pipeline: $(PIPELINE_MAKEFILE)
+endif
+else
+	$(error FATAL: PIPELINE= is required)
+endif
+
+new-stage:
+ifdef PIPELINE
+ifdef STAGE
+new-stage: $(NEW_STAGE_MAKEFILE)
+else
+	$(error FATAL: STAGE= is required)
 endif
 else
 	$(error FATAL: PIPELINE= is required)
@@ -92,6 +106,12 @@ $(PATTERN_STAGE_MAKEFILES): | $(PATTERN_STAGE_DIRS)
 $(PATTERN_STAGE_DIRS): | $(PIPELINE_MAKEFILE)
 	mkdir -p '$@'
 
+$(NEW_STAGE_MAKEFILE): | $(NEW_STAGE_DIR)
+	echo 'include ../$(SYSTEM_RELTO_PIPELINE)/mk/stage.mk' > '$@'
+
+$(NEW_STAGE_DIR):
+	mkdir -p '$@'
+
 $(SELECTED_SUBJECT_MAKEFILES) $(DEFAULT_SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
 	echo 'include ../../$(SYSTEM_RELTO_PIPELINE)/mk/subject.mk' > '$@'
 
@@ -101,4 +121,5 @@ $(SUBJECT_DIRS): | $(PIPELINE_MAKEFILE)
 .PHONY: help
 .PHONY: init
 .PHONY: new-pipeline
+.PHONY: new-stage
 .PHONY: new-subject
