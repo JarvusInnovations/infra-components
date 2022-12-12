@@ -4,7 +4,7 @@ help:
 	@echo
 	@echo 'Orchestrations:                                                 '
 	@echo '                                                                '
-	@echo '    run - execute all test suite                                '
+	@echo '    run - execute all test suites                               '
 	@echo
 
 $(MAKECMDGOALS) : $(TEST_SUITES)
