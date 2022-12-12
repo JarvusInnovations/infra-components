@@ -14,9 +14,10 @@ help:
 	@echo
 
 run:
-	$(if $(filter setup,    $(SELECT_STAGES)),$(MAKE) -C setup    stage )
-	$(if $(filter cases,    $(SELECT_STAGES)),$(MAKE) -C cases    stage )
-	$(if $(filter teardown, $(SELECT_STAGES)),$(MAKE) -C teardown stage )
+	$(call run_stage,setup)
+	$(call run_stage,cases)
+	$(call run_stage,teardown)
 
-.PHONY: help
+pipeline: run
+
 .PHONY: run
