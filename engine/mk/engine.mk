@@ -20,8 +20,8 @@ ifeq ($(ENGINE_ENV_DIR),)
 ENGINE_ENV_DIR  := $(shell git rev-parse --git-dir --path-format=relative)/engine
 endif
 
-ifeq ($(LIFECYCLE_HOME),)
-LIFECYCLE_HOME  := $(ENGINE_HOME)/lifecycles
+ifeq ($(PIPELINES_HOME),)
+PIPELINES_HOME  := $(ENGINE_HOME)/pipelines
 endif
 
 # call signature : $(call env_pathjoin,<subpath>)
@@ -35,4 +35,4 @@ env_pathstrip    = $(patsubst $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR
 export ENGINE_SYSTEM
 export ENGINE_HOME
 export ENGINE_ENV_DIR
-export LIFECYCLE_HOME
+export PIPELINES_HOME

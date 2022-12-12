@@ -1,4 +1,4 @@
-include ../../.engine/mk/lifecycle.mk
+include ../../.engine/mk/pipeline.mk
 
 help:
 	@echo

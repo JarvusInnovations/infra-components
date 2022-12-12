@@ -1,74 +1,74 @@
-LIFECYCLE_HOME ?= ../lifecycles
+PIPELINES_HOME ?= ../pipelines
 ENGINE_ENV_DIR ?= ../$(shell git -C .. rev-parse --git-dir --path-format=relative)/engine
-ENGINE_SYSTEM  ?= $(shell realpath --relative-to='$(LIFECYCLE_HOME)' .)
+ENGINE_SYSTEM  ?= $(shell realpath --relative-to='$(PIPELINES_HOME)' .)
 
 # new-pipeline
-LIFECYCLE ?=
-PATTERN   ?=
+PIPELINE ?=
+PATTERN  ?=
 
 VALID_PATTERNS := cicd
 STAGES_cicd    := develop integrate deploy operate
 
 help:
 	@echo
-	@echo 'Actions:                                                                                      '
-	@echo '                                                                                              '
-	@echo '    init                                - setup a new engine project                          '
-	@echo '    new-pipeline (LIFECYCLE=, PATTERN=) - create a new lifecycle pipeline in engine project   '
-	@echo '    new-subject  (LIFECYCLE=, SUBJECT=) - create a new subject within the specified lifecycle '
+	@echo 'Actions:                                                                                     '
+	@echo '                                                                                             '
+	@echo '    init                                - setup a new engine project                         '
+	@echo '    new-pipeline (PIPELINE=, PATTERN=) - create a new pipeline from a pattern template       '
+	@echo '    new-subject  (PIPELINE=, SUBJECT=) - create a new subject within the specified pipeline  '
 	@echo
 
-init: $(ENGINE_ENV_DIR) $(LIFECYCLE_HOME)
+init: $(ENGINE_ENV_DIR) $(PIPELINES_HOME)
 
-$(ENGINE_ENV_DIR) $(LIFECYCLE_HOME):
+$(ENGINE_ENV_DIR) $(PIPELINES_HOME):
 	mkdir -p '$@'
 
 # new-pipeline, new-subject dynamic processing
-ifndef LIFECYCLE
+ifndef PIPELINE
 new-pipeline:
-	$(error FATAL: LIFECYCLE= is required)
+	$(error FATAL: PIPELINE= is required)
 
 new-subject:
-	$(error FATAL: LIFECYCLE= is required)
+	$(error FATAL: PIPELINE= is required)
 else
 
-LIFECYCLE_DIR        := $(LIFECYCLE_HOME)/$(LIFECYCLE)
-LIFECYCLE_MAKEFILE   := $(LIFECYCLE_DIR)/Makefile
+PIPELINE_DIR        := $(PIPELINES_HOME)/$(PIPELINE)
+PIPELINE_MAKEFILE   := $(PIPELINE_DIR)/Makefile
 
 ifndef SUBJECT
 new-subject:
 	$(error FATAL: SUBJECT= is required)
 else
-EXISTING_STAGE_DIRS  := $(shell find '$(LIFECYCLE_DIR)' -mindepth 1 -maxdepth 1 -type d ! -name '.*')
-SUBJECT_DIRS         := $(patsubst %,%/$(SUBJECT),$(EXISTING_STAGE_DIRS))
-SUBJECT_MAKEFILES    := $(patsubst %,%/Makefile,$(SUBJECT_DIRS))
+EXISTING_STAGE_DIRS := $(shell find '$(PIPELINE_DIR)' -mindepth 1 -maxdepth 1 -type d ! -name '.*')
+SUBJECT_DIRS        := $(patsubst %,%/$(SUBJECT),$(EXISTING_STAGE_DIRS))
+SUBJECT_MAKEFILES   := $(patsubst %,%/Makefile,$(SUBJECT_DIRS))
 
 new-subject: $(SUBJECT_MAKEFILES)
 $(SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
 	echo 'include ../../../$(ENGINE_SYSTEM)/mk/subject.mk' > '$@'
-$(SUBJECT_DIRS): | $(LIFECYCLE_MAKEFILE)
+$(SUBJECT_DIRS): | $(PIPELINE_MAKEFILE)
 	mkdir -p '$@'
 endif
 ifeq ($(filter $(VALID_PATTERNS),$(PATTERN)),)
 new-pipeline:
 	$(error FATAL: PATTERN= must be one of: $(VALID_PATTERNS))
 else
-PIPELINE_STAGES          := $(STAGES_$(PATTERN))
-PIPELINE_STAGE_DIRS      := $(patsubst %,$(LIFECYCLE_DIR)/%,$(PIPELINE_STAGES))
-PIPELINE_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PIPELINE_STAGE_DIRS))
+PATTERN_STAGES          := $(STAGES_$(PATTERN))
+PATTERN_STAGE_DIRS      := $(patsubst %,$(PIPELINE_DIR)/%,$(PATTERN_STAGES))
+PATTERN_STAGE_MAKEFILES := $(patsubst %,%/Makefile,$(PATTERN_STAGE_DIRS))
 
-new-pipeline: $(PIPELINE_STAGE_MAKEFILES)
+new-pipeline: $(PATTERN_STAGE_MAKEFILES)
 
-$(PIPELINE_STAGE_MAKEFILES): | $(PIPELINE_STAGE_DIRS)
+$(PATTERN_STAGE_MAKEFILES): | $(PATTERN_STAGE_DIRS)
 	echo 'include ../../$(ENGINE_SYSTEM)/mk/stage.mk' > '$@'
 
-$(PIPELINE_STAGE_DIRS): | $(LIFECYCLE_MAKEFILE)
+$(PATTERN_STAGE_DIRS): | $(PIPELINE_MAKEFILE)
 	mkdir -p '$@'
 
-$(LIFECYCLE_MAKEFILE): | $(LIFECYCLE_DIR)
+$(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
 	echo 'include ../$(ENGINE_SYSTEM)/mk/patterns/$(PATTERN).mk' > '$@'
 
-$(LIFECYCLE_DIR): | $(LIFECYCLE_HOME)
+$(PIPELINE_DIR): | $(PIPELINES_HOME)
 	mkdir -p '$@'
 endif
 endif
