@@ -13,7 +13,4 @@ help:
 	@echo
 
 pipeline:
-	$(if $(filter secrets, $(SELECT_STAGES)), $(MAKE) -C secrets stage )
-
-.PHONY: help
-.PHONY: pipeline
+	$(call run_stage,secrets)
