@@ -1,4 +1,4 @@
-ENGINE_ENV_DIR := $(shell realpath ../../../../environments/config)
+ENGINE_ENV_DIR := $(shell realpath ../../../../environments/core)
 include ../../../../../mk/subject.mk
 
 stage:
