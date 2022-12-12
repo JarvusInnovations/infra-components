@@ -4,10 +4,6 @@ ifeq ($(SUBJECT_NAME),)
 SUBJECT_NAME  := $(shell basename "`realpath .`")
 endif
 
-ifeq ($(SUBJECT_DIR),)
-SUBJECT_DIR   := $(shell realpath .)
-endif
-
 ifeq ($(STAGE_NAME),)
 STAGE_NAME    := $(shell basename "`realpath ..`")
 endif
@@ -16,31 +12,16 @@ ifeq ($(PIPELINE_NAME),)
 PIPELINE_NAME := $(shell basename "`realpath ../..`")
 endif
 
-ifeq ($(PIPELINE_DIR),)
-PIPELINE_DIR  := $(shell realpath '$(SUBJECT_DIR)'/../..)
+ifeq ($(SUBJECT_DIR),)
+SUBJECT_DIR   := $(shell realpath .)
 endif
 
-help:
-	@echo
-	@echo 'Activities:                                                           '
-	@echo '                                                                      '
-	@echo '    help   - show this message                                        '
-	@echo '    test   - run tests for this stage                                 '
-	@echo '    clean  - remove files cached by this stage                        '
-	@echo '    stage  - execute this stage                                       '
-	@echo '    report - publish stage-specific information to an external system '
-	@echo '                                                                      '
-	@echo 'To view all available activities, open: $(shell realpath .)/Makefile  '
-	@echo
+ifeq ($(PIPELINE_DIR),)
+PIPELINE_DIR  := $(shell realpath ../..)
+endif
+
+stage:
+
+.PHONY: stage
 
 include $(MK)/config.mk
-
-test:
-clean:
-stage:
-report:
-
-.PHONY: help
-.PHONY: test
-.PHONY: clean
-.PHONY: stage
