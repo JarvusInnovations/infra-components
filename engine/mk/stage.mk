@@ -21,7 +21,7 @@ export SELECTED_ALL
 
 SUBJECT_TARGETS := $(patsubst %,subject-%,$(SELECT_SUBJECTS))
 
-subject_exists = $(shell find . -mindepth 1 -maxdepth 1 -type d -name $(1))
+subject_exists = $(shell find . -mindepth 1 -maxdepth 1 -type d -name $(1) 2>/dev/null)
 
 $(MAKECMDGOALS): $(SUBJECT_TARGETS)
 
