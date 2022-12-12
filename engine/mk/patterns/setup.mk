@@ -14,3 +14,8 @@ help:
 
 pipeline:
 	$(call run_stage,secrets)
+
+UNSUPPORTED := $(filter-out pipeline help secrets,$(MAKECMDGOALS))
+
+$(UNSUPPORTED): help
+.PHONY: $(UNSUPPORTED)

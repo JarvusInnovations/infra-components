@@ -28,3 +28,8 @@ cd:
 
 .PHONY: ci
 .PHONY: cd
+
+UNSUPPORTED := $(filter-out pipeline help ci cd,$(MAKECMDGOALS))
+
+$(UNSUPPORTED): help
+.PHONY: $(UNSUPPORTED)
