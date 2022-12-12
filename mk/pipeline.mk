@@ -20,8 +20,8 @@ $(info STARTUP: ENGINE_ENV_DIR=$(ENGINE_ENV_DIR))
 
 run_stage = $(if $(filter $(1), $(SELECT_STAGES)), $(MAKE) -C $(1) stage)
 
-pipeline:
 help:
+pipeline:
 
-.PHONY: pipeline
 .PHONY: help
+.PHONY: pipeline
