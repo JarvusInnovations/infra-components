@@ -1,3 +1,3 @@
 
 test:
-	$(MAKE) -C lifecycles/development pipeline
+	$(MAKE) -C pipelines/development pipeline

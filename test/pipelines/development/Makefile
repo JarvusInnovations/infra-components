@@ -1,5 +1,5 @@
-LIFECYCLE_DIR := $(shell realpath .)
-include ../../../mk/lifecycle.mk
+PIPELINE_DIR := $(shell realpath .)
+include ../../../mk/pipeline.mk
 
 help:
 	@echo
