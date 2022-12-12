@@ -1,6 +1,5 @@
 include ../../../../../mk/subject.mk
-include $(MK)/tech/ssh.mk
-include $(MK)/test.mk
+include $(ENGINE_SYSTEM)/tests/content/mk/case.mk
 
 stage:
 ifneq ($(SSH_CONFIG),)
