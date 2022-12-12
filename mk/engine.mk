@@ -32,6 +32,14 @@ env_pathjoin     = $(ENGINE_ENV_DIR)/$(1)
 # returns        : <env-subpath>
 env_pathstrip    = $(patsubst $(ENGINE_ENV_DIR)/%,%,$(1))
 
+# call signature : $(call home_pathjoin,<subpath>)
+# returns        : <engine-home>/<subpath>
+home_pathjoin    = $(ENGINE_HOME)/$(1)
+
+# call signature : $(call home_pathstrip,<home-path>)
+# returns        : <home-subpath>
+home_pathstrip   = $(patsubst $(ENGINE_HOME)/%,%,$(1))
+
 export ENGINE_SYSTEM
 export ENGINE_HOME
 export ENGINE_ENV_DIR

@@ -32,4 +32,10 @@ subject_config  = $(shell $(GIT_CONFIG) $(2) subject.$(PIPELINE_NAME)/$(SUBJECT_
 # returns        : <varname-value>
 env_config      = $(shell $(GIT_CONFIG) $(2) env.$(ENGINE_ENV).$(1))
 
-env_config_path = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
+# call signature : $(call env_config_path,<varname>)
+# returns        : <engine-env-dir>/<varname-value>
+env_config_path     = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
+
+# call signature : $(call subject_config_path,<varname>)
+# returns        : <engine-home>/<varname-value>
+subject_config_path = $(if $(call subject_config,$(1)),$(call home_pathjoin,$(call subject_config,$(1))))
