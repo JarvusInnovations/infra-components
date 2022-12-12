@@ -22,12 +22,12 @@ help:
 	@echo '    new-subject  (SUBJECT=, PIPELINE=, STAGES=) - create a new subject within the specified pipeline stages         '
 	@echo
 
-PIPELINE_DIR        := $(PIPELINES_HOME)/$(PIPELINE)
-PIPELINE_MAKEFILE   := $(PIPELINE_DIR)/Makefile
-
-SYSTEM_RELTO_PIPELINE      := $(shell realpath --relative-to='$(PIPELINE_DIR)' .)
+PIPELINE_DIR          := $(PIPELINES_HOME)/$(PIPELINE)
+PIPELINE_MAKEFILE     := $(PIPELINE_DIR)/Makefile
 
 ifdef PIPELINE
+
+SYSTEM_RELTO_PIPELINE := $(shell realpath --relative-to='$(PIPELINE_DIR)' .)
 
 ifeq ($(shell echo '$(SYSTEM_RELTO_PIPELINE)' | head -c 1),)
 $(error FATAL: SYSTEM_RELTO_PIPELINE must be a relative path; got the absolute path $(SYSTEM_RELTO_PIPELINE))
