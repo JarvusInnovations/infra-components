@@ -17,7 +17,7 @@ ENGINE_ENV      := local
 endif
 
 ifeq ($(ENGINE_ENV_DIR),)
-ENGINE_ENV_DIR  := $(shell git rev-parse --git-dir --path-format=relative)/engine
+ENGINE_ENV_DIR  := $(shell realpath `git rev-parse --git-path engine`)
 endif
 
 ifeq ($(PIPELINES_HOME),)
@@ -26,11 +26,11 @@ endif
 
 # call signature : $(call env_pathjoin,<subpath>)
 # returns        : <engine-env-dir>/<subpath>
-env_pathjoin     = $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR)')/$(1)
+env_pathjoin     = $(ENGINE_ENV_DIR)/$(1)
 
 # call signature : $(call env_pathstrip,<env-path>)
 # returns        : <env-subpath>
-env_pathstrip    = $(patsubst $(shell realpath --relative-to=. '$(ENGINE_ENV_DIR)')/%,%,$(1))
+env_pathstrip    = $(patsubst $(ENGINE_ENV_DIR)/%,%,$(1))
 
 export ENGINE_SYSTEM
 export ENGINE_HOME

@@ -1,7 +1,7 @@
 GIT     ?= git
 
 ifeq ($(GIT_DIR),)
-GIT_DIR := $(shell $(GIT) rev-parse --git-dir --path-format=relative)
+GIT_DIR := $(shell $(GIT) rev-parse --git-path .)
 endif
 
 PIPELINE_CONFS := $(wildcard $(PIPELINE_DIR)/*.conf)
