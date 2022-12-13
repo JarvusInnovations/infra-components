@@ -2,11 +2,10 @@ include ../../.engine/mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                             '
+	@echo 'Actions:                                                                    '
 	@echo '                                                                            '
-	@echo '    pipeline - run full ci/cd pipeline over selections                      '
-	@echo '    ci       - package & test selections                                    '
-	@echo '    cd       - deploy a package                                             '
+	@echo '    pull - download binary files                                            '
+	@echo '    push - upload binary files                                              '
 	@echo '                                                                            '
 	@echo 'Filters:                                                                    '
 	@echo '                                                                            '
@@ -14,22 +13,18 @@ help:
 	@echo '    DO_SUBJECTS = space delimited list of subjects to include in each stage '
 	@echo
 
-pipeline:
-	$(MAKE) ci cd
+pipeline: help
 
-ci:
-	$(call run_stage,accept)
-	$(call run_stage,build)
-	$(call run_stage,test)
+pull:
+	$(call run_stage,pull)
 
-cd:
-	$(call run_stage,deliver)
-	$(call run_stage,deploy)
+push:
+	$(call run_stage,push)
 
-.PHONY: ci
-.PHONY: cd
+.PHONY: pull
+.PHONY: push
 
-UNSUPPORTED := $(filter-out pipeline help ci cd,$(MAKECMDGOALS))
+UNSUPPORTED := $(filter-out pipeline help pull push,$(MAKECMDGOALS))
 
 $(UNSUPPORTED): help
 .PHONY: $(UNSUPPORTED)

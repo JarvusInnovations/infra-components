@@ -1,16 +1,18 @@
 PIPELINE_DIR   := $(shell realpath .)
+ENGINE_HOME    := $(shell realpath ../..)
+ENGINE_SYSTEM  := $(shell realpath ../../..)
 include ../../../mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                 '
-	@echo '                                                                '
-	@echo '    run - execute test suite                                    '
-	@echo '                                                                '
-	@echo 'Selections:                                                     '
-	@echo '                                                                '
-	@echo '    SELECT_STAGES   = list of stages to execute                 '
-	@echo '    SELECT_SUBJECTS = list of subjects to include in each stage '
+	@echo 'Orchestrations:                                                             '
+	@echo '                                                                            '
+	@echo '    run - execute test suite                                                '
+	@echo '                                                                            '
+	@echo 'Selections:                                                                 '
+	@echo '                                                                            '
+	@echo '    DO_STAGES   = space delimited list of stages to execute                 '
+	@echo '    DO_SUBJECTS = space delimited list of subjects to include in each stage '
 	@echo
 
 run:

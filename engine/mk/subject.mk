@@ -20,6 +20,8 @@ ifeq ($(PIPELINE_DIR),)
 PIPELINE_DIR  := $(shell realpath ../..)
 endif
 
+run_step = $(MAKE) $(1)
+
 stage:
 
 .PHONY: stage
