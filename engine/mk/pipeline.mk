@@ -8,8 +8,8 @@ ifeq ($(PIPELINE_DIR),)
 PIPELINE_DIR  := $(PIPELINES_HOME)/$(PIPELINE_NAME)
 endif
 
-ifeq ($(SELECT_STAGES),)
-SELECT_STAGES := $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
+ifeq ($(DO_STAGES),)
+DO_STAGES := $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
 endif
 
 export PIPELINE_NAME
@@ -19,7 +19,7 @@ $(info STARTUP: ENGINE_ENV=$(ENGINE_ENV))
 $(info STARTUP: ENGINE_ENV_DIR=$(ENGINE_ENV_DIR))
 $(info STARTUP: ENGINE_HOME=$(ENGINE_HOME))
 
-run_stage = $(if $(filter $(1), $(SELECT_STAGES)), $(MAKE) -C $(1) stage)
+run_stage = $(if $(filter $(1), $(DO_STAGES)), $(MAKE) -C $(1) stage)
 
 help:
 pipeline:

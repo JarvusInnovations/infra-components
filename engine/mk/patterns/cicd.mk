@@ -2,16 +2,16 @@ include ../../.engine/mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                 '
-	@echo '                                                                '
-	@echo '    pipeline - run full ci/cd pipeline over selections          '
-	@echo '    ci       - package & test selections                        '
-	@echo '    cd       - deploy a package                                 '
-	@echo '                                                                '
-	@echo 'Selections:                                                     '
-	@echo '                                                                '
-	@echo '    SELECT_STAGES   = list of stages to execute                 '
-	@echo '    SELECT_SUBJECTS = list of subjects to include in each stage '
+	@echo 'Orchestrations:                                                             '
+	@echo '                                                                            '
+	@echo '    pipeline - run full ci/cd pipeline over selections                      '
+	@echo '    ci       - package & test selections                                    '
+	@echo '    cd       - deploy a package                                             '
+	@echo '                                                                            '
+	@echo 'Filters:                                                                    '
+	@echo '                                                                            '
+	@echo '    DO_STAGES   = space delimited list of stages to execute                 '
+	@echo '    DO_SUBJECTS = space delimited list of subjects to include in each stage '
 	@echo
 
 pipeline:
