@@ -11,22 +11,22 @@
 #
 
 TERRAFORM                   ?= terraform
-TERRAFORM_ROOT_MODULE       ?= $(call subject_config,tfRootModule)
+TERRAFORM_ROOT_MODULE       ?= $(call subject_config_path,tfRootModule)
 TERRAFORM_SUBJECT_VAR_FILES ?= $(call subject_config,tfVarFile,--get-all)
 TERRAFORM_ENV_VAR_FILES     ?= $(call env_config,tfVarFile,--get-all)
-TERRAFORM_SUBJECT_BACKEND   ?= $(call subject_config,tfBackend)
-TERRAFORM_ENV_BACKEND       ?= $(call env_config,tfBackend)
+TERRAFORM_SUBJECT_BACKEND   ?= $(call subject_config_path,tfBackend)
+TERRAFORM_ENV_BACKEND       ?= $(call env_config_path,tfBackend)
 
 ifneq ($(TERRAFORM_SUBJECT_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(ENGINE_HOME)/$(TERRAFORM_SUBJECT_BACKEND)
+TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_SUBJECT_BACKEND)
 endif
 
 ifneq ($(TERRAFORM_ENV_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(ENGINE_ENV_DIR)/$(TERRAFORM_ENV_BACKEND)
+TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_ENV_BACKEND)
 endif
 
 ifneq ($(TERRAFORM_ROOT_MODULE),)
-TERRAFORM += '-chdir=$(ENGINE_HOME)/$(TERRAFORM_ROOT_MODULE)'
+TERRAFORM += '-chdir=$(TERRAFORM_ROOT_MODULE)'
 endif
 
 ifneq ($(TERRAFORM_SUBJECT_VAR_FILES),)
