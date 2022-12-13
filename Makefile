@@ -8,9 +8,9 @@ STAGE    ?=
 STAGES   ?=
 SUBJECT  ?=
 
-VALID_PATTERNS := cicd setup
+VALID_PATTERNS := cicd bins
 STAGES_cicd    := accept build test deliver deploy
-STAGES_setup   := secrets
+STAGES_bins    := pull push
 
 help:
 	@echo
