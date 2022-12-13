@@ -115,6 +115,7 @@ $(NEW_STAGE_MAKEFILE): | $(NEW_STAGE_DIR)
 $(NEW_STAGE_DIR):
 	mkdir -p '$@'
 
+# FIXME: This target fails to create non-existent SUBJECT_DIRS & produces duplicate target paths
 $(SELECTED_SUBJECT_MAKEFILES) $(DEFAULT_SUBJECT_MAKEFILES): | $(SUBJECT_DIRS)
 	echo 'include ../../$(SYSTEM_RELTO_PIPELINE)/mk/subject.mk' > '$@'
 
