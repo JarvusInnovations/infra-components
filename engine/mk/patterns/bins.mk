@@ -2,9 +2,10 @@ include ../../.engine/mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                 '
+	@echo 'Actions:                                                        '
 	@echo '                                                                '
-	@echo '    pipeline - run full setup pipeline                          '
+	@echo '    pull - download binary files                                '
+	@echo '    push - upload binary files                                  '
 	@echo '                                                                '
 	@echo 'Selections:                                                     '
 	@echo '                                                                '
@@ -12,10 +13,18 @@ help:
 	@echo '    SELECT_SUBJECTS = list of subjects to include in each stage '
 	@echo
 
-pipeline:
-	$(call run_stage,secrets)
+pipeline: help
 
-UNSUPPORTED := $(filter-out pipeline help secrets,$(MAKECMDGOALS))
+pull:
+	$(call run_stage,pull)
+
+push:
+	$(call run_stage,push)
+
+.PHONY: pull
+.PHONY: push
+
+UNSUPPORTED := $(filter-out pipeline help pull push,$(MAKECMDGOALS))
 
 $(UNSUPPORTED): help
 .PHONY: $(UNSUPPORTED)
