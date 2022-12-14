@@ -68,7 +68,7 @@ else
 new-pipeline: $(PIPELINE_MAKEFILE)
 
 $(PIPELINE_MAKEFILE): | $(PIPELINE_DIR)
-	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/pipeline.mk' > '$@'
+	echo 'include $(SYSTEM_RELTO_PIPELINE)/mk/patterns/default.mk' > '$@'
 endif
 else
 	$(error FATAL: PIPELINE= is required)
