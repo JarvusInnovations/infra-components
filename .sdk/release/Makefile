@@ -2,7 +2,7 @@ C ?=
 
 release:
 	$(if $(C),,$(error C= is required))
-	rev=`git -C ../.. subtree split -P $(C)` && git update-ref refs/heads/channels/$(C)/dev $$rev
+	rev=`git -C ../.. subtree split -P $(C)` && git update-ref refs/heads/channels/$(C)/local $$rev
 
 help:
 	@echo
