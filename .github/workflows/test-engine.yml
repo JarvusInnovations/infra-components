@@ -1,0 +1,21 @@
+name: Test Engine
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'engine/**'
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: run tests
+        run: |
+          make -C engine/tests run
