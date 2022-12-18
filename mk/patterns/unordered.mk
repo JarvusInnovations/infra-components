@@ -1,12 +1,13 @@
 include ../../.engine/mk/pipeline.mk
 
+ALL_STAGES := $(sort $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;))
+RUN_STAGES := $(filter $(DO_STAGES),$(ALL_STAGES))
+
 help:
 	@echo
-	@echo 'Actions:                                                                    '
+	@echo 'Stages:                                                                     '
 	@echo '                                                                            '
-	@echo '    pipeline - run full ci/cd pipeline over selections                      '
-	@echo '    ci       - package & test selections                                    '
-	@echo '    cd       - deploy a package                                             '
+	@echo '    $(ALL_STAGES)                                                           '
 	@echo '                                                                            '
 	@echo 'Filters:                                                                    '
 	@echo '                                                                            '
@@ -14,22 +15,14 @@ help:
 	@echo '    DO_SUBJECTS = space delimited list of subjects to include in each stage '
 	@echo
 
-pipeline:
-	$(MAKE) ci cd
+$(ALL_STAGES):
+	$(call run_stage,$@)
 
-ci:
-	$(call run_stage,1-accept)
-	$(call run_stage,2-build)
-	$(call run_stage,3-test)
+pipeline: help
 
-cd:
-	$(call run_stage,4-deliver)
-	$(call run_stage,5-deploy)
+.PHONY: $(ALL_STAGES)
 
-.PHONY: ci
-.PHONY: cd
-
-UNSUPPORTED := $(filter-out pipeline help ci cd,$(MAKECMDGOALS))
+UNSUPPORTED := $(filter-out pipeline help $(ALL_STAGES),$(MAKECMDGOALS))
 
 $(UNSUPPORTED): help
 .PHONY: $(UNSUPPORTED)
