@@ -1,6 +1,6 @@
 -include local.mk
-PIPELINES_HOME ?= ../pipelines
-ENGINE_ENV_DIR ?= $(shell git -C '$(PIPELINES_HOME)' rev-parse --absolute-git-dir)/engine/env
+ENGINE_PIPELINES_DIR ?= ../pipelines
+ENGINE_ENV_DIR       ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/env
 
 PIPELINE ?=
 PATTERN  ?= ordered
@@ -26,10 +26,10 @@ help:
 	@echo
 
 init:
-	mkdir -pv '$(PIPELINES_HOME)'
+	mkdir -pv '$(ENGINE_PIPELINES_DIR)'
 	mkdir -pv '$(ENGINE_ENV_DIR)'
 
-PIPELINE_DIR          := $(if $(PIPELINE),$(PIPELINES_HOME)/$(PIPELINE))
+PIPELINE_DIR          := $(if $(PIPELINE),$(ENGINE_PIPELINES_DIR)/$(PIPELINE))
 PIPELINE_MAKEFILE     := $(if $(PIPELINE),$(PIPELINE_DIR)/Makefile)
 SYSTEM_RELTO_PIPELINE := $(if $(PIPELINE),$(shell realpath --relative-to='$(PIPELINE_DIR)' .))
 
@@ -92,7 +92,7 @@ ifndef SUBJECT
 	$(error FATAL: SUBJECT= is required)
 endif
 
-$(PIPELINE_DIR)      : | $(PIPELINES_HOME)
+$(PIPELINE_DIR)      : | $(ENGINE_PIPELINES_DIR)
 $(PIPELINE_MAKEFILE) : | $(PIPELINE_DIR)
 $(STAGE_MAKEFILES)   : $(PIPELINE_MAKEFILE) | $(STAGE_DIRS)
 $(SUBJECT_MAKEFILES) : $(STAGE_MAKEFILES)   | $(SUBJECT_DIRS)

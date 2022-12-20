@@ -5,7 +5,7 @@ PIPELINE_NAME := $(shell basename "`realpath .`")
 endif
 
 ifeq ($(PIPELINE_DIR),)
-PIPELINE_DIR  := $(PIPELINES_HOME)/$(PIPELINE_NAME)
+PIPELINE_DIR  := $(ENGINE_PIPELINES_DIR)/$(PIPELINE_NAME)
 endif
 
 ifeq ($(DO_STAGES),)
