@@ -1,4 +1,3 @@
-PIPELINE_DIR       := $(shell realpath .)
 ENGINE_PROJECT_DIR := $(shell realpath ../..)
 ENGINE_SYSTEM      := $(shell realpath ../../..)
 ENGINE_ENV         := tests
