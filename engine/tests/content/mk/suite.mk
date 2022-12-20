@@ -5,7 +5,7 @@ include ../../../mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                             '
+	@echo 'Actions:                                                                    '
 	@echo '                                                                            '
 	@echo '    run - execute test suite                                                '
 	@echo '                                                                            '
