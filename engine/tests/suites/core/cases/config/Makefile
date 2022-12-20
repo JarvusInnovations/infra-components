@@ -1,5 +1,5 @@
 ENGINE_ENV_DIR := $(shell realpath ../../../../environments/core)
-include ../../../../../mk/subject.mk
+include ../../../../content/mk/case.mk
 
 stage:
 	$(info INFO: GIT=$(GIT))

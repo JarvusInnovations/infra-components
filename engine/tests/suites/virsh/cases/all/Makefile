@@ -1,6 +1,5 @@
-include ../../../../../mk/subject.mk
+include ../../../../content/mk/case.mk
 include $(MK)/tech/virsh.mk
-include $(ENGINE_SYSTEM)/tests/content/mk/case.mk
 
 stage:
 ifneq ($(VIRSH_DOMAIN),)
