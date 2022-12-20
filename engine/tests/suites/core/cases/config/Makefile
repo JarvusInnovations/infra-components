@@ -7,4 +7,4 @@ stage:
 	test '$(call subject_config,configSubject)' = fromSubject # '<configSubject>'
 	test '$(call subject_config,configEnv)' = fromEnv # '<configEnv>'
 	stat '$(call subject_config_path,verifyHomePath)' # '<verifyHomePath>'
-	stat '$(call env_config_path,verifyEnvPath)' # '<verifyHomePath>'
+	stat '$(call env_config_path,verifyEnvPath)' # '<verifyEnvPath>'
