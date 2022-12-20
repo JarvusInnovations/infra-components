@@ -3,7 +3,7 @@ include $(MK)/tech/kube.mk
 include $(MK)/tech/helm.mk
 
 stage:
-ifdef KUBECONFIG
+ifneq ($(KUBECONFIG),)
 	$(HELM) uninstall $(HELM_RELEASE)
 	$(KUBECTL) delete ns $(HELM_NAMESPACE)
 else
