@@ -3,7 +3,7 @@ include $(MK)/tech/kube.mk
 include $(MK)/tech/helm.mk
 
 stage:
-ifdef KUBECONFIG
+ifneq ($(KUBECONFIG),)
 	$(call run_step,helm-deploy)
 else
 	$(test_skip_env,kubeconfig)
