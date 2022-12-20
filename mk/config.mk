@@ -4,16 +4,17 @@ ifeq ($(GIT_DIR),)
 GIT_DIR := $(shell $(GIT) rev-parse --git-path .)
 endif
 
-PIPELINE_CONFS := $(wildcard $(PIPELINE_DIR)/*.conf)
-SUBJECT_CONFS  := $(wildcard *.conf)
-ENV_CONFS      := $(wildcard $(ENGINE_ENV_DIR)/*.conf)
+PIPELINE_CONFS := $(wildcard $(shell realpath ../..)/*.conf)
+SUBJECT_CONFS  := $(wildcard $(shell realpath .)/*.conf)
+ENV_CONFS      := $(wildcard $(shell realpath '$(ENGINE_ENV_DIR)')/*.conf)
 
+# FIXME: this use of patsubst may break the module when abspaths have whitespace
 ifneq ($(PIPELINE_CONFS),)
 GIT += $(patsubst %, -c 'include.path=%',$(PIPELINE_CONFS))
 endif
 
 ifneq ($(SUBJECT_CONFS),)
-GIT += $(patsubst %, -c 'include.path=$(shell realpath .)/%',$(SUBJECT_CONFS))
+GIT += $(patsubst %, -c 'include.path=%',$(SUBJECT_CONFS))
 endif
 
 ifneq ($(ENV_CONFS),)

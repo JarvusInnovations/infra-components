@@ -16,10 +16,6 @@ ifeq ($(SUBJECT_DIR),)
 SUBJECT_DIR   := $(shell realpath .)
 endif
 
-ifeq ($(PIPELINE_DIR),)
-PIPELINE_DIR  := $(shell realpath ../..)
-endif
-
 run_step = $(MAKE) $(1)
 
 stage:
