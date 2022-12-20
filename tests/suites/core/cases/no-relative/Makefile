@@ -1,4 +1,4 @@
-include ../../../../../mk/subject.mk
+include ../../../../content/mk/case.mk
 
 assert_no_relative = $(if $(shell git -C '$(shell git rev-parse --show-toplevel)' grep relative -- $(1)),$(error $(1): relatve path resolution forbidden))
 

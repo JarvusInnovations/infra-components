@@ -50,7 +50,7 @@ $(STAGE_MAKEFILES):
 	echo 'include ../../../../mk/stage.mk' > '$@'
 
 $(SUBJECT_MAKEFILES):
-	echo 'include ../../../../../mk/subject.mk' > '$@'
+	echo 'include ../../../../content/mk/case.mk' > '$@'
 
 $(SUITE_DIR_TARGET):
 ifeq ($(wildcard $(SUITE_DIR)),)

@@ -1,4 +1,4 @@
-include ../../../../../mk/subject.mk
+include ../../../../content/mk/case.mk
 include $(MK)/tech/kube.mk
 include $(MK)/tech/helm.mk
 
