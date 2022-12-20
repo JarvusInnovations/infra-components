@@ -1,6 +1,6 @@
 -include local.mk
 PIPELINES_HOME ?= ../pipelines
-ENGINE_ENV_DIR ?= $(shell git -C '$(PIPELINES_HOME)' rev-parse --absolute-git-dir)/engine
+ENGINE_ENV_DIR ?= $(shell git -C '$(PIPELINES_HOME)' rev-parse --absolute-git-dir)/engine/env
 
 PIPELINE ?=
 PATTERN  ?= ordered
