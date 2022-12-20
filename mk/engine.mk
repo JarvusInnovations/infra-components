@@ -17,7 +17,7 @@ ENGINE_ENV      := local
 endif
 
 ifeq ($(ENGINE_ENV_DIR),)
-ENGINE_ENV_DIR  := $(shell realpath `git rev-parse --git-path engine`)
+ENGINE_ENV_DIR  := $(shell realpath `git rev-parse --git-path engine/env`)
 endif
 
 ifeq ($(PIPELINES_HOME),)
