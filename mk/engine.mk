@@ -42,5 +42,6 @@ home_pathstrip   = $(patsubst $(ENGINE_HOME)/%,%,$(1))
 
 export ENGINE_SYSTEM
 export ENGINE_HOME
+export ENGINE_ENV
 export ENGINE_ENV_DIR
 export PIPELINES_HOME
