@@ -19,7 +19,7 @@ HELM_VALUES      ?= $(call subject_config,helmValues,--get-all)
 HELM_DEPLOY_VERB ?= $(if $(helm_release_exists),upgrade,install)
 
 HELM_OPTS         = $(patsubst %,--namespace '%',$(HELM_NAMESPACE))
-HELM_VALUES_OPTS  = $(patsubst %,--values '$(ENGINE_HOME)/%',$(HELM_VALUES))
+HELM_VALUES_OPTS  = $(patsubst %,--values '$(ENGINE_PROJECT_DIR)/%',$(HELM_VALUES))
 
 HELM             += $(HELM_OPTS)
 

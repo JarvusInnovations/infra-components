@@ -1,7 +1,7 @@
-PIPELINE_DIR   := $(shell realpath .)
-ENGINE_HOME    := $(shell realpath ../..)
-ENGINE_SYSTEM  := $(shell realpath ../../..)
-ENGINE_ENV     := tests
+PIPELINE_DIR       := $(shell realpath .)
+ENGINE_PROJECT_DIR := $(shell realpath ../..)
+ENGINE_SYSTEM      := $(shell realpath ../../..)
+ENGINE_ENV         := tests
 include ../../../mk/pipeline.mk
 
 help:

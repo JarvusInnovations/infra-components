@@ -17,7 +17,7 @@ export PIPELINE_DIR
 
 $(info STARTUP: ENGINE_ENV=$(ENGINE_ENV))
 $(info STARTUP: ENGINE_ENV_DIR=$(ENGINE_ENV_DIR))
-$(info STARTUP: ENGINE_HOME=$(ENGINE_HOME))
+$(info STARTUP: ENGINE_PROJECT_DIR=$(ENGINE_PROJECT_DIR))
 
 run_stage = $(if $(filter $(1), $(DO_STAGES)), $(MAKE) -C $(1) stage)
 

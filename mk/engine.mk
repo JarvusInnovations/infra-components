@@ -1,27 +1,27 @@
 -include local.mk
 
 ifeq ($(MK),)
-MK              := $(shell dirname '$(lastword $(MAKEFILE_LIST))')
+MK                 := $(shell dirname '$(lastword $(MAKEFILE_LIST))')
 endif
 
 ifeq ($(ENGINE_SYSTEM),)
-ENGINE_SYSTEM   := $(shell realpath '$(MK)/..')
+ENGINE_SYSTEM      := $(shell realpath '$(MK)/..')
 endif
 
-ifeq ($(ENGINE_HOME),)
-ENGINE_HOME     := $(shell realpath '$(MK)/../..')
+ifeq ($(ENGINE_PROJECT_DIR),)
+ENGINE_PROJECT_DIR := $(shell realpath '$(MK)/../..')
 endif
 
 ifeq ($(ENGINE_ENV),)
-ENGINE_ENV      := local
+ENGINE_ENV         := local
 endif
 
 ifeq ($(ENGINE_ENV_DIR),)
-ENGINE_ENV_DIR  := $(shell realpath `git rev-parse --git-path engine/env`)
+ENGINE_ENV_DIR     := $(shell realpath `git rev-parse --git-path engine/env`)
 endif
 
 ifeq ($(PIPELINES_HOME),)
-PIPELINES_HOME  := $(ENGINE_HOME)/pipelines
+PIPELINES_HOME     := $(ENGINE_PROJECT_DIR)/pipelines
 endif
 
 # call signature : $(call env_pathjoin,<subpath>)
@@ -34,14 +34,14 @@ env_pathstrip    = $(patsubst $(ENGINE_ENV_DIR)/%,%,$(1))
 
 # call signature : $(call home_pathjoin,<subpath>)
 # returns        : <engine-home>/<subpath>
-home_pathjoin    = $(ENGINE_HOME)/$(1)
+home_pathjoin    = $(ENGINE_PROJECT_DIR)/$(1)
 
 # call signature : $(call home_pathstrip,<home-path>)
 # returns        : <home-subpath>
-home_pathstrip   = $(patsubst $(ENGINE_HOME)/%,%,$(1))
+home_pathstrip   = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 
 export ENGINE_SYSTEM
-export ENGINE_HOME
+export ENGINE_PROJECT_DIR
 export ENGINE_ENV
 export ENGINE_ENV_DIR
 export PIPELINES_HOME
