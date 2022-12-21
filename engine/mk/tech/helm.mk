@@ -1,12 +1,81 @@
+# = helm =
 #
-# Config:
+# The package manager for kubernetes
 #
-# [engineSubject "<name>"]
-# helmChart     = <engine-home-subpath>
-# helmRelease   = <name>
-# helmNamespace = <name>
-# helmValues    = <engine-home-subpath>
-# helmValues    = ...
+# == Inputs ==
+#
+# |================================================
+# | Section       | Name              | Description
+# | engineSubject | helmChart         | A helm chart source
+# | engineSubject | helmRelease       | A release name for a deployed helm chart
+# | engineSubject | helmNamespace     | The kubernetes namespace the helm release should deploy into
+# | engineSubject | helmValues [...]  | A helm values file used to perform the release
+# |================================================
+#
+# == Steps ==
+#
+# `helm-deploy`::
+#   description:::
+#     Performs a `helm install` when the release does not yet exist and a
+#     `helm upgrade` when it does. Creates the kubernetes namespace if it does not exist.
+#   inputs:::
+#     * engineSubject.helmChart
+#     * engineSubject.helmRelease
+#     * engineSubject.helmNamespace
+#     * engineSubject.helmValues
+#
+# `helm-dependency-update`::
+#   description:::
+#     Performs a `helm dependency update` on the specified chart.
+#   inputs:::
+#     * engineSubject.helmChart
+#
+# == Methods ==
+#
+# `helm_release_exists`::
+#   inputs:::
+#     * engineSubject.helmRelease
+#     * engineSubject.helmNamespace
+#   return:::
+#     * Non-empty when specified release exists within namespace
+#     * Empty when specified release does not exist within namespace
+#
+# `helm_release_changed`::
+#   inputs:::
+#     * engineSubject.helmChart
+#     * engineSubject.helmRelease
+#     * engineSubject.helmNamespace
+#     * engineSubject.helmValues
+#   return:::
+#     * Non-empty when desired release state has changed
+#     * Empty when desired release state has not changed
+#
+# `helm_dependencies_drifted`::
+#   inputs:::
+#     * engineSubject.helmChart
+#   return:::
+#     * Non-empty when one or more chart dependencies are missing or ourdated
+#     * Empty when all chart dependencies are present and up to date
+#
+# `helm_diff_status`::
+#   inputs:::
+#     * engineSubject.helmChart
+#     * engineSubject.helmRelease
+#     * engineSubject.helmNamespace
+#     * engineSubject.helmValues
+#   return:::
+#     * Exit code of `kubectl diff` on the rendered helm release
+#
+# `helm_diff_is_error`::
+#   inputs:::
+#     * engineSubject.helmChart
+#     * engineSubject.helmRelease
+#     * engineSubject.helmNamespace
+#     * engineSubject.helmValues
+#   return:::
+#     * Non-empty if the return value of `helm_diff_status` indicates an error
+#     * Empty if the return value of `helm_diff_status` does not indicate an error
+
 ifeq ($(KUBECTL),)
 $(error FATAL: helm: missing required module: kube)
 endif
