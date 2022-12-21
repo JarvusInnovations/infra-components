@@ -2,20 +2,20 @@
 # Config:
 #
 # [subject "<name>"]
-# tfRootModule = <subject-subpath>
-# tfVarFile    = <subject-subpath>
-# tfBackend    = <subject-subpath>
+# tfRootModulePath = <subject-subpath>
+# tfVarFilePath    = <subject-subpath>
+# tfBackendPath    = <subject-subpath>
 # [env     "<name>"]
-# tfVarFile    = <env-subpath>
-# tfBackend    = <env-subpath>
+# tfVarFilePath    = <env-subpath>
+# tfBackendPath    = <env-subpath>
 #
 
 TERRAFORM                   ?= terraform
-TERRAFORM_ROOT_MODULE       ?= $(call subject_config_path,tfRootModule)
-TERRAFORM_SUBJECT_VAR_FILES ?= $(call subject_config,tfVarFile,--get-all)
-TERRAFORM_ENV_VAR_FILES     ?= $(call env_config,tfVarFile,--get-all)
-TERRAFORM_SUBJECT_BACKEND   ?= $(call subject_config_path,tfBackend)
-TERRAFORM_ENV_BACKEND       ?= $(call env_config_path,tfBackend)
+TERRAFORM_ROOT_MODULE       ?= $(call subject_config_path,tfRootModulePath)
+TERRAFORM_SUBJECT_VAR_FILES ?= $(call subject_config,tfVarFilePath,--get-all)
+TERRAFORM_ENV_VAR_FILES     ?= $(call env_config,tfVarFilePath,--get-all)
+TERRAFORM_SUBJECT_BACKEND   ?= $(call subject_config_path,tfBackendPath)
+TERRAFORM_ENV_BACKEND       ?= $(call env_config_path,tfBackendPath)
 
 ifneq ($(TERRAFORM_SUBJECT_BACKEND),)
 TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_SUBJECT_BACKEND)

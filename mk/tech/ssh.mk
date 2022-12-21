@@ -2,10 +2,10 @@
 # Config:
 #
 # [env "<env-name>"]
-# sshConfig = <env-subpath>
+# sshConfigPath = <env-subpath>
 
 SSH        ?= ssh
-SSH_CONFIG ?= $(call env_config_path,sshConfig)
+SSH_CONFIG ?= $(call env_config_path,sshConfigPath)
 
 ifneq ($(SSH_CONFIG),)
 SSH += -F $(shell realpath '$(SSH_CONFIG)')
