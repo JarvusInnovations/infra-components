@@ -1,5 +1,5 @@
 ENGINE_PROJECT_DIR := $(shell realpath ../..)
-ENGINE_SYSTEM      := $(shell realpath ../../..)
+ENGINE_SYSTEM_DIR  := $(shell realpath ../../..)
 ENGINE_ENV         := tests
 include ../../../mk/pipeline.mk
 

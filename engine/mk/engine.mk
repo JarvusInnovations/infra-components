@@ -4,8 +4,8 @@ ifeq ($(MK),)
 MK                   := $(shell dirname '$(lastword $(MAKEFILE_LIST))')
 endif
 
-ifeq ($(ENGINE_SYSTEM),)
-ENGINE_SYSTEM        := $(shell realpath '$(MK)/..')
+ifeq ($(ENGINE_SYSTEM_DIR),)
+ENGINE_SYSTEM_DIR    := $(shell realpath '$(MK)/..')
 endif
 
 ifeq ($(ENGINE_PROJECT_DIR),)
@@ -40,7 +40,7 @@ home_pathjoin    = $(ENGINE_PROJECT_DIR)/$(1)
 # returns        : <home-subpath>
 home_pathstrip   = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 
-export ENGINE_SYSTEM
+export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
 export ENGINE_ENV
 export ENGINE_ENV_DIR
