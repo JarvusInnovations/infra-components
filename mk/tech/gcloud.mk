@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [env "<env-name>"]
+# [engineEnv "<name>"]
 # gcpProject = <project-name>
 
 GCLOUD      ?= gcloud

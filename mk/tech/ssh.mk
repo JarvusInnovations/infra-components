@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [env "<env-name>"]
+# [engineEnv "<env-name>"]
 # sshConfigPath = <env-subpath>
 
 SSH        ?= ssh
