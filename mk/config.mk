@@ -26,12 +26,12 @@ GIT_CONFIG := $(GIT) config
 # call signature : $(call subject_config,<varname> [git-config-value-pattern],<git-config-opts>)
 # expands to     : git config <git-config-opts> subject.<pipeline-name/subject-name>.<varname> [git-config-value-pattern]
 # returns        : <varname-value>
-subject_config  = $(shell $(GIT_CONFIG) $(2) subject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
+subject_config  = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
 
 # call signature : $(call env_config,<varname> [git-config-value-pattern],<git-config-opts>)
 # expands to     : git config <git-config-opts> env.<engine-env>.<varname> [git-config-value-pattern]
 # returns        : <varname-value>
-env_config      = $(shell $(GIT_CONFIG) $(2) env.$(ENGINE_ENV).$(1))
+env_config      = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
 
 # call signature : $(call env_config_path,<varname>)
 # returns        : <engine-env-dir>/<varname-value>
