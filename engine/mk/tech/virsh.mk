@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [subject "<name>"]
+# [engineSubject "<name>"]
 # virshDomain       = <domain-name>
 # virshBaseSnapshot = <snapshot-name>
 VIRSH ?= virsh

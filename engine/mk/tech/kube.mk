@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [env "<name>"]
+# [engineEnv "<name>"]
 # kubeconfig = <absolute-path>
 KUBECONFIG ?= $(call env_config,kubeconfig)
 KUBECTL    ?= KUBECONFIG='$(KUBECONFIG)' kubectl

@@ -1,11 +1,11 @@
 #
 # Config:
 #
-# [subject "<name>"]
+# [engineSubject "<name>"]
 # tfRootModulePath = <subject-subpath>
 # tfVarFilePath    = <subject-subpath>
 # tfBackendPath    = <subject-subpath>
-# [env     "<name>"]
+# [engineEnv     "<name>"]
 # tfVarFilePath    = <env-subpath>
 # tfBackendPath    = <env-subpath>
 #

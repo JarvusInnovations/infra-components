@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [subject "<name>"]
+# [engineSubject "<name>"]
 # helmChart     = <engine-home-subpath>
 # helmRelease   = <name>
 # helmNamespace = <name>

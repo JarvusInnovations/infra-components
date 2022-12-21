@@ -1,7 +1,7 @@
 #
 # Config:
 #
-# [env "<env-name>"]
+# [engineEnv "<env-name>"]
 # gcpSecret = foo-secret
 # gcpSecret = bar-secret
 # [gcpSecret "foo-secret"]
