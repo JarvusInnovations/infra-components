@@ -1,14 +1,51 @@
+# = terraform =
 #
-# Config:
+# The Infrastructure as Code tool by Hashicorp
 #
-# [engineSubject "<name>"]
-# tfRootModulePath = <subject-subpath>
-# tfVarFilePath    = <subject-subpath>
-# tfBackendPath    = <subject-subpath>
-# [engineEnv     "<name>"]
-# tfVarFilePath    = <env-subpath>
-# tfBackendPath    = <env-subpath>
+# == Inputs ==
 #
+# |==================================================
+# | Section       | Name                | Description
+# | engineSubject | tfRootModulePath    | Project subpath to Terraform project
+# | engineSubject | tfVarFilePath [...] | Project subpath to a subject-local variable file
+# | engineSubject | tfBackendPath       | Project subpath to a subject-local backend config. This is used by any implicit `terraform init` commands.
+# | engineEnv     | tfVarFilePath [...] | Env subpath to a pipeline-global var file. Extends `engineSubject.tfVarFilePath`.
+# | engineEnv     | tfBackendPath       | Env subpath to a pipeline-global backend config. Overrides `engineSubject.tfBackendPath`.
+# |================================================
+#
+# == Steps ==
+#
+# `terraform-plan`::
+#   description:::
+#     Runs a `terraform plan` on the specified project
+#   inputs:::
+#     * engineSubject.tfRootModulePath
+#     * engineSubject.tfVarFilePath
+#     * engineEnv.tfVarFilePath
+#
+# `terraform-apply`::
+#   description:::
+#     Runs a `terraform apply` on the specified project
+#   inputs:::
+#     * engineSubject.tfRootModulePath
+#     * engineSubject.tfVarFilePath
+#     * engineEnv.tfVarFilePath
+#
+# `terraform-validate`::
+#   description:::
+#     Runs a `terraform validate` on the specified project
+#   inputs:::
+#     * engineSubject.tfRootModulePath
+#
+# == Methods ==
+#
+# `tf_plan_status`::
+#   inputs:::
+#     * engineSubject.tfRootModulePath
+#     * engineSubject.tfVarFilePath
+#     * engineEnv.tfVarFilePath
+#   return:::
+#     * Detailed exit code of `terraform plan`
 
 TERRAFORM                   ?= terraform
 TERRAFORM_ROOT_MODULE       ?= $(call subject_config_path,tfRootModulePath)

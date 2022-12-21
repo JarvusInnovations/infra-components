@@ -1,8 +1,13 @@
+# = gcloud =
 #
-# Config:
+# The Google Cloud Platform CLI interface
 #
-# [engineEnv "<name>"]
-# gcpProject = <project-name>
+# == Inputs ==
+#
+# |================================================
+# | Section       | Name              | Description
+# | engineEnv     | gcpProject        | The name of the Google Cloud project to operate on
+# |================================================
 
 GCLOUD      ?= gcloud
 GCP_PROJECT ?= $(call env_config,gcpProject,--get --default '$(call subject_config,gcpProject)')

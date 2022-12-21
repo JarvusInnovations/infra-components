@@ -1,9 +1,45 @@
+# = virsh =
 #
-# Config:
+# The libvirt CLI interface
 #
-# [engineSubject "<name>"]
-# virshDomain       = <domain-name>
-# virshBaseSnapshot = <snapshot-name>
+# == Inputs ==
+#
+# |================================================
+# | Section       | Name              | Description
+# | engineSubject | virshDomain       | The name of the target domain
+# | engineSubject | virshBaseSnapshot | The name of an existing snapshot for `virshDomain`
+# |================================================
+#
+# == Steps ==
+#
+# `virsh-domain-start`::
+#   description:::
+#     Starts the specified domain
+#   inputs:::
+#     * engineSubject.virshDomain
+#
+# `virsh-domain-stop`::
+#   description:::
+#     Stops the specified domain
+#   inputs:::
+#     * engineSubject.virshDomain
+#
+#  `virsh-domain-reset`::
+#    description:::
+#      Reverts the specified domain to the specified snapshot
+#    inputs:::
+#     * engineSubject.virshDomain
+#     * engineSubject.virshBaseSnapshot
+#
+# == Methods ==
+#
+# `virsh_domain_running`::
+#   inputs:::
+#     * engineSubject.virshDomain
+#   return:::
+#     * Non-empty if the specified domain is in a "running" state
+#     * Empty if in any other state
+
 VIRSH ?= virsh
 
 VIRSH_DOMAIN        ?= $(call subject_config,virshDomain)
