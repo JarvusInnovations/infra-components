@@ -12,6 +12,7 @@ $(error FATAL: helm: missing required module: kube)
 endif
 
 HELM             ?= KUBECONFIG='$(KUBECONFIG)' helm
+# FIXME: it should not be presumed that a helm chart is a filesystem path
 HELM_CHART       ?= $(call subject_config_path,helmChart)
 HELM_RELEASE     ?= $(call subject_config,helmRelease)
 HELM_NAMESPACE   ?= $(call subject_config,helmNamespace)
