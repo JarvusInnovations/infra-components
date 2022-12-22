@@ -1,6 +1,7 @@
 -include local.mk
 ENGINE_PIPELINES_DIR ?= ../pipelines
 ENGINE_ENV_DIR       ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/env
+ENGINE_ARTIFACTS_DIR ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/artifacts
 
 PIPELINE ?=
 PATTERN  ?= ordered
@@ -28,6 +29,7 @@ help:
 init:
 	mkdir -pv '$(ENGINE_PIPELINES_DIR)'
 	mkdir -pv '$(ENGINE_ENV_DIR)'
+	mkdir -pv '$(ENGINE_ARTIFACTS_DIR)'
 
 PIPELINE_DIR          := $(if $(PIPELINE),$(ENGINE_PIPELINES_DIR)/$(PIPELINE))
 PIPELINE_MAKEFILE     := $(if $(PIPELINE),$(PIPELINE_DIR)/Makefile)

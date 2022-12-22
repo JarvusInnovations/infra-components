@@ -20,6 +20,10 @@ ifeq ($(ENGINE_ENV_DIR),)
 ENGINE_ENV_DIR       := $(shell realpath `git rev-parse --git-path engine/env`)
 endif
 
+ifeq ($(ENGINE_ARTIFACTS_DIR),)
+ENGINE_ARTIFACTS_DIR := $(shell realpath `git rev-parse --git-path engine/artifacts`)
+endif
+
 ifeq ($(ENGINE_PIPELINES_DIR),)
 ENGINE_PIPELINES_DIR := $(ENGINE_PROJECT_DIR)/pipelines
 endif
@@ -40,8 +44,17 @@ home_pathjoin    = $(ENGINE_PROJECT_DIR)/$(1)
 # returns        : <home-subpath>
 home_pathstrip   = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 
+# call signature : $(call artifact_pathjoin,<subpath>)
+# returns        : <engine-artifacts-dir>/<subpath>
+artifact_pathjoin  = $(ENGINE_ARTIFACTS_DIR)/$(1)
+
+# call signature : $(call artifact_pathstrip,<artifact-path>)
+# returns        : <artifact-subpath>
+artifact_pathstrip = $(patsubst $(ENGINE_ARTIFACTS_DIR)/%,%,$(1))
+
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
 export ENGINE_ENV
 export ENGINE_ENV_DIR
+export ENGINE_ARTIFACTS_DIR
 export ENGINE_PIPELINES_DIR

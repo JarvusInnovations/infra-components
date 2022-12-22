@@ -33,10 +33,23 @@ subject_config  = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SU
 # returns        : <varname-value>
 env_config      = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
 
+# call signature : $(call artifact_var,<artifact-name>,<varname>,<git-config-opts>)
+# expands to     : git config <git-config-opts> artifact.<artifact-name>.<varname>
+# returns        : <varname-value>
+artifact_var        = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
+
 # call signature : $(call env_config_path,<varname>)
 # returns        : <engine-env-dir>/<varname-value>
 env_config_path     = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
 
+# call signature : $(call artifact_path,<artifact-name>)
+# returns        : <engine-artifacts-dir>/<artifact-path-var>
+artifact_path       = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
+
 # call signature : $(call subject_config_path,<varname>)
 # returns        : <engine-home>/<varname-value>
 subject_config_path = $(if $(call subject_config,$(1)),$(call home_pathjoin,$(call subject_config,$(1))))
+
+# call signature : $(call artifact_match,<name-pattern>)
+# returns        : <matched-artifact-name> ...
+artifact_match      = $(shell $(GIT_CONFIG) --get-regexp 'engineArtifact\.$(1)\.path' | cut -d. -f2)
