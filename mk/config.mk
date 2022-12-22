@@ -47,8 +47,8 @@ env_config_path     = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call en
 artifact_path       = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
 
 # call signature : $(call subject_config_path,<varname>)
-# returns        : <engine-home>/<varname-value>
-subject_config_path = $(if $(call subject_config,$(1)),$(call home_pathjoin,$(call subject_config,$(1))))
+# returns        : <engine-project-dir>/<varname-value>
+subject_config_path = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
 
 # call signature : $(call artifact_match,<name-pattern>)
 # returns        : <matched-artifact-name> ...
