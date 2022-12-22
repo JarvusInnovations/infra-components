@@ -55,6 +55,12 @@
 #     1. artifact pattern. Anchors (^ and $) will break matching and must not be used.
 #   returns:::
 #     * All artifact names which match <artifact-pattern> and define a "path" variable
+#
+# `artifacts_using_producer`::
+#   positionals:::
+#     1. producer name
+#   returns:::
+#     * Names of artifacts which define "producer = <producer-name>"
 
 GIT     ?= git
 
@@ -81,12 +87,13 @@ endif
 
 GIT_CONFIG := $(GIT) config
 
-env_config          = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
-env_config_path     = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
+env_config               = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
+env_config_path          = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
 
-subject_config      = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
-subject_config_path = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
+subject_config           = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
+subject_config_path      = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
 
-artifact_var        = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
-artifact_path       = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
-artifact_match      = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\.path$$' | cut -d. -f2)
+artifact_var             = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
+artifact_path            = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
+artifact_match           = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\.path$$' | cut -d. -f2)
+artifacts_using_producer = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.[^.]+\.producer$$' '^$(1)$$' | cut -d. -f2)
