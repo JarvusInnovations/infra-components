@@ -52,4 +52,4 @@ subject_config_path = $(if $(call subject_config,$(1)),$(call project_pathjoin,$
 
 # call signature : $(call artifact_match,<name-pattern>)
 # returns        : <matched-artifact-name> ...
-artifact_match      = $(shell $(GIT_CONFIG) --get-regexp 'engineArtifact\.$(1)\.path' | cut -d. -f2)
+artifact_match      = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\.path$$' | cut -d. -f2)
