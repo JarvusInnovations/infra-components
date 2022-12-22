@@ -36,13 +36,13 @@ env_pathjoin     = $(ENGINE_ENV_DIR)/$(1)
 # returns        : <env-subpath>
 env_pathstrip    = $(patsubst $(ENGINE_ENV_DIR)/%,%,$(1))
 
-# call signature : $(call home_pathjoin,<subpath>)
-# returns        : <engine-home>/<subpath>
-home_pathjoin    = $(ENGINE_PROJECT_DIR)/$(1)
+# call signature : $(call project_pathjoin,<subpath>)
+# returns        : <engine-project-dir>/<subpath>
+project_pathjoin = $(ENGINE_PROJECT_DIR)/$(1)
 
-# call signature : $(call home_pathstrip,<home-path>)
-# returns        : <home-subpath>
-home_pathstrip   = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
+# call signature : $(call project_pathstrip,<project-path>)
+# returns        : <project-subpath>
+project_pathstrip = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 
 # call signature : $(call artifact_pathjoin,<subpath>)
 # returns        : <engine-artifacts-dir>/<subpath>
