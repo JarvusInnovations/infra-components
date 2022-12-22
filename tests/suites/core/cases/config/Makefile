@@ -6,5 +6,5 @@ stage:
 	test '$(call subject_config,configPipeline)' = fromPipeline # '<configPipeline>'
 	test '$(call subject_config,configSubject)' = fromSubject # '<configSubject>'
 	test '$(call subject_config,configEnv)' = fromEnv # '<configEnv>'
-	stat '$(call subject_config_path,verifyHomePath)' # '<verifyHomePath>'
+	stat '$(call subject_config_path,verifyProjectPath)' # '<verifyProjectPath>'
 	stat '$(call env_config_path,verifyEnvPath)' # '<verifyEnvPath>'
