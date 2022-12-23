@@ -54,7 +54,7 @@
 #   positionals:::
 #     1. artifact pattern. Anchors (^ and $) will break matching and must not be used.
 #   returns:::
-#     * Names of artifacts which match <artifact-pattern> and define a "path" variable
+#     * Names of artifacts which match <artifact-pattern>
 #
 # `artifacts_using_producer`::
 #   positionals:::
@@ -95,5 +95,5 @@ subject_config_path      = $(if $(call subject_config,$(1)),$(call project_pathj
 
 artifact_var             = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
 artifact_path            = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
-artifacts_matching       = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\.path$$' | cut -d. -f2)
+artifacts_matching       = $(sort $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\..*$$' | cut -d. -f2))
 artifacts_using_producer = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.[^.]+\.producer$$' '^$(1)$$' | cut -d. -f2)
