@@ -87,6 +87,10 @@ endif
 
 GIT_CONFIG := $(GIT) config
 
+keys_matching            = $(shell $(GIT_CONFIG) --get-regexp '$(1)' $(if $(2),'$(2)') | awk '{print $$1}')
+key_has_value            = $(shell $(GIT_CONFIG) $(1) | grep '^$(2)$$')
+key_section_id           = $(shell echo '$(1)' | cut -d. -f2)
+
 env_config               = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
 env_config_path          = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
 
@@ -96,4 +100,8 @@ subject_config_path      = $(if $(call subject_config,$(1)),$(call project_pathj
 artifact_var             = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
 artifact_path            = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
 artifacts_matching       = $(sort $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\..*$$' | cut -d. -f2))
-artifacts_using_producer = $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.[^.]+\.producer$$' '^$(1)$$' | cut -d. -f2)
+# The complexity in this implementation "filters out" artifacts whose producers
+# match, but have been overridden. I.e., if an artifact defines a matching
+# producer value and also defines a non-matching, higher precedence value, it
+# will not be a member of the returned list.
+artifacts_using_producer = $(foreach key,$(call keys_matching,^engineArtifact\.[^.]+\.producer$$,^$(1)$$),$(if $(call key_has_value,$(key),$(1)),$(call key_section_id,$(key))))

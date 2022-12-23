@@ -8,6 +8,7 @@ ifeq ($(ARTIFACT_IDS),)
 endif
 
 $(ARTIFACT_IDS):
+	$(if $(filter skipped,$(ARTIFACT_IDS)),$(error FAIL: "skipped" appeared in ARTIFACT_IDS=$(ARTIFACT_IDS)),$(info INFO: ARTIFACT_IDS=$(ARTIFACT_IDS)))
 	printf '$(call artifact_var,$@,testsContent)' > '$(call artifact_path,$@)'
 
 .PHONY: $(ARTIFACT_IDS)
