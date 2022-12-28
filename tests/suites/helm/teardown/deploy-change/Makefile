@@ -2,7 +2,7 @@ include ../../../../content/mk/case.mk
 include $(MK)/tech/kube.mk
 include $(MK)/tech/helm.mk
 
-stage:
+subject:
 ifneq ($(KUBECONFIG),)
 	$(HELM) uninstall $(HELM_RELEASE)
 	$(KUBECTL) delete ns $(HELM_NAMESPACE)

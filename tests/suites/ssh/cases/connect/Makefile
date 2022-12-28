@@ -1,6 +1,6 @@
 include ../../../../content/mk/case.mk
 
-stage:
+subject:
 ifneq ($(SSH_CONFIG),)
 	$(SSH) test-machine true
 else

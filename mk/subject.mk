@@ -40,8 +40,8 @@ endif
 
 run_step = $(MAKE) $(1)
 
-stage:
+subject:
 
-.PHONY: stage
+.PHONY: subject
 
 include $(MK)/config.mk
