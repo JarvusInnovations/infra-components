@@ -68,21 +68,22 @@ ifeq ($(GIT_DIR),)
 GIT_DIR := $(shell $(GIT) rev-parse --git-path .)
 endif
 
-PIPELINE_CONFS := $(wildcard $(shell realpath ../..)/*.conf)
-SUBJECT_CONFS  := $(wildcard $(shell realpath .)/*.conf)
-ENV_CONFS      := $(wildcard $(shell realpath '$(ENGINE_ENV_DIR)')/*.conf)
+list_confs      = $(shell find '$(1)' -mindepth 1 -maxdepth 1 -name '*.conf' -exec basename {} \;)
 
-# FIXME: this use of patsubst may break the module when abspaths have whitespace
-ifneq ($(PIPELINE_CONFS),)
-GIT += $(patsubst %, -c 'include.path=%',$(PIPELINE_CONFS))
+PIPELINE_CONF_ARGS = $(foreach conf,$(call list_confs,$(shell realpath ../..)),-c 'include.path=$(shell realpath ../..)/$(conf)')
+SUBJECT_CONF_ARGS  = $(foreach conf,$(call list_confs,$(shell realpath .)),-c 'include.path=$(shell realpath .)/$(conf)')
+ENV_CONF_ARGS      = $(foreach conf,$(call list_confs,$(ENGINE_ENV_DIR)),-c 'include.path=$(ENGINE_ENV_DIR)/$(conf)')
+
+ifneq ($(PIPELINE_CONF_ARGS),)
+GIT += $(PIPELINE_CONF_ARGS)
 endif
 
-ifneq ($(SUBJECT_CONFS),)
-GIT += $(patsubst %, -c 'include.path=%',$(SUBJECT_CONFS))
+ifneq ($(SUBJECT_CONF_ARGS),)
+GIT += $(SUBJECT_CONF_ARGS)
 endif
 
-ifneq ($(ENV_CONFS),)
-GIT += $(patsubst %, -c 'include.path=%',$(ENV_CONFS))
+ifneq ($(ENV_CONF_ARGS),)
+GIT += $(ENV_CONF_ARGS)
 endif
 
 GIT_CONFIG := $(GIT) config
