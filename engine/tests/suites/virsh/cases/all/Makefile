@@ -1,7 +1,7 @@
 include ../../../../content/mk/case.mk
 include $(MK)/tech/virsh.mk
 
-stage:
+subject:
 ifneq ($(VIRSH_DOMAIN),)
 	$(call run_step,virsh-domain-start)
 	$(call run_step,virsh-domain-stop)

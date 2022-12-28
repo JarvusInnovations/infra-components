@@ -1,7 +1,7 @@
 ENGINE_ENV_DIR := $(shell realpath ../../../../environments/core)
 include ../../../../content/mk/case.mk
 
-stage:
+subject:
 	$(info INFO: GIT=$(GIT))
 	test '$(call subject_config,configPipeline)' = fromPipeline # '<configPipeline>'
 	test '$(call subject_config,configSubject)' = fromSubject # '<configSubject>'
