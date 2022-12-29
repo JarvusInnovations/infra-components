@@ -1,6 +1,7 @@
 include ../../../../content/mk/case.mk
 
-assert_portable_realpath = $(if $(shell git -C '$(ENGINE_SYSTEM_DIR)' grep -E -- 'realpath[[:space:]]+-' $(1)),$(error $(1): non-portable use of realpath forbidden))
+
+assert_portable_realpath = if git -C '$(ENGINE_SYSTEM_DIR)' grep -n -E -- 'realpath[[:space:]]+-' $(1); then exit 1; else true; fi \# usage of realpath MUST be portable
 
 subject:
 	$(call assert_portable_realpath,mk/config.mk)
