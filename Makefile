@@ -1,5 +1,7 @@
 -include local.mk
-ENGINE_PIPELINES_DIR ?= ../pipelines
+ENGINE_SYSTEM_DIR    ?= .
+ENGINE_PROJECT_DIR   ?= ..
+ENGINE_PIPELINES_DIR ?= $(ENGINE_PROJECT_DIR)/pipelines
 ENGINE_ENV_DIR       ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/env
 ENGINE_ARTIFACTS_DIR ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/artifacts
 
