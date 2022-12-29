@@ -62,6 +62,10 @@ ifeq ($(MK),)
 MK                   := $(shell dirname '$(lastword $(MAKEFILE_LIST))')
 endif
 
+ifeq ($(LIB),)
+LIB                  := $(MK)/../lib
+endif
+
 ifeq ($(ENGINE_SYSTEM_DIR),)
 ENGINE_SYSTEM_DIR    := $(shell realpath '$(MK)/..')
 endif
