@@ -36,7 +36,7 @@ init:
 
 PIPELINE_DIR          := $(if $(PIPELINE),$(ENGINE_PIPELINES_DIR)/$(PIPELINE))
 PIPELINE_MAKEFILE     := $(if $(PIPELINE),$(PIPELINE_DIR)/Makefile)
-SYSTEM_RELTO_PIPELINE := $(if $(PIPELINE),$(shell realpath --relative-to='$(PIPELINE_DIR)' .))
+SYSTEM_RELTO_PIPELINE := $(if $(PIPELINE),$(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_SYSTEM_DIR)' '$(PIPELINE_DIR)'))
 
 ifdef PIPELINE
 

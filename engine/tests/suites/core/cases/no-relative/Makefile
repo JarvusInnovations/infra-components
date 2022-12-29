@@ -8,3 +8,4 @@ subject:
 	$(call assert_no_relative,mk/pipeline.mk)
 	$(call assert_no_relative,mk/stage.mk)
 	$(call assert_no_relative,mk/subject.mk)
+	$(call assert_no_relative,Makefile)
