@@ -1,3 +1,4 @@
+# FIXME: hard coded .engine
 include ../../.engine/mk/pipeline.mk
 
 ALL_STAGES := $(sort $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;))
