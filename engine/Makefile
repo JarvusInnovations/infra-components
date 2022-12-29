@@ -78,6 +78,7 @@ ifndef PIPELINE
 	$(error FATAL: PIPELINE= is required)
 endif
 
+# FIXME: Prereqs will run if STAGE= is defined and PIPELINE= is not
 new-stage: $(NEW_STAGE_MAKEFILE)
 ifndef PIPELINE
 	$(error FATAL: PIPELINE= is required)
