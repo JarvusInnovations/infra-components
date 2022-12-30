@@ -1,5 +1,4 @@
-# FIXME: hard coded .engine
-include ../../.engine/mk/pipeline.mk
+include $(dir $(lastword $(MAKEFILE_LIST)))../pipeline.mk
 
 help:
 	@echo
