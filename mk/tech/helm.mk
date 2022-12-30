@@ -5,11 +5,13 @@
 # == Inputs ==
 #
 # |================================================
-# | Section       | Name              | Description
-# | engineSubject | helmChart         | A helm chart source
-# | engineSubject | helmRelease       | A release name for a deployed helm chart
-# | engineSubject | helmNamespace     | The kubernetes namespace the helm release should deploy into
-# | engineSubject | helmValues [...]  | A helm values file used to perform the release
+# | Section       | Name                  | Description
+# | engineSubject | helmChart             | A helm chart source
+# | engineSubject | helmChartPath         | A helm chart source relative to ENGINE_PROJECT_DIR. Overridden by `engineSubject.helmChart`.
+# | engineSubject | helmRelease           | A release name for a deployed helm chart
+# | engineSubject | helmNamespace         | The kubernetes namespace the helm release should deploy into
+# | engineSubject | helmValues     [...]  | A helm values file used to perform the release
+# | engineSubject | helmValuesPath [...]  | A helm values file relative to ENGINE_PROJECT_DIR used to perform the release. Extends engineSubject.helmValues.
 # |================================================
 #
 # == Steps ==
@@ -20,9 +22,11 @@
 #     `helm upgrade` when it does. Creates the kubernetes namespace if it does not exist.
 #   inputs:::
 #     * engineSubject.helmChart
+#     * engineSubject.helmChartPath
 #     * engineSubject.helmRelease
 #     * engineSubject.helmNamespace
 #     * engineSubject.helmValues
+#     * engineSubject.helmValuesPath
 #
 # `helm-dependency-update`::
 #   description:::
@@ -43,9 +47,11 @@
 # `helm_release_changed`::
 #   inputs:::
 #     * engineSubject.helmChart
+#     * engineSubject.helmChartPath
 #     * engineSubject.helmRelease
 #     * engineSubject.helmNamespace
 #     * engineSubject.helmValues
+#     * engineSubject.helmValuesPath
 #   return:::
 #     * Non-empty when desired release state has changed
 #     * Empty when desired release state has not changed
@@ -63,6 +69,7 @@
 #     * engineSubject.helmRelease
 #     * engineSubject.helmNamespace
 #     * engineSubject.helmValues
+#     * engineSubject.helmValuesPath
 #   return:::
 #     * Exit code of `kubectl diff` on the rendered helm release
 #
@@ -72,6 +79,7 @@
 #     * engineSubject.helmRelease
 #     * engineSubject.helmNamespace
 #     * engineSubject.helmValues
+#     * engineSubject.helmValuesPath
 #   return:::
 #     * Non-empty if the return value of `helm_diff_status` indicates an error
 #     * Empty if the return value of `helm_diff_status` does not indicate an error
@@ -81,15 +89,26 @@ $(error FATAL: helm: missing required module: kube)
 endif
 
 HELM             ?= KUBECONFIG='$(KUBECONFIG)' helm
-# FIXME: it should not be presumed that a helm chart is a filesystem path
-HELM_CHART       ?= $(call subject_config_path,helmChart)
+HELM_CHART       ?= $(call subject_config,helmChart)
 HELM_RELEASE     ?= $(call subject_config,helmRelease)
 HELM_NAMESPACE   ?= $(call subject_config,helmNamespace)
-HELM_VALUES      ?= $(call subject_config,helmValues,--get-all)
 HELM_DEPLOY_VERB ?= $(if $(helm_release_exists),upgrade,install)
 
+ifeq ($(HELM_CHART),)
+HELM_CHART := $(call subject_config_path,helmChartPath)
+endif
+
+ifeq ($(HELM_VALUES),)
+HELM_VALUES       := $(call subject_config,helmValues,--get-all)
+HELM_VALUES_ARGS  += $(foreach src,$(HELM_VALUES),--values '$(src)')
+endif
+
+ifeq ($(HELM_VALUES_PATHS),)
+HELM_VALUES_PATHS := $(call subject_config,helmValuesPath,--get-all)
+HELM_VALUES_ARGS  += $(foreach subpath,$(HELM_VALUES_PATHS),--values '$(ENGINE_PROJECT_DIR)/$(subpath)')
+endif
+
 HELM_ARGS         = $(if $(HELM_NAMESPACE),--namespace '$(HELM_NAMESPACE)')
-HELM_VALUES_ARGS  = $(foreach subpath,$(HELM_VALUES),--values '$(ENGINE_PROJECT_DIR)/$(subpath)')
 
 HELM             += $(HELM_ARGS)
 
