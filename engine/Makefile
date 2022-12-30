@@ -91,26 +91,37 @@ STAGE_DIRS                 := $(sort $(NEW_STAGE_DIR) $(PATTERN_STAGE_DIRS) $(SU
 
 ALL_DIRS                   := $(sort $(PIPELINE_DIR) $(STAGE_DIRS) $(SUBJECT_DIRS))
 
-new-pipeline: $(PIPELINE_MAKEFILE) $(PATTERN_STAGE_MAKEFILES)
+new-pipeline:
 ifndef PIPELINE
 	$(error FATAL: PIPELINE= is required)
+else
+new-pipeline: $(PIPELINE_MAKEFILE) $(PATTERN_STAGE_MAKEFILES)
 endif
 
-# FIXME: Prereqs will run if STAGE= is defined and PIPELINE= is not
-new-stage: $(NEW_STAGE_MAKEFILE)
+new-stage:
 ifndef PIPELINE
 	$(error FATAL: PIPELINE= is required)
 endif
 ifndef STAGE
 	$(error FATAL: STAGE= is required)
 endif
+ifdef PIPELINE
+ifdef STAGE
+new-stage: $(NEW_STAGE_MAKEFILE)
+endif
+endif
 
-new-subject: $(SUBJECT_MAKEFILES)
+new-subject:
 ifndef PIPELINE
 	$(error FATAL: PIPELINE= is required)
-endif
 ifndef SUBJECT
 	$(error FATAL: SUBJECT= is required)
+endif
+endif
+ifdef PIPELINE
+ifdef SUBJECT
+new-subject: $(SUBJECT_MAKEFILES)
+endif
 endif
 
 $(PIPELINE_DIR)      : | $(ENGINE_PIPELINES_DIR)
