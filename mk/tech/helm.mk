@@ -93,6 +93,7 @@ HELM_VALUES_OPTS  = $(patsubst %,--values '$(ENGINE_PROJECT_DIR)/%',$(HELM_VALUE
 
 HELM             += $(HELM_OPTS)
 
+# FIXME: "&>" is non-portable
 helm_release_exists        = $(shell if $(HELM) status '$(HELM_RELEASE)' &>/dev/null; then echo 1; else false; fi)
 helm_release_changed       = $(or $(filter 1,$(helm_diff_status)),$(if $(helm_diff_is_error),$(info NOTICE: helm_diff_status encountered an error in stage $(PIPELINE_NAME)/$(STAGE_NAME) for subject $(SUBJECT_NAME); deployment will be unchanged)))
 helm_dependencies_drifted  = $(shell $(HELM) dependency list '$(HELM_CHART)' | tail -n+2 | grep -v 'ok[[:space:]]*$$' | awk '{print $$1}')
