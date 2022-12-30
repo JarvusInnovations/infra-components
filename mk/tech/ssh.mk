@@ -18,7 +18,7 @@ SSH        ?= ssh
 SSH_CONFIG ?= $(call env_config_path,sshConfigPath)
 
 ifneq ($(SSH_CONFIG),)
-SSH += -F $(shell realpath '$(SSH_CONFIG)')
+SSH += -F '$(SSH_CONFIG)'
 endif
 
 GIT_SSH_COMMAND := $(SSH)
