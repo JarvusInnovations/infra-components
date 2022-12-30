@@ -1,5 +1,4 @@
-# FIXME: hard coded .engine
-include ../../.engine/mk/pipeline.mk
+include $(dir $(lastword $(MAKEFILE_LIST)))../pipeline.mk
 
 ALL_STAGES := $(sort $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;))
 RUN_STAGES := $(filter $(DO_STAGES),$(ALL_STAGES))
