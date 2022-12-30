@@ -62,6 +62,8 @@ ifeq ($(MK),)
 MK                   := $(shell dirname '$(lastword $(MAKEFILE_LIST))')
 endif
 
+-include $(MK)/../../.engine-project.mk
+
 ifeq ($(LIB),)
 LIB                  := $(MK)/../lib
 endif
