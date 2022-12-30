@@ -122,7 +122,7 @@ helm_diff_is_error        := $(if $(filter-out 0 1,$(helm_diff_status)),1)
 helm-deploy:
 	$(if $(helm_dependencies_drifted),$(call run_step,helm-dependency-update))
 	$(if $(call kube_ns_exists,$(HELM_NAMESPACE)),,$(KUBECTL) create ns $(HELM_NAMESPACE))
-	$(HELM) $(HELM_DEPLOY_VERB) $(HELM_RELEASE) $(HELM_CHART) $(HELM_VALUES_ARGS)
+	$(HELM) $(HELM_DEPLOY_VERB) '$(HELM_RELEASE)' '$(HELM_CHART)' $(HELM_VALUES_ARGS)
 
 helm-dependency-update:
 	$(HELM) dependency update '$(HELM_CHART)'
