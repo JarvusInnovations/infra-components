@@ -16,24 +16,38 @@ SUBJECT  ?=
 STAGES_cicd    := 1-accept 2-build 3-test 4-deliver 5-deploy
 STAGES_bins    := pull push
 
-COMMA          := ,
-VALID_PATTERNS := $(notdir $(basename $(wildcard mk/patterns/*.mk)))
-VALID_HELPSTR  := $(patsubst %,%$(COMMA),$(filter-out $(lastword $(VALID_PATTERNS)),$(VALID_PATTERNS))) $(lastword $(VALID_PATTERNS))
+COMMA                 := ,
+VALID_PATTERNS        := $(notdir $(basename $(wildcard mk/patterns/*.mk)))
+VALID_PATTERNS_HELPST := $(patsubst %,%$(COMMA),$(filter-out $(lastword $(VALID_PATTERNS)),$(VALID_PATTERNS))) $(lastword $(VALID_PATTERNS))
+VALID_MODS            := $(patsubst mk/%,%,$(wildcard mk/*.mk mk/tech/*.mk))
+MODS_PATHS            := $(if $(MOD),$(foreach mod,$(MOD),mk/$(mod)))
 
 help:
 	@echo
-	@echo 'Actions:                                                                                                            '
-	@echo '                                                                                                                    '
-	@echo '    init                                        - setup a new engine project                                        '
-	@echo '    new-pipeline (PIPELINE=, PATTERN=)          - create a new pipeline from a pattern template ($(VALID_HELPSTR))  '
-	@echo '    new-stage    (PIPELINE=, STAGE=)            - create a new stage within the specified pipeline                  '
-	@echo '    new-subject  (PIPELINE=, STAGES=, SUBJECT=) - create a new subject within the specified pipeline stages         '
+	@echo 'Actions:                                                                                                                    '
+	@echo '                                                                                                                            '
+	@echo '    init                                        - setup a new engine project                                                '
+	@echo '    lsmod                                       - list module names                                                         '
+	@echo '    printdoc     (MOD=)                         - print module documentation                                                '
+	@echo '    new-pipeline (PIPELINE=, PATTERN=)          - create a new pipeline from a pattern template ($(VALID_PATTERNS_HELPSTR)) '
+	@echo '    new-stage    (PIPELINE=, STAGE=)            - create a new stage within the specified pipeline                          '
+	@echo '    new-subject  (PIPELINE=, STAGES=, SUBJECT=) - create a new subject within the specified pipeline stages                 '
 	@echo
 
 init:
 	mkdir -pv '$(ENGINE_PIPELINES_DIR)'
 	mkdir -pv '$(ENGINE_ENV_DIR)'
 	mkdir -pv '$(ENGINE_ARTIFACTS_DIR)'
+
+lsmod:
+	@printf '%s\n' $(VALID_MODS)
+
+printdoc:
+ifdef MOD
+	@awk -f '$(LIB)'/awk/comment-embedded-adoc.awk $(MODS_PATHS)
+else
+	$(error MOD= is required)
+endif
 
 PIPELINE_DIR          := $(if $(PIPELINE),$(ENGINE_PIPELINES_DIR)/$(PIPELINE))
 PIPELINE_MAKEFILE     := $(if $(PIPELINE),$(PIPELINE_DIR)/Makefile)
@@ -118,6 +132,8 @@ $(ALL_DIRS):
 
 .PHONY: help
 .PHONY: init
+.PHONY: lsmod
+.PHONY: printdoc
 .PHONY: new-pipeline
 .PHONY: new-stage
 .PHONY: new-subject
