@@ -55,6 +55,19 @@
 #   returns:::
 #     * A subpath with ENGINE_ARTIFACTS_DIR stripped from the beginning
 #     * <abspath> if it does not start with ENGINE_ARTIFACTS_DIR
+#
+# `artifact_relpathjoin`::
+#   positionals:::
+#     1. subpath
+#   returns:::
+#     * {relative path to ENGINE_ARTIFACTS_DIR}/<subpath>
+#
+# `artifact_relpathstrip`::
+#   positionals:::
+#     1. relpath
+#   returns:::
+#     * A subpath with the relative path to ENGINE_ARTIFACTS_DIR stripped from the beginning
+#     * <relpath> if it does not start with a relative path to ENGINE_ARTIFACTS_DIR
 
 -include local.mk
 
@@ -100,6 +113,9 @@ project_pathstrip  = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 
 artifact_pathjoin  = $(ENGINE_ARTIFACTS_DIR)/$(1)
 artifact_pathstrip = $(patsubst $(ENGINE_ARTIFACTS_DIR)/%,%,$(1))
+
+artifact_relpathjoin  = $(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/$(1)
+artifact_relpathstrip = $(patsubst $(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/%,%,$(1))
 
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
