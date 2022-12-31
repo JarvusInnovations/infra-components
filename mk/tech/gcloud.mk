@@ -12,6 +12,7 @@
 GCLOUD      ?= gcloud
 GCP_PROJECT ?= $(call env_config,gcpProject,--get --default '$(call subject_config,gcpProject)')
 
+GCLOUD += --quiet
 ifneq ($(GCP_PROJECT),)
 GCLOUD += --project='$(GCP_PROJECT)'
 endif
