@@ -1,6 +1,6 @@
 include ../../../../content/mk/case.mk
 
-ARTIFACT_IDS := $(call artifacts_using_producer,tests)
+ARTIFACT_IDS := $(call artifacts_filter_equalto,$(call artifacts_matching,.+),producer,tests)
 
 subject: $(ARTIFACT_IDS)
 

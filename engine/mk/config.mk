@@ -56,11 +56,36 @@
 #   returns:::
 #     * Names of artifacts which match <artifact-pattern>
 #
-# `artifacts_using_producer`::
+# `artifacts_filter_equalto`::
 #   positionals:::
-#     1. producer name
+#     1. set of artifact names
+#     2. varname to check on each artifact
+#     3. value for equality test
 #   returns:::
-#     * Names of artifacts which define "producer = <producer-name>"
+#     * Names of artifacts which define "<varname> = <value>"
+#
+# `artifacts_filter_has`::
+#   positionals:::
+#     1. set of artifact names
+#     2. varname to check on each artifact
+#     3. [optional] value for equality test
+#   returns:::
+#     * Names of artifacts which define <varname> at least once
+#     * Names of artifacts which define "<varname> = <value>" at least once
+#
+# `artifacts_lookupby_relpath`::
+#   positionals:::
+#     1. set of artifact IDs
+#     2. a relative path formed by `artifact_relpathjoin`
+#   returns:::
+#     * Artifact IDs whose "path" value matches `artifact_relpathstrip $(2)`
+#
+# `artifacts_lookupby_abspath`::
+#   positionals:::
+#     1. set of artifact IDs
+#     2. an absolute path formed by `artifact_pathjoin`
+#   returns:::
+#     * Artifact IDs whose "path" value matches `artifact_pathstrip $(2)`
 
 GIT     ?= git
 
@@ -88,21 +113,16 @@ endif
 
 GIT_CONFIG := $(GIT) config
 
-keys_matching            = $(shell $(GIT_CONFIG) --get-regexp '$(1)' $(if $(2),'$(2)') | awk '{print $$1}')
-key_has_value            = $(shell $(GIT_CONFIG) $(1) | grep '^$(2)$$')
-key_section_id           = $(shell echo '$(1)' | cut -d. -f2)
+env_config                 = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
+env_config_path            = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
 
-env_config               = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
-env_config_path          = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
+subject_config             = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
+subject_config_path        = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
 
-subject_config           = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
-subject_config_path      = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
-
-artifact_var             = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
-artifact_path            = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
-artifacts_matching       = $(sort $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\..*$$' | cut -d. -f2))
-# The complexity in this implementation "filters out" artifacts whose producers
-# match, but have been overridden. I.e., if an artifact defines a matching
-# producer value and also defines a non-matching, higher precedence value, it
-# will not be a member of the returned list.
-artifacts_using_producer = $(foreach key,$(call keys_matching,^engineArtifact\.[^.]+\.producer$$,^$(1)$$),$(if $(call key_has_value,$(key),$(1)),$(call key_section_id,$(key))))
+artifact_var               = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
+artifact_path              = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
+artifacts_matching         = $(sort $(shell $(GIT_CONFIG) --get-regexp '^engineArtifact\.$(1)\.[^.]+$$' | cut -d. -f2))
+artifacts_filter_equalto   = $(foreach id,$(1),$(if $(filter $(3),$(call artifact_var,$(id),$(2))),$(id)))
+artifacts_filter_has       = $(foreach id,$(1),$(if $(call artifact_var,$(id),$(2) $(if $(3),'^$(3)$$'),--get),$(id)))
+artifacts_lookupby_relpath = $(call artifacts_filter_equalto,$(1),path,$(call artifact_relpathstrip,$(2)))
+artifacts_lookupby_abspath = $(call artifacts_filter_equalto,$(1),path,$(call artifact_pathstrip,$(2)))
