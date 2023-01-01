@@ -19,6 +19,13 @@
 #     * <ENGINE_ENV_DIR>/<engineEnv-value>
 #     * blank when <varname> does not exist
 #
+# `env_config_artifact`::
+#   positionals:::
+#     1. varname
+#   returns:::
+#     * <ENGINE_ARTIFACTS_DIR>/<engineEnv-value>
+#     * blank when <varname> does not exist
+#
 # `subject_config`::
 #   positionals:::
 #     1. varname
@@ -32,6 +39,13 @@
 #     1. varname
 #   returns:::
 #     * <ENGINE_PROJECT_DIR>/<engineSubject-value>
+#     * blank when <varname> does not exist
+#
+# `subject_config_artifact`::
+#   positionals:::
+#     1. varname
+#   returns:::
+#     * <ENGINE_ARTIFACTS_DIR>/<engineSubject-value>
 #     * blank when <varname> does not exist
 #
 # `artifact_var`::
@@ -115,9 +129,11 @@ GIT_CONFIG := $(GIT) config
 
 env_config                 = $(shell $(GIT_CONFIG) $(2) engineEnv.$(ENGINE_ENV).$(1))
 env_config_path            = $(if $(call env_config,$(1)),$(call env_pathjoin,$(call env_config,$(1))))
+env_config_artifact        = $(call artifact_path,$(call env_config,$(1)))
 
 subject_config             = $(shell $(GIT_CONFIG) $(2) engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).$(1))
 subject_config_path        = $(if $(call subject_config,$(1)),$(call project_pathjoin,$(call subject_config,$(1))))
+subject_config_artifact    = $(call artifact_path,$(call subject_config,$(1)))
 
 artifact_var               = $(shell $(GIT_CONFIG) $(3) engineArtifact.$(1).$(2))
 artifact_path              = $(if $(call artifact_var,$(1),path),$(call artifact_pathjoin,$(call artifact_var,$(1),path)))
