@@ -3,7 +3,7 @@ ENGINE_PROJECT_DIR   ?= ..
 -include $(ENGINE_PROJECT_DIR)/.engine-project.mk
 ENGINE_SYSTEM_DIR    ?= .
 ENGINE_PIPELINES_DIR ?= $(ENGINE_PROJECT_DIR)/pipelines
-ENGINE_ENV_DIR       ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/env
+ENGINE_LOCAL_DIR     ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/local
 ENGINE_ARTIFACTS_DIR ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/artifacts
 LIB                  ?= $(ENGINE_SYSTEM_DIR)/lib
 
@@ -36,7 +36,7 @@ help:
 
 init:
 	mkdir -pv '$(ENGINE_PIPELINES_DIR)'
-	mkdir -pv '$(ENGINE_ENV_DIR)'
+	mkdir -pv '$(ENGINE_LOCAL_DIR)'
 	mkdir -pv '$(ENGINE_ARTIFACTS_DIR)'
 
 lsmod:
