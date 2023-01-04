@@ -11,8 +11,8 @@ SCRIPT=$(basename "$0")
 
 usage()
 {
-  printf 'Usage: %s DEST_DIR START_DIR\n' "$SCRIPT"
-  printf 'Print the relative path to DEST_DIR from START_DIR on the current system\n'
+  printf 'Usage: %s DEST_PATH START_DIR\n' "$SCRIPT"
+  printf 'Print the relative path to DEST_PATH from START_DIR on the current system\n'
 }
 
 die()
@@ -110,7 +110,7 @@ if ! type realpath >/dev/null 2>&1; then
 fi
 
 if ! [ "$path_dest" ]; then
-  printf 'DEST_DIR is required\n' >&2
+  printf 'DEST_PATH is required\n' >&2
   inputs_valid=
 fi
 
