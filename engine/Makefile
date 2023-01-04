@@ -51,7 +51,7 @@ endif
 
 PIPELINE_DIR          := $(if $(PIPELINE),$(ENGINE_PIPELINES_DIR)/$(PIPELINE))
 PIPELINE_MAKEFILE     := $(if $(PIPELINE),$(PIPELINE_DIR)/Makefile)
-SYSTEM_RELTO_PIPELINE := $(if $(PIPELINE),$(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_SYSTEM_DIR)' '$(PIPELINE_DIR)'))
+SYSTEM_RELTO_PIPELINE := $(if $(PIPELINE),$(shell $(LIB)/sh/path-relto.sh '$(ENGINE_SYSTEM_DIR)' '$(PIPELINE_DIR)'))
 
 ifdef PIPELINE
 

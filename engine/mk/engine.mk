@@ -114,8 +114,8 @@ project_pathstrip  = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 artifact_pathjoin  = $(ENGINE_ARTIFACTS_DIR)/$(1)
 artifact_pathstrip = $(patsubst $(ENGINE_ARTIFACTS_DIR)/%,%,$(1))
 
-artifact_relpathjoin  = $(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/$(1)
-artifact_relpathstrip = $(patsubst $(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/%,%,$(1))
+artifact_relpathjoin  = $(shell $(LIB)/sh/path-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/$(1)
+artifact_relpathstrip = $(patsubst $(shell $(LIB)/sh/path-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/%,%,$(1))
 
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
