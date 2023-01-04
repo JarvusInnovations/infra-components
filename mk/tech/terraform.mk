@@ -71,7 +71,7 @@ TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_PROJECT_DIR)/%',$(TERRAF
 endif
 
 ifneq ($(TERRAFORM_ENV_VAR_FILES),)
-TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_ENV_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
+TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_LOCAL_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
 endif
 
 TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(shell realpath --relative-to=. '$(TERRAFORM_ROOT_MODULE)')/.terraform,.terraform)

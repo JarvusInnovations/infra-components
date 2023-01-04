@@ -11,7 +11,7 @@ endif
 export PIPELINE_NAME
 
 $(info STARTUP: ENGINE_ENV=$(ENGINE_ENV))
-$(info STARTUP: ENGINE_ENV_DIR=$(ENGINE_ENV_DIR))
+$(info STARTUP: ENGINE_LOCAL_DIR=$(ENGINE_LOCAL_DIR))
 $(info STARTUP: ENGINE_PROJECT_DIR=$(ENGINE_PROJECT_DIR))
 
 run_stage = $(if $(filter $(1), $(DO_STAGES)), $(MAKE) -C $(1) stage)

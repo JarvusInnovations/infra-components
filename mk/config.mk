@@ -16,7 +16,7 @@
 #   positionals:::
 #     1. varname
 #   returns:::
-#     * <ENGINE_ENV_DIR>/<engineEnv-value>
+#     * <ENGINE_LOCAL_DIR>/<engineEnv-value>
 #     * blank when <varname> does not exist
 #
 # `env_config_artifact`::
@@ -111,7 +111,7 @@ list_confs      = $(shell find '$(1)' -mindepth 1 -maxdepth 1 -name '*.conf' -ex
 
 PIPELINE_CONF_ARGS = $(foreach conf,$(call list_confs,$(shell realpath ../..)),-c 'include.path=$(shell realpath ../..)/$(conf)')
 SUBJECT_CONF_ARGS  = $(foreach conf,$(call list_confs,$(shell realpath .)),-c 'include.path=$(shell realpath .)/$(conf)')
-ENV_CONF_ARGS      = $(foreach conf,$(call list_confs,$(ENGINE_ENV_DIR)),-c 'include.path=$(ENGINE_ENV_DIR)/$(conf)')
+ENV_CONF_ARGS      = $(foreach conf,$(call list_confs,$(ENGINE_LOCAL_DIR)),-c 'include.path=$(ENGINE_LOCAL_DIR)/$(conf)')
 
 ifneq ($(PIPELINE_CONF_ARGS),)
 GIT += $(PIPELINE_CONF_ARGS)

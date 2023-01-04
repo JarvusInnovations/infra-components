@@ -1,4 +1,4 @@
-ENGINE_ENV_DIR := $(shell realpath ../../../../environments/core)
+ENGINE_LOCAL_DIR := $(shell realpath ../../../../environments/core)
 include ../../../../content/mk/case.mk
 
 subject:

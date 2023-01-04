@@ -10,7 +10,7 @@
 # | ENGINE_SYSTEM_DIR    | Absolute path to engine runtime directory
 # | ENGINE_PROJECT_DIR   | Absolute path to engine consumer project
 # | ENGINE_ENV           | Name of engineEnv to be used when querying engine configs
-# | ENGINE_ENV_DIR       | Absolute path to directory which engineEnv paths are relative to and from which highest precedence .conf files are collected
+# | ENGINE_LOCAL_DIR     | Absolute path to directory which engineEnv paths are relative to and from which highest precedence .conf files are collected
 # | ENGINE_ARTIFACTS_DIR | Absolute path to directory which engineArtifact paths are relative to
 # | ENGINE_PIPELINES_DIR | Absolute path to directory which contains project pipelines
 # |===================================
@@ -21,14 +21,14 @@
 #   positionals:::
 #     1. subpath
 #   returns:::
-#     * <ENGINE_ENV_DIR>/<subpath>
+#     * <ENGINE_LOCAL_DIR>/<subpath>
 #
 # `env_pathstrip`::
 #   positionals:::
 #     1. abspath
 #   returns:::
-#     * A subpath with ENGINE_ENV_DIR stripped from the beginning
-#     * <abspath> if it does not start with ENGINE_ENV_DIR
+#     * A subpath with ENGINE_LOCAL_DIR stripped from the beginning
+#     * <abspath> if it does not start with ENGINE_LOCAL_DIR
 #
 # `project_pathjoin`::
 #   positionals:::
@@ -90,11 +90,11 @@ ENGINE_PROJECT_DIR   := $(shell realpath '$(MK)/../..')
 endif
 
 ifeq ($(ENGINE_ENV),)
-ENGINE_ENV           := local
+ENGINE_ENV           := dev
 endif
 
-ifeq ($(ENGINE_ENV_DIR),)
-ENGINE_ENV_DIR       := $(shell realpath `git rev-parse --git-path engine/env`)
+ifeq ($(ENGINE_LOCAL_DIR),)
+ENGINE_LOCAL_DIR     := $(shell realpath `git rev-parse --git-path engine/local`)
 endif
 
 ifeq ($(ENGINE_ARTIFACTS_DIR),)
@@ -105,8 +105,8 @@ ifeq ($(ENGINE_PIPELINES_DIR),)
 ENGINE_PIPELINES_DIR := $(ENGINE_PROJECT_DIR)/pipelines
 endif
 
-env_pathjoin       = $(ENGINE_ENV_DIR)/$(1)
-env_pathstrip      = $(patsubst $(ENGINE_ENV_DIR)/%,%,$(1))
+env_pathjoin       = $(ENGINE_LOCAL_DIR)/$(1)
+env_pathstrip      = $(patsubst $(ENGINE_LOCAL_DIR)/%,%,$(1))
 
 project_pathjoin   = $(ENGINE_PROJECT_DIR)/$(1)
 project_pathstrip  = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
@@ -120,6 +120,6 @@ artifact_relpathstrip = $(patsubst $(shell $(LIB)/sh/dir-relto.sh '$(ENGINE_ARTI
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
 export ENGINE_ENV
-export ENGINE_ENV_DIR
+export ENGINE_LOCAL_DIR
 export ENGINE_ARTIFACTS_DIR
 export ENGINE_PIPELINES_DIR
