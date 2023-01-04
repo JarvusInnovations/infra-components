@@ -17,6 +17,13 @@
 #
 # == Methods ==
 #
+# `path_relto`::
+#   positionals:::
+#     1. dest path
+#     2. start dir
+#   returns:::
+#     * A relative path from <start-dir> to <dest-path> on the current system
+#
 # `env_pathjoin`::
 #   positionals:::
 #     1. subpath
@@ -105,6 +112,8 @@ ifeq ($(ENGINE_PIPELINES_DIR),)
 ENGINE_PIPELINES_DIR := $(ENGINE_PROJECT_DIR)/pipelines
 endif
 
+path_relto         = $(shell $(LIB)/sh/path-relto.sh '$(1)' '$(2)')
+
 env_pathjoin       = $(ENGINE_LOCAL_DIR)/$(1)
 env_pathstrip      = $(patsubst $(ENGINE_LOCAL_DIR)/%,%,$(1))
 
@@ -114,8 +123,8 @@ project_pathstrip  = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
 artifact_pathjoin  = $(ENGINE_ARTIFACTS_DIR)/$(1)
 artifact_pathstrip = $(patsubst $(ENGINE_ARTIFACTS_DIR)/%,%,$(1))
 
-artifact_relpathjoin  = $(shell $(LIB)/sh/path-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/$(1)
-artifact_relpathstrip = $(patsubst $(shell $(LIB)/sh/path-relto.sh '$(ENGINE_ARTIFACTS_DIR)' .)/%,%,$(1))
+artifact_relpathjoin  = $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/$(1)
+artifact_relpathstrip = $(patsubst $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/%,%,$(1))
 
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
