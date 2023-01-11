@@ -141,16 +141,6 @@ stmt_table_print()
   eval "printf '%s\\n' \"\$$stmt_table_name\""
 }
 
-stmt_key_modifiers_pattern='[a-z]+path'
-
-stmt_key_modifier()
-{
-  _stmt_key=$1
-  if echo "$_stmt_key" | grep -E '[a-z]+path$' >/dev/null; then
-    echo path
-  fi
-}
-
 stmt_table_format_opts()
 {
   while read _in_key _in_val; do
@@ -178,12 +168,33 @@ stmt_table_format_opts()
   done
 }
 
+stmt_key_modifiers_pattern='(project|local|subject)path|artifact'
+
+stmt_key_modifier()
+{
+  _stmt_key=$1
+  if   echo "$_stmt_key" | grep -E '(project|local|subject)path$' >/dev/null; then
+    echo path
+  elif echo "$_stmt_key" | grep -E 'artifact$'   >/dev/null; then
+    echo artifact
+  fi
+}
+
+xfrm_artifact()
+{
+  _in_key=$1
+  _in_val=$2
+  _artifact_id=$_in_val
+  _artifact_path=$(stmt_table_name=stmt_table_artifactrefs opt_keyseq_tovar "$_artifact_id")
+  test ! "$_artifact_path" || printf '%s\n' "$_artifact_path"
+}
+
 xfrm_path()
 {
   _in_key=$1
   _in_val=$2
   _out_val=
-  _xfrm_path_resolvers="project local subject artifact"
+  _xfrm_path_resolvers="project local subject"
   for _resolver in $_xfrm_path_resolvers; do
     if echo "$_in_key" | grep "${_resolver}path\$" >/dev/null; then
       _xfrm_path_fn=xfrm_path_$_resolver
@@ -217,12 +228,6 @@ xfrm_path_subject()
   if [ "$_stem" ]; then
     printf '%s\n' "$(path_relto "$SUBJECT_DIR/$_stem" .)"
   fi
-}
-
-xfrm_path_artifact()
-{
-  _id=$2
-  printf '%s\n' "$_id"
 }
 
 path_relto()
