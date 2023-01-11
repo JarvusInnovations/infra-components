@@ -95,6 +95,21 @@ $(printf '%s\n' "$_raw_table" | awk -f "$_awk_prog")
 EOF
 }
 
+stmt_table_artifactopts_load()
+{
+  _raw_table=$(
+  git config --file - --get-regexp "^(engineArtifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
+[include]
+$(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
+EOF
+)
+  stmt_table_use stmt_table_artifactopts
+  stmt_table_set modified
+  stmt_table_load <<EOF
+$(printf '%s\n' "$_raw_table" | stmt_table_format_opts)
+EOF
+}
+
 stmt_table_load()
 {
   test "$stmt_table_name" || return 1
@@ -154,7 +169,10 @@ stmt_table_format_opts()
     if   [ "$_in_key" = 'include.path' ]; then
       _out_key=OPTSFILE
     elif [ $(echo "$_in_key" | awk -F. '{print NF}') -eq 3 ]; then
-      _out_key=$(echo "$_in_key" | cut -d. -f3)
+      case $stmt_table_name in
+        stmt_table_pipelineopts) _out_key=$(echo "$_in_key" | cut -d. -f3);;
+        stmt_table_artifactopts) _out_key=$(echo "$_in_key" | awk -F. '{printf "%s.%s\n", $2, $3}');;
+      esac
     else
       continue
     fi
