@@ -11,8 +11,8 @@ SCRIPT=$(basename "$0")
 
 usage()
 {
-  printf 'Usage: %s DEST_PATH START_DIR\n' "$SCRIPT"
-  printf 'Print the relative path to DEST_PATH from START_DIR on the current system\n'
+  printf 'Usage: %s DEST_PATH START_DIR\n' "$SCRIPT"                                   >&2
+  printf 'Print the relative path to DEST_PATH from START_DIR on the current system\n' >&2
 }
 
 die()
@@ -146,12 +146,12 @@ else
 fi
 
 if [ "$DEBUG" ]; then
-  printf 'DEBUG path_dest_norm=%s\n'  "$path_dest_norm"
-  printf 'DEBUG path_start_norm=%s\n' "$path_start_norm"
-  printf 'DEBUG path_base=%s\n'       "$path_base"
-  printf 'DEBUG stem_dest=%s\n'       "$stem_dest"
-  printf 'DEBUG stem_start=%s\n'      "$stem_start"
-  printf 'DEBUG path_traversal=%s\n'  "$path_traversal"
+  printf 'DEBUG path_dest_norm=%s\n'  "$path_dest_norm"  >&2
+  printf 'DEBUG path_start_norm=%s\n' "$path_start_norm" >&2
+  printf 'DEBUG path_base=%s\n'       "$path_base"       >&2
+  printf 'DEBUG stem_dest=%s\n'       "$stem_dest"       >&2
+  printf 'DEBUG stem_start=%s\n'      "$stem_start"      >&2
+  printf 'DEBUG path_traversal=%s\n'  "$path_traversal"  >&2
 fi
 
 printf '%s%s\n' "$path_traversal" "$stem_dest"
