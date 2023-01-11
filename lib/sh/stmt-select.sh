@@ -80,7 +80,20 @@ $(printf '%s\n' "$_raw_table" | stmt_table_format_opts)
 EOF
 }
 
-
+stmt_table_artifactrefs_load()
+{
+  _awk_prog=$LIB/awk/stmt-table-format-artifactrefs.awk
+  _raw_table=$(
+  git config --file - --get-regexp "^(engineArtifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
+[include]
+$(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
+EOF
+)
+  stmt_table_use stmt_table_artifactrefs
+  stmt_table_load <<EOF
+$(printf '%s\n' "$_raw_table" | awk -f "$_awk_prog")
+EOF
+}
 
 stmt_table_load()
 {
