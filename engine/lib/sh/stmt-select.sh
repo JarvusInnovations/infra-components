@@ -2,23 +2,24 @@
 
 usage()
 {
-  printf 'Usage: %s [OPTION...] OPTS_FILE...                                                                     \n' "$SCRIPT" >&2
-  printf '                                                                                                       \n'           >&2
-  printf 'Options:                                                                                               \n'           >&2
-  printf '  -h            print this help message                                                                \n'           >&2
-  printf '  -t TABLE      table to select statements from                                                        \n'           >&2
-  printf "                TABLE is 'pipelineOpts', 'artifactRefs' or 'artifactOpts'; defaults to 'pipelineOpts' \\n"           >&2
-  printf '  -c COLUMN     column to return from selected statements                                              \n'           >&2
-  printf "                COLUMN is 'values' or 'keys'                                                          \\n"           >&2
-  printf '  -r RET_TYPE   return type for selection                                                              \n'           >&2
-  printf "                RET_TYPE is 'variable' or 'list'; defaults to 'variable'                              \\n"           >&2
-  printf "  -p PATH_FMT   format of returned path values; ignored unless RET_TYPE is 'variable'                 \\n"           >&2
-  printf "                PATH_FMT is 'abs' or 'rel'; defaults to 'rel'                                         \\n"           >&2
-  printf "  -k OPT_NAME   select statements with keys matching OPT_NAME                                         \\n"           >&2
-  printf "  -v OPT_VALUE  select statements with values equal to OPT_VALUE                                      \\n"           >&2
-  printf '                                                                                                       \n'           >&2
-  printf 'OPTS_FILE is a path to an options file                                                                 \n'           >&2
-  printf '                                                                                                       \n'           >&2
+  printf 'Usage: %s [OPTION...] OPTS_FILE...                                                                            \n' "$SCRIPT" >&2
+  printf '                                                                                                              \n'           >&2
+  printf 'Options:                                                                                                      \n'           >&2
+  printf '  -h              print this help message                                                                     \n'           >&2
+  printf '  -t TABLE        table to select statements from                                                             \n'           >&2
+  printf "                  TABLE is 'pipelineOpts', 'artifactRefs' or 'artifactOpts'; defaults to 'pipelineOpts'      \\n"           >&2
+  printf '  -c COLUMN       column to return from selected statements                                                   \n'           >&2
+  printf "                  COLUMN is 'values' or 'keys'                                                               \\n"           >&2
+  printf '  -r RET_TYPE     return type for selection                                                                   \n'           >&2
+  printf "                  RET_TYPE is 'variable' or 'list'; defaults to 'variable'                                   \\n"           >&2
+  printf "  -p PATH_FMT     format of returned path values; ignored unless RET_TYPE is 'variable'                      \\n"           >&2
+  printf "                  PATH_FMT is 'abs' or 'rel'; defaults to 'rel'                                              \\n"           >&2
+  printf "  -k OPT_NAME     select statements with keys matching OPT_NAME                                              \\n"           >&2
+  printf "  -v OPT_VALUE    select statements with values equal to OPT_VALUE                                           \\n"           >&2
+  printf "  -a ARTIFACT_ID  select statements assigned to artifact ARTIFACT_ID; ignored unless TABLE is 'artifactOpts' \\n"           >&2
+  printf '                                                                                                              \n'           >&2
+  printf 'OPTS_FILE is a path to an options file                                                                        \n'           >&2
+  printf '                                                                                                              \n'           >&2
 }
 
 input_error()
@@ -295,6 +296,7 @@ opt_col=
 opt_ref_type=var
 opt_names=
 opt_values=
+artifact_ids=
 
 while getopts :ht:c:r:p:k:v: flag; do
   case "$flag" in
@@ -305,6 +307,7 @@ while getopts :ht:c:r:p:k:v: flag; do
     p) path_fmt=$OPTARG;;
     k) opt_names=$(printf '%s\n%s\n' "$opt_names" "$OPTARG");;
     v) opt_values=$(printf '%s\n%s\n' "$opt_values" "$OPTARG");;
+    a) artifact_ids=$(printf '%s\n%s\n' "$artifact_ids" "$OPTARG");;
    \?) input_error "invalid argument: -$OPTARG";;
   esac
 done
@@ -362,6 +365,10 @@ fi
 
 if [ "$opt_values" ]; then
   opt_values=$(printf '%s\n' "$opt_values" | sed -n '2,$p')
+fi
+
+if [ "$artifact_ids" ]; then
+  artifact_ids=$(printf '%s\n' "$artifact_ids" | sed -n '2,$p')
 fi
 
 #
