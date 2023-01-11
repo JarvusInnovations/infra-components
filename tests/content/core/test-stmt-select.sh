@@ -18,6 +18,7 @@ case $1 in
 esac
 
 test_cmd stmt_table_artifactrefs_load "$@"
+test_cmd stmt_table_artifactopts_load "$@"
 test_cmd stmt_table_pipelineopts_load "$@"
 test_cmd "test foo-value = $(opt_keyseq_tovar 'optFoo')"
 test_cmd "test corge-subject-value = $(opt_keyseq_tovar 'optCorge')"
@@ -50,3 +51,7 @@ test_cmd "test bazs-item-2 = $(opt_keyseq_tolist $bazs_item_keyseq | sed -n 5p)"
 test_cmd "test ./bazs-subject-path = $(opt_keyseq_tolist $bazs_item_keyseq | sed -n 6p)"
 test_cmd "test bazs-item-3 = $(opt_keyseq_tolist $bazs_item_keyseq | sed -n 7p)"
 test_cmd "test $(path_relto "$ENGINE_ARTIFACTS_DIR" .)/baz.txt = $(stmt_table_name=stmt_table_artifactrefs opt_keyseq_tovar 'baz')"
+test_cmd stmt_table_use stmt_table_artifactopts
+test_cmd "test setup/opt = $(opt_keyseq_tovar baz.producer)"
+test_cmd "test tests-publisher-1 = $(opt_keyseq_tolist baz.publishersItem | sed -n 1p)"
+test_cmd "test tests-publisher-2 = $(opt_keyseq_tolist baz.publishersItem | sed -n 2p)"
