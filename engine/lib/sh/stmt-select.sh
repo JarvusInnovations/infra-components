@@ -30,16 +30,6 @@ input_error()
   fi
 }
 
-opt_name_keyseq()
-{
-  _opt_name=$1
-  _awk_prog=$LIB/awk/stmt-table-keys-startingwith.awk
-  _trailer=
-
-  test -z "$(stmt_table_get modified)" || _trailer="($stmt_key_modifiers_pattern)?"
-  stmt_table_print | awk -v "starting_with=$_opt_name" -v "ending_with=$_trailer" -f "$_awk_prog"
-}
-
 keyseq_varkey()
 {
   test $# -gt 0 || return 0
@@ -71,6 +61,23 @@ varkey_value()
   fi
 
   test ! "$_var_val" || printf '%s\n' "$_var_val"
+}
+
+stmt_table_select_keyseq()
+{
+  # patterns and items should be newline delimited
+  _stmt_key_patterns=$1
+  _stmt_val_items=$2
+  _awk_prog=$LIB/awk/stmt-table-select-keyseq.awk
+  _trailer=
+
+  test -z "$(stmt_table_get modified)" || _trailer="($stmt_key_modifiers_pattern)?"
+
+  stmt_table_print | awk                  \
+    -v "key_patterns=$_stmt_key_patterns" \
+    -v "key_trailer=$_trailer"            \
+    -v "val_items=$_stmt_val_items"       \
+    -f "$_awk_prog"
 }
 
 stmt_table_pipelineopts_load()
