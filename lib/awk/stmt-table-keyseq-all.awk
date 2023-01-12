@@ -1,5 +1,6 @@
 # INVAR: keyseq
 # INVAR: opt_col
+# INVAR: flag_clearable
 BEGIN {
   FS = "\t"
   keyseq_count = split(keyseq, keyseq_list, "\n")
@@ -16,7 +17,7 @@ BEGIN {
 NF > 1 { for (i = 2; i <= NF; i++) if (i == NF) { stmt_val = stmt_val $i } else { stmt_val = stmt_val sprintf("%s\t", $i) } }
 
 stmt_key in keyseq_set {
-  if (stmt_val)
+  if (stmt_val || !flag_clearable)
   {
     stmt_count++
     if (opt_col == "keys") {
