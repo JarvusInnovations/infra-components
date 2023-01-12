@@ -31,37 +31,22 @@ input_error()
   fi
 }
 
-keyseq_varkey()
+keyseq_all_stmts()
 {
-  test $# -gt 0 || return 0
-  shift `expr $# - 1`
-  test ! "$1" || printf '%s\n' "$1"
+  _awk_prog=$LIB/awk/stmt-table-keyseq-all.awk
+  stmt_table_print | awk                                                  \
+    -v "keyseq=$(for keyname in "$@"; do printf '%s\n' "$keyname"; done)" \
+    -v "opt_col=$opt_col"                                                 \
+    -f "$_awk_prog"
 }
 
-keyseq_tovar()
+keyseq_last_stmt()
 {
-  _opt_key=$(keyseq_varkey "$@")
-  _opt_val=$(varkey_value "$_opt_key")
-  test ! "$_opt_val" || printf '%s\n' "$_opt_val"
-}
-
-keyseq_tolist()
-{
-  _awk_prog=$LIB/awk/stmt-table-list.awk
-  stmt_table_print | awk -v "list_keys_str=$*" -f "$_awk_prog"
-}
-
-varkey_value()
-{
-  _awk_prog=$LIB/awk/stmt-table-var.awk
-  _var_key=$1
-  _var_val=$(stmt_table_print | awk -v "var_key=$_var_key" -f "$_awk_prog")
-
-  if [ "$_var_val" ] && [ "$path_fmt" = 'abs' ] && [ "$(stmt_table_get modified)" ] && [ "$(stmt_key_modifier "$_var_key")" = 'path' ]; then
-    _var_val=$(path_relto "$_var_val" / | sed 's,^\.,,')
-  fi
-
-  test ! "$_var_val" || printf '%s\n' "$_var_val"
+  _awk_prog=$LIB/awk/stmt-table-keyseq-last.awk
+  stmt_table_print | awk                                                  \
+    -v "keyseq=$(for keyname in "$@"; do printf '%s\n' "$keyname"; done)" \
+    -v "opt_col=$opt_col"                                                 \
+    -f "$_awk_prog"
 }
 
 stmt_table_select_keyseq()
@@ -223,7 +208,7 @@ xfrm_artifact()
   _in_key=$1
   _in_val=$2
   _artifact_id=$_in_val
-  _artifact_path=$(stmt_table_name=stmt_table_artifactrefs keyseq_tovar "$_artifact_id")
+  _artifact_path=$(stmt_table_name=stmt_table_artifactrefs opt_col=values keyseq_last_stmt "$_artifact_id")
   test ! "$_artifact_path" || printf '%s\n' "$_artifact_path"
 }
 
