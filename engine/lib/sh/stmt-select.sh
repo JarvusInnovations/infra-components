@@ -349,6 +349,14 @@ if [ "$input_errors" ]; then
   exit 1
 fi
 
+if [ "$opt_names" ]; then
+  opt_names=$(printf '%s\n' "$opt_names" | sed -n '2,$p')
+fi
+
+if [ "$opt_values" ]; then
+  opt_values=$(printf '%s\n' "$opt_values" | sed -n '2,$p')
+fi
+
 #
 # Defaults
 #
