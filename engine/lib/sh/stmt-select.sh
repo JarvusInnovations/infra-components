@@ -129,8 +129,8 @@ stmt_table_set()
   _flag_name=$1
   test "$stmt_table_name" || return 1
   test "$_flag_name"      || return 1
-  eval "${stmt_table_name}_${_flag_name}=1"
-  eval "export ${stmt_table_name}_${_flag_name}"
+  eval "${stmt_table_name}_flag_${_flag_name}=1"
+  eval "export ${stmt_table_name}_flag_${_flag_name}"
 }
 
 stmt_table_unset()
@@ -138,7 +138,7 @@ stmt_table_unset()
   _flag_name=$1
   test "$stmt_table_name" || return 1
   test "$_flag_name"      || return 1
-  eval "unset ${stmt_table_name}_${_flag_name}"
+  eval "unset ${stmt_table_name}_flag_${_flag_name}"
 }
 
 stmt_table_get()
@@ -146,7 +146,7 @@ stmt_table_get()
   _flag_name=$1
   test "$stmt_table_name" || return 1
   test "$_flag_name"      || return 1
-  eval "printf '%s\\n' \"\$${stmt_table_name}_${_flag_name}\""
+  eval "printf '%s\\n' \"\$${stmt_table_name}_flag_${_flag_name}\""
 }
 
 stmt_table_print()
