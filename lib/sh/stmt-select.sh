@@ -40,25 +40,37 @@ opt_name_keyseq()
   stmt_table_print | awk -v "starting_with=$_opt_name" -v "ending_with=$_trailer" -f "$_awk_prog"
 }
 
-opt_keyseq_tovar()
+opt_keyseq_varkey()
 {
   test $# -gt 0 || return 0
   shift `expr $# - 1`
-  _awk_prog=$LIB/awk/stmt-table-var.awk
-  _var_key=$1
-  _var_val=$(stmt_table_print | awk -v "var_key=$_var_key" -f "$_awk_prog")
+  test ! "$1" || printf '%s\n' "$1"
+}
 
-  if [ "$_var_val" ] && [ "$path_fmt" = 'abs' ] && [ "$(stmt_key_modifier "$_var_key")" = 'path' ]; then
-    _var_val=$(path_relto "$_var_val" / | sed 's,^\.,,')
-  fi
-
-  test ! "$_var_val" || printf '%s\n' "$_var_val"
+opt_keyseq_tovar()
+{
+  _opt_key=$(opt_keyseq_varkey "$@")
+  _opt_val=$(opt_varkey_value "$_opt_key")
+  test ! "$_opt_val" || printf '%s\n' "$_opt_val"
 }
 
 opt_keyseq_tolist()
 {
   _awk_prog=$LIB/awk/stmt-table-list.awk
   stmt_table_print | awk -v "list_keys_str=$*" -f "$_awk_prog"
+}
+
+opt_varkey_value()
+{
+  _awk_prog=$LIB/awk/stmt-table-var.awk
+  _var_key=$1
+  _var_val=$(stmt_table_print | awk -v "var_key=$_var_key" -f "$_awk_prog")
+
+  if [ "$_var_val" ] && [ "$path_fmt" = 'abs' ] && [ "$(stmt_table_get modified)" ] && [ "$(stmt_key_modifier "$_var_key")" = 'path' ]; then
+    _var_val=$(path_relto "$_var_val" / | sed 's,^\.,,')
+  fi
+
+  test ! "$_var_val" || printf '%s\n' "$_var_val"
 }
 
 stmt_table_pipelineopts_load()
