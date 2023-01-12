@@ -37,6 +37,7 @@ keyseq_all_stmts()
   stmt_table_print | awk                                                  \
     -v "keyseq=$(for keyname in "$@"; do printf '%s\n' "$keyname"; done)" \
     -v "opt_col=$opt_col"                                                 \
+    -v "flag_clearable=$(stmt_table_get lists_clearable)"                 \
     -f "$_awk_prog"
 }
 
@@ -80,6 +81,7 @@ EOF
 )
   stmt_table_use stmt_table_pipelineopts
   stmt_table_set modified
+  stmt_table_set lists_clearable
   stmt_table_load <<EOF
 $(printf '%s\n' "$_raw_table" | stmt_table_format_opts)
 EOF
@@ -110,6 +112,7 @@ EOF
 )
   stmt_table_use stmt_table_artifactopts
   stmt_table_set modified
+  stmt_table_set lists_clearable
   stmt_table_load <<EOF
 $(printf '%s\n' "$_raw_table" | stmt_table_format_opts)
 EOF
@@ -276,7 +279,7 @@ test $# -gt 0 || { usage; exit 0; }
 #
 
 path_fmt=rel
-use_stmt_table=pipelineOpts
+opt_table=pipelineOpts
 opt_col=
 opt_ref_type=var
 opt_names=
@@ -286,7 +289,7 @@ artifact_ids=
 while getopts :ht:c:r:p:k:v: flag; do
   case "$flag" in
     h) usage; exit 0;;
-    t) use_stmt_table=$OPTARG;;
+    t) opt_table=$OPTARG;;
     c) opt_col=$OPTARG;;
     r) opt_ref_type=$OPTARG;;
     p) path_fmt=$OPTARG;;
@@ -311,11 +314,11 @@ test "$SUBJECT_NAME"         || input_error 'missing required context: SUBJECT_N
 test "$SUBJECT_DIR"          || input_error 'missing required context: SUBJECT_DIR'
 test $# -gt 0                || input_error 'missing required argument: OPTS_FILE'
 
-case $use_stmt_table in
+case $opt_table in
   pipelineOpts) true                                         ;;
   artifactRefs) true                                         ;;
   artifactOpts) true                                         ;;
-             *) input_error "invalid TABLE: $use_stmt_table" ;;
+             *) input_error "invalid TABLE: $opt_table"      ;;
 esac
 
 case $opt_col in
@@ -362,7 +365,30 @@ fi
 
 test "$LIB"        || LIB=$(realpath "$(dirname "$0")/..")
 test "$PATH_RELTO" || PATH_RELTO=$LIB/sh/path-relto.sh
+export LIB
+export PATH_RELTO
 
 #
 # Main
 #
+
+stmt_table_artifactrefs_load "$@"
+stmt_table_artifactopts_load "$@"
+stmt_table_pipelineopts_load "$@"
+stmt_table_use "stmt_table_$(printf '%s\n' "$opt_table" | tr '[:upper:]' '[:lower:]')"
+
+opt_keyseq=$(stmt_table_select_keyseq "$opt_names" "$opt_values")
+
+case $opt_ref_type in
+  variable|var) opt_value=$(keyseq_last_stmt $opt_keyseq)
+                if [ absolute = "$path_fmt"                                                   ] &&
+                   [ path     = "$(stmt_key_modifier `echo $opt_keyseq | awk '{print $NF}'`)" ] &&
+                   [ "$(stmt_table_get modified)"                                             ]
+                then
+                  opt_value=$(path_relto "$opt_value" / | sed 's,^\.,,')
+                fi
+                test ! "$opt_value" || printf '%s\n' "$opt_value"
+             ;;
+          list) keyseq_all_stmts $opt_keyseq                                ;;
+             *) printf 'BUG: fatal: unhandled table: %s\n' "$opt_table" >&2 ;;
+esac
