@@ -40,27 +40,27 @@ opt_name_keyseq()
   stmt_table_print | awk -v "starting_with=$_opt_name" -v "ending_with=$_trailer" -f "$_awk_prog"
 }
 
-opt_keyseq_varkey()
+keyseq_varkey()
 {
   test $# -gt 0 || return 0
   shift `expr $# - 1`
   test ! "$1" || printf '%s\n' "$1"
 }
 
-opt_keyseq_tovar()
+keyseq_tovar()
 {
-  _opt_key=$(opt_keyseq_varkey "$@")
-  _opt_val=$(opt_varkey_value "$_opt_key")
+  _opt_key=$(keyseq_varkey "$@")
+  _opt_val=$(varkey_value "$_opt_key")
   test ! "$_opt_val" || printf '%s\n' "$_opt_val"
 }
 
-opt_keyseq_tolist()
+keyseq_tolist()
 {
   _awk_prog=$LIB/awk/stmt-table-list.awk
   stmt_table_print | awk -v "list_keys_str=$*" -f "$_awk_prog"
 }
 
-opt_varkey_value()
+varkey_value()
 {
   _awk_prog=$LIB/awk/stmt-table-var.awk
   _var_key=$1
@@ -215,7 +215,7 @@ xfrm_artifact()
   _in_key=$1
   _in_val=$2
   _artifact_id=$_in_val
-  _artifact_path=$(stmt_table_name=stmt_table_artifactrefs opt_keyseq_tovar "$_artifact_id")
+  _artifact_path=$(stmt_table_name=stmt_table_artifactrefs keyseq_tovar "$_artifact_id")
   test ! "$_artifact_path" || printf '%s\n' "$_artifact_path"
 }
 
