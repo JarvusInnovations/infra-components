@@ -17,8 +17,8 @@ STMT_SELECT = $(OPT_CONTEXT) $(LIB)/sh/stmt-select.sh
 # Methods
 opt_pipeline_var   =
 opt_pipeline_list  =
-opt_artifact_var   =
-opt_artifact_list  =
+opt_artifact_var   = $(shell $(STMT_SELECT) -t artifactOpts -c values -r variable -a '$(1)' -k '$(2)' $(OPTSFILE_PATHS))
+opt_artifact_list  = $(shell $(STMT_SELECT) -t artifactOpts -c values -r list     -a '$(1)' -k '$(2)' $(OPTSFILE_PATHS))
 artifact_path      = $(shell $(STMT_SELECT) -t artifactRefs -c values -r variable -k '$(1)' $(OPTSFILE_PATHS))
 artifact_frompath  = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r variable -v '$(1)' $(OPTSFILE_PATHS))
 artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r list     -k '$(1)' $(OPTSFILE_PATHS))

@@ -286,7 +286,7 @@ opt_names=
 opt_values=
 artifact_ids=
 
-while getopts :ht:c:r:p:k:v: flag; do
+while getopts :ht:c:r:p:k:v:a: flag; do
   case "$flag" in
     h) usage; exit 0;;
     t) opt_table=$OPTARG;;
@@ -376,6 +376,24 @@ stmt_table_artifactrefs_load "$@"
 stmt_table_artifactopts_load "$@"
 stmt_table_pipelineopts_load "$@"
 stmt_table_use "stmt_table_$(printf '%s\n' "$opt_table" | tr '[:upper:]' '[:lower:]')"
+
+if [ "$opt_table" = artifactOpts ]; then
+
+  artifact_opt_names=
+
+  while read aid; do
+    while read opt_name; do
+      artifact_opt_names=$(printf '%s\n%s\\\.%s\n' "$artifact_opt_names" "$aid" "$opt_name")
+    done <<EOF
+$opt_names
+EOF
+  done <<EOF
+$artifact_ids
+EOF
+
+  opt_names=$artifact_opt_names
+
+fi
 
 opt_keyseq=$(stmt_table_select_keyseq "$opt_names" "$opt_values")
 

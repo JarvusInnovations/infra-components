@@ -14,6 +14,8 @@ test-artifacts:
 	test $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/baz.txt = $(call artifact_path,baz) # artifact_path(baz)
 	test baz = $(call artifact_frompath,$(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/baz.txt) # artifact_frompath({ENGINE_ARTIFACTS_DIR}/baz.txt)
 	test baz = $(filter baz,$(call artifacts_matching,.+)) # artifacts_matching
+	test setup/opt = $(call opt_artifact_var,baz,producer) # opt_artifact_var(baz,producer)
+	test tests-publisher-2 = `printf '%s\n' '$(call opt_artifact_list,baz,publishersItem)' | awk '{print $$2}'` # opt_artifact_list(baz,publishersItem)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts
