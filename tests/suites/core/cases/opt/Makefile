@@ -6,6 +6,7 @@ STMT_SELECT = $(OPT_CONTEXT) dash $(LIB)/sh/stmt-select.sh
 subject:
 	$(call run_step,test-stmt-select)
 	$(call run_step,test-artifacts)
+	$(call run_step,test-pipeline-opts)
 
 test-stmt-select:
 	LIB=$(LIB) $(OPT_CONTEXT) dash $(ENGINE_PROJECT_DIR)/content/core/test-stmt-select.sh $(OPTSFILE_PATHS)
@@ -16,6 +17,10 @@ test-artifacts:
 	test baz = $(filter baz,$(call artifacts_matching,.+)) # artifacts_matching
 	test setup/opt = $(call opt_artifact_var,baz,producer) # opt_artifact_var(baz,producer)
 	test tests-publisher-2 = `printf '%s\n' '$(call opt_artifact_list,baz,publishersItem)' | awk '{print $$2}'` # opt_artifact_list(baz,publishersItem)
+
+test-pipeline-opts:
+	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
+	test bars-item-2 = `printf '%s\n' '$(call opt_pipeline_list,optBarsItem)' | awk '{print $$1}'` # opt_pipeline_list(optBarsItem)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts
