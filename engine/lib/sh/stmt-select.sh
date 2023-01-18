@@ -399,9 +399,9 @@ opt_keyseq=$(stmt_table_select_keyseq "$opt_names" "$opt_values")
 
 case $opt_ref_type in
   variable|var) opt_value=$(keyseq_last_stmt $opt_keyseq)
-                if [ absolute = "$path_fmt"                                                   ] &&
-                   [ path     = "$(stmt_key_modifier `echo $opt_keyseq | awk '{print $NF}'`)" ] &&
-                   [ "$(stmt_table_get modified)"                                             ]
+                if [ abs  = "$path_fmt"           ] &&
+                   [ "$(stmt_table_get modified)" ] &&
+                   stmt_key_modifier `echo $opt_keyseq | awk '{print $NF}'` | grep -E '^(path|artifact)$' >/dev/null
                 then
                   opt_value=$(path_relto "$opt_value" / | sed 's,^\.,,')
                 fi
