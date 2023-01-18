@@ -7,6 +7,7 @@ subject:
 	$(call run_step,test-stmt-select)
 	$(call run_step,test-artifacts)
 	$(call run_step,test-pipeline-opts)
+	$(call run_step,test-filter-artifacts)
 
 test-stmt-select:
 	LIB=$(LIB) $(OPT_CONTEXT) dash $(ENGINE_PROJECT_DIR)/content/core/test-stmt-select.sh $(OPTSFILE_PATHS)
@@ -25,6 +26,10 @@ test-pipeline-opts:
 	test bars-item-2 = `printf '%s\n' '$(call opt_pipeline_list,optBarsItem)' | awk '{print $$1}'` # opt_pipeline_list(optBarsItem)
 	test foos-item-1 = `printf '%s\n' '$(call opt_pipeline_list,optBazsItem optFoosItem)' | awk '{print $$1}'` # opt_pipeline_list(optBazsItem optFoosItem)
 	test 'bazs-item-3' = `printf '%s\n' '$(call opt_pipeline_list,optBazsItem optFoosItem)' | awk '{print $$NF}'` # opt_pipeline_list(optBazsItem optFoosItem)
+
+test-filter-artifacts:
+	test 'bar foo skipped' = '$(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,tests)' # filter_artifacts_opt_eq_val(*,producer,tests)
+	test baz = $(call filter_artifacts_opt_ne_val,$(call artifacts_matching,.+),producer,tests) # filter_artifacts_opt_ne_val(*,producer,tests)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts
