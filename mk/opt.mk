@@ -23,10 +23,8 @@ artifact_path      = $(shell $(STMT_SELECT) -t artifactRefs -c values -r variabl
 artifact_frompath  = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r variable $(foreach val,$(1),-v '$(val)') $(OPTSFILE_PATHS))
 artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r list     $(foreach key,$(1),-k '$(key)') $(OPTSFILE_PATHS))
 
-filter_artifacts_opt_eq_val     =
-filter_artifacts_opt_ne_val     =
-filter_artifacts_list_has_val   =
-filter_artifacts_list_hasno_val =
+filter_artifacts_opt_eq_val = $(sort $(basename $(shell $(STMT_SELECT) -t artifactOpts -c keys -r list $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(foreach val,$(3),-v '$(val)') $(OPTSFILE_PATHS))))
+filter_artifacts_opt_ne_val = $(sort $(filter-out $(call filter_artifacts_opt_eq_val,$(1),$(2),$(3)),$(1)))
 
 # Internal
 
