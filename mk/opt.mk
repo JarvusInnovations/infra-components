@@ -15,13 +15,13 @@ OPT_CONTEXT            = \
 STMT_SELECT = $(OPT_CONTEXT) $(LIB)/sh/stmt-select.sh
 
 # Methods
-opt_pipeline_var   = $(shell $(STMT_SELECT) -t pipelineOpts -c values -r variable -k '$(1)' $(if $(2),-p '$(2)') $(OPTSFILE_PATHS))
-opt_pipeline_list  = $(shell $(STMT_SELECT) -t pipelineOpts -c values -r list     -k '$(1)' $(OPTSFILE_PATHS))
-opt_artifact_var   = $(shell $(STMT_SELECT) -t artifactOpts -c values -r variable -a '$(1)' -k '$(2)' $(if $(3),-p '$(3)') $(OPTSFILE_PATHS))
-opt_artifact_list  = $(shell $(STMT_SELECT) -t artifactOpts -c values -r list     -a '$(1)' -k '$(2)' $(OPTSFILE_PATHS))
-artifact_path      = $(shell $(STMT_SELECT) -t artifactRefs -c values -r variable -k '$(1)' $(OPTSFILE_PATHS))
-artifact_frompath  = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r variable -v '$(1)' $(OPTSFILE_PATHS))
-artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r list     -k '$(1)' $(OPTSFILE_PATHS))
+opt_pipeline_var   = $(shell $(STMT_SELECT) -t pipelineOpts -c values -r variable $(foreach key,$(1),-k '$(key)') $(if $(2),-p '$(2)') $(OPTSFILE_PATHS))
+opt_pipeline_list  = $(shell $(STMT_SELECT) -t pipelineOpts -c values -r list     $(foreach key,$(1),-k '$(key)') $(OPTSFILE_PATHS))
+opt_artifact_var   = $(shell $(STMT_SELECT) -t artifactOpts -c values -r variable $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(if $(3),-p '$(3)') $(OPTSFILE_PATHS))
+opt_artifact_list  = $(shell $(STMT_SELECT) -t artifactOpts -c values -r list     $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(OPTSFILE_PATHS))
+artifact_path      = $(shell $(STMT_SELECT) -t artifactRefs -c values -r variable $(foreach key,$(1),-k '$(key)') $(OPTSFILE_PATHS))
+artifact_frompath  = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r variable $(foreach val,$(1),-v '$(val)') $(OPTSFILE_PATHS))
+artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r list     $(foreach key,$(1),-k '$(key)') $(OPTSFILE_PATHS))
 
 filter_artifacts_opt_eq_val     =
 filter_artifacts_opt_ne_val     =

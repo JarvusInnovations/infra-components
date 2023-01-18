@@ -18,10 +18,13 @@ test-artifacts:
 	test setup/opt = $(call opt_artifact_var,baz,producer) # opt_artifact_var(baz,producer)
 	test tests-publisher-2 = `printf '%s\n' '$(call opt_artifact_list,baz,publishersItem)' | awk '{print $$2}'` # opt_artifact_list(baz,publishersItem)
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_LOCAL_DIR) / | sed s,^.,,)/baz-input.conf' = '$(call opt_artifact_var,baz,config,abs)' # opt_artifact_var(baz,config,abs)
+	test 'tests' = '$(call opt_artifact_var,foo,path producer)' # opt_artifact_var(foo,path producer)
 
 test-pipeline-opts:
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
 	test bars-item-2 = `printf '%s\n' '$(call opt_pipeline_list,optBarsItem)' | awk '{print $$1}'` # opt_pipeline_list(optBarsItem)
+	test foos-item-1 = `printf '%s\n' '$(call opt_pipeline_list,optBazsItem optFoosItem)' | awk '{print $$1}'` # opt_pipeline_list(optBazsItem optFoosItem)
+	test 'bazs-item-3' = `printf '%s\n' '$(call opt_pipeline_list,optBazsItem optFoosItem)' | awk '{print $$NF}'` # opt_pipeline_list(optBazsItem optFoosItem)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts
