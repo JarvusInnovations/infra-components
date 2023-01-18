@@ -17,6 +17,7 @@ test-artifacts:
 	test baz = $(filter baz,$(call artifacts_matching,.+)) # artifacts_matching
 	test setup/opt = $(call opt_artifact_var,baz,producer) # opt_artifact_var(baz,producer)
 	test tests-publisher-2 = `printf '%s\n' '$(call opt_artifact_list,baz,publishersItem)' | awk '{print $$2}'` # opt_artifact_list(baz,publishersItem)
+	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_LOCAL_DIR) / | sed s,^.,,)/baz-input.conf' = '$(call opt_artifact_var,baz,config,abs)' # opt_artifact_var(baz,config,abs)
 
 test-pipeline-opts:
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
