@@ -10,9 +10,9 @@ usage()
   printf "                  TABLE is 'pipelineOpts', 'artifactRefs' or 'artifactOpts'; defaults to 'pipelineOpts'      \\n"           >&2
   printf '  -c COLUMN       column to return from selected statements                                                   \n'           >&2
   printf "                  COLUMN is 'values' or 'keys'                                                               \\n"           >&2
-  printf '  -r RET_TYPE     return type for selection                                                                   \n'           >&2
-  printf "                  RET_TYPE is 'variable' or 'list'; defaults to 'variable'                                   \\n"           >&2
-  printf "  -p PATH_FMT     format of returned path values; ignored unless RET_TYPE is 'variable'                      \\n"           >&2
+  printf '  -r RETURN_MODE  which matched statements should be returned                                                 \n'           >&2
+  printf "                  RETURN_MODE is 'all' or 'last'; defaults to 'all'                                          \\n"           >&2
+  printf "  -p PATH_FMT     format of returned path values; ignored unless RETURN_MODE is 'last'                       \\n"           >&2
   printf "                  PATH_FMT is 'abs' or 'rel'; defaults to 'rel'                                              \\n"           >&2
   printf "  -k OPT_NAME     select statements with keys matching OPT_NAME                                              \\n"           >&2
   printf "  -v OPT_VALUE    select statements with values equal to OPT_VALUE                                           \\n"           >&2
@@ -281,7 +281,7 @@ test $# -gt 0 || { usage; exit 0; }
 path_fmt=rel
 opt_table=pipelineOpts
 opt_col=
-opt_ref_type=var
+opt_return_mode=all
 opt_names=
 opt_values=
 artifact_ids=
@@ -291,7 +291,7 @@ while getopts :ht:c:r:p:k:v:a: flag; do
     h) usage; exit 0;;
     t) opt_table=$OPTARG;;
     c) opt_col=$OPTARG;;
-    r) opt_ref_type=$OPTARG;;
+    r) opt_return_mode=$OPTARG;;
     p) path_fmt=$OPTARG;;
     k) opt_names=$(printf '%s\n%s\n' "$opt_names" "$OPTARG");;
     v) opt_values=$(printf '%s\n%s\n' "$opt_values" "$OPTARG");;
@@ -328,10 +328,10 @@ case $opt_col in
        *) input_error "invalid COLUMN: $opt_col" ;;
 esac
 
-case $opt_ref_type in
-  variable|var) true                                          ;;
-          list) true                                          ;;
-             *) input_error "invalid RET_TYPE: $opt_ref_type" ;;
+case $opt_return_mode in
+   all) true                                                ;;
+  last) true                                                ;;
+     *) input_error "invalid RETURN_MODE: $opt_return_mode" ;;
 esac
 
 case $path_fmt in
@@ -397,8 +397,9 @@ fi
 
 opt_keyseq=$(stmt_table_select_keyseq "$opt_names" "$opt_values")
 
-case $opt_ref_type in
-  variable|var) opt_value=$(keyseq_last_stmt $opt_keyseq)
+case $opt_return_mode in
+   all) keyseq_all_stmts $opt_keyseq                                ;;
+  last) opt_value=$(keyseq_last_stmt $opt_keyseq)
                 if [ abs  = "$path_fmt"           ] &&
                    [ "$(stmt_table_get modified)" ] &&
                    stmt_key_modifier `echo $opt_keyseq | awk '{print $NF}'` | grep -E '^(path|artifact)$' >/dev/null
@@ -407,6 +408,5 @@ case $opt_ref_type in
                 fi
                 test ! "$opt_value" || printf '%s\n' "$opt_value"
              ;;
-          list) keyseq_all_stmts $opt_keyseq                                ;;
-             *) printf 'BUG: fatal: unhandled table: %s\n' "$opt_table" >&2 ;;
+     *) printf 'BUG: fatal: unhandled RETURN_MODE: %s\n' "$opt_return_mode" >&2 ;;
 esac
