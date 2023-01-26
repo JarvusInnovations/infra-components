@@ -5,5 +5,5 @@ subject:
 ifneq ($(SSH_CONFIG),)
 	$(SSH) tests-connect true
 else
-	$(call test_skip_env,sshConfigPath)
+	$(call test_skip_opt,sshConfig)
 endif
