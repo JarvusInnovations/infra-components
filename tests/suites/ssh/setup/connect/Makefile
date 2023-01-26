@@ -1,12 +1,8 @@
 include ../../../../content/mk/case.mk
 
-VIRSH_DOMAIN ?= $(call subject_config,virshDomain)
+VIRSH_DOMAIN ?= $(call opt_pipeline_var,virshDomain)
 
 ifneq ($(VIRSH_DOMAIN),)
 include $(MK)/tech/virsh.mk
-endif
-
-subject:
-ifneq ($(VIRSH_DOMAIN),)
-	$(call run_step,virsh-domain-start)
+subject: virsh-domain-start
 endif
