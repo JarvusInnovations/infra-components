@@ -6,5 +6,5 @@ subject:
 ifneq ($(KUBECONFIG),)
 	$(HELM) uninstall $(HELM_RELEASE)
 else
-	$(test_skip_env,kubeconfig)
+	$(test_skip_opt,kubeconfig)
 endif

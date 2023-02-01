@@ -6,5 +6,5 @@ subject:
 ifneq ($(KUBECONFIG),)
 	$(call run_step,helm-deploy)
 else
-	$(test_skip_env,kubeconfig)
+	$(call test_skip_opt,kubeconfig)
 endif
