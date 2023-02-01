@@ -2,15 +2,15 @@
 #
 # The Google Cloud Platform CLI interface
 #
-# == Inputs ==
+# == Options ==
 #
 # |================================================
-# | Section       | Name              | Description
-# | engineEnv     | gcpProject        | The name of the Google Cloud project to operate on
+# | Name          | Reference Type    | Description
+# | gcpProject    | var               | The name of the Google Cloud project to operate on
 # |================================================
 
 GCLOUD      ?= gcloud
-GCP_PROJECT ?= $(call env_config,gcpProject,--get --default '$(call subject_config,gcpProject)')
+GCP_PROJECT ?= $(call opt_pipeline_var,gcpProject)
 
 GCLOUD += --quiet
 ifneq ($(GCP_PROJECT),)
