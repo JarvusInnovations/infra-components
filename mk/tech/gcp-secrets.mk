@@ -2,52 +2,57 @@
 #
 # Artifacts interface to upload and download secrets from GCP Secret Manager
 #
-# == Inputs ==
+# == Artifacts ==
 #
-# |===============================================================
-# | Section        | Name              | Value       | Description
-# | engineArtifact | producer          | gcp-secrets | Artifacts with this value will be used by gcp-secrets-artifacts-produce
-# | engineArtifact | publisher         | gcp-secrets | Artifacts with this value will be used by gcp-secrets-artifacts-publish
-# | engineArtifact | gcpSecretID       | *           | The ID associated with the secret in GCP
-# |===============================================================
+# |======================================================
+# | Option              | Value             | Description
+# | producer            | gcp-secrets       | Artifacts with this value will be used by gcp-secrets-artifacts-produce
+# | publisherItem       | gcp-secrets       | Artifacts with this value will be used by gcp-secrets-artifacts-publish
+# | gcpSecretID         | [var]             | The ID associated with the secret in GCP
+# |======================================================
 #
 # == Steps ==
 #
 # `gcp-secrets-artifacts-produce`::
 #   description:::
-#     Downloads secret <engineArtifact.gcpSecretID> to <engineArtifact.path>
+#     Downloads secret `gcpSecretID` to `path`
+#   artifacts:::
+#     * producer=gcp-secrets
 #   inputs:::
-#     * engineArtifact.producer=gcp-secrets
-#     * engineArtifact.path
-#     * engineArtifact.gcpSecretID
+#     * <artifact>.path
+#     * <artifact>.gcpSecretID
 #
 # `gcp-secrets-artifacts-publish`::
 #   description:::
-#     Uploads data from <engineArtifact.path> to secret <engineArtifact.gcpSecretID>
+#     Uploads data from `path` to secret `gcpSecretID`
+#   artifacts:::
+#     * publisherItem=gcp-secrets
 #   inputs:::
-#     * engineArtifact.publisher=gcp-secrets
-#     * engineArtifact.path
-#     * engineArtifact.gcpSecretID
+#     * <artifact>.path
+#     * <artifact>.gcpSecretID
 #
 # `gcp-secrets-artifacts-clean`::
 #   description:::
 #     Deletes all produced artifacts
+#   artifacts:::
+#     * producer=gcp-secrets
 #   inputs:::
-#     * engineArtifact.producer=gcp-secrets
-#     * engineArtifact.path
+#     * <artifact>.path
 
+ifeq ($(GCLOUD),)
 include $(MK)/tech/gcloud.mk
+endif
 
-GCP_SECRETS_PRODUCE_ARTIFACTS  ?= $(call artifacts_filter_equalto,$(call artifacts_matching,.+),producer,gcp-secrets)
-GCP_SECRETS_PUBLISH_ARTIFACTS  ?= $(call artifacts_filter_has,$(call artifacts_matching,.+),publisher,gcp-secrets)
-GCP_SECRETS_PATHS              ?= $(foreach id,$(GCP_SECRETS_PRODUCE_ARTIFACTS),$(if $(call artifact_path,$(id)),$(call artifact_relpathjoin,$(call artifact_var,$(id),path))))
+GCP_SECRETS_PRODUCE_ARTIFACTS  ?= $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,gcp-secrets)
+GCP_SECRETS_PUBLISH_ARTIFACTS  ?= $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),publisherItem,gcp-secrets)
+GCP_SECRETS_PATHS              ?= $(foreach id,$(GCP_SECRETS_PRODUCE_ARTIFACTS),$(call artifact_path,$(id)))
 
 gcp-secrets-create:
 gcp-secrets-artifacts-publish:
 gcp-secrets-artifacts-produce:
 gcp-secrets-artifacts-clean:
 
-artifact_gcpSecretID         = $(call artifact_var,$(1),gcpSecretID)
+artifact_gcpSecretID         = $(call opt_artifact_var,$(1),gcpSecretID)
 
 GCP_SECRETS_CREATE_TARGETS  := $(patsubst %,gcp-secrets-create-%,$(GCP_SECRETS_PUBLISH_ARTIFACTS))
 GCP_SECRETS_PUBLISH_TARGETS := $(patsubst %,gcp-secrets-artifacts-publish-%,$(GCP_SECRETS_PUBLISH_ARTIFACTS))
@@ -70,7 +75,7 @@ endif
 ifneq ($(GCP_SECRETS_PATHS),)
 gcp-secrets-artifacts-produce: $(GCP_SECRETS_PATHS)
 $(GCP_SECRETS_PATHS):
-	$(GCLOUD) secrets versions access latest --secret='$(call artifact_gcpSecretID,$(call artifacts_lookupby_relpath,$(GCP_SECRETS_PRODUCE_ARTIFACTS),$@))' --out-file='$@'
+	$(GCLOUD) secrets versions access latest --secret='$(call artifact_gcpSecretID,$(call artifact_frompath,$@))' --out-file='$@'
 endif
 
 .PHONY: gcp-secrets-create
