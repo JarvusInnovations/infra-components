@@ -11,6 +11,8 @@ subject:
 
 test-stmt-select:
 	LIB=$(LIB) $(OPT_CONTEXT) dash $(ENGINE_PROJECT_DIR)/content/core/test-stmt-select.sh $(OPTSFILE_PATHS)
+	test -z '$(shell $(STMT_SELECT) -t pipelineOpts -c values -r last -k noopShouldBeEmpty $(OPTSFILE_PATHS) 2>&1)' # missing var should return empty, no errors
+	test -z '$(shell $(STMT_SELECT) -t pipelineOpts -c values -r all  -k noopShouldBeEmptyItem $(OPTSFILE_PATHS) 2>&1)' # missing list should return empty, no errors
 
 test-artifacts:
 	test $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/baz.txt = $(call artifact_path,baz) # artifact_path(baz)

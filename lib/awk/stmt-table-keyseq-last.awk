@@ -6,7 +6,7 @@ BEGIN {
   last_key     = tolower(keyseq_list[keyseq_count])
   if (!last_key)
   {
-    print "stmt-table-keyseq-last.awk: fatal: missing required input: keyseq" | "cat 1>&2"
+    exit 0
   }
   if (opt_col && opt_col != "keys" && opt_col != "values")
   {
