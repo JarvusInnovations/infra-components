@@ -2,12 +2,12 @@
 #
 # The Kubernetes control plane CLI interface
 #
-# == Inputs ==
+# == Options ==
 #
-# |================================================
-# | Section       | Name              | Description
-# | engineEnv     | kubeconfig        | Value to assign to `KUBECONFIG` environment variable
-# |================================================
+# |======================================================
+# | Name                | Reference Type    | Description
+# | kubeconfig          | var               | Value to assign to `KUBECONFIG` environment variable
+# |======================================================
 #
 # == Methods ==
 #
@@ -15,12 +15,12 @@
 #   positionals::
 #     1. Namespace to check existence of
 #   inputs:::
-#     * engineEnv.kubeconfig
+#     * kubeconfig
 #   return:::
 #     * Non-empty if the specified namespace exists
 #     * Empty if the specified namespace does not exist
 
-KUBECONFIG ?= $(call env_config,kubeconfig)
+KUBECONFIG ?= $(call opt_pipeline_var,kubeconfig)
 KUBECTL    ?= KUBECONFIG='$(KUBECONFIG)' kubectl
 
 kube_ns_exists = $(if $(shell $(KUBECTL) get ns '$(1)' 2>/dev/null),1)
