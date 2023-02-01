@@ -4,8 +4,8 @@ include $(MK)/tech/gcp-secrets.mk
 
 subject:
 ifneq ($(GCP_PROJECT),)
-	$(GCLOUD) secrets delete '$(call artifact_gcpSecretID,tests-gcp-secrets)'
+	$(GCLOUD) secrets delete '$(call opt_artifact_var,tests-gcp-secrets,gcpSecretId)'
 	$(call run_step,gcp-secrets-artifacts-clean)
 else
-	$(call test_skip_env,gcpProject)
+	$(call test_skip_opt,gcpProject)
 endif

@@ -8,5 +8,5 @@ ifneq ($(GCP_PROJECT),)
 	$(call run_step,gcp-secrets-artifacts-publish)
 	$(call run_step,gcp-secrets-artifacts-clean)
 else
-	$(call test_skip_env,gcpProject)
+	$(call test_skip_opt,gcpProject)
 endif
