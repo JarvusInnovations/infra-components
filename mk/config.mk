@@ -101,7 +101,9 @@
 #   returns:::
 #     * Artifact IDs whose "path" value matches `artifact_pathstrip $(2)`
 
-GIT     ?= git
+ifeq ($(GIT),)
+GIT     := git
+endif
 
 ifeq ($(GIT_DIR),)
 GIT_DIR := $(shell $(GIT) rev-parse --git-path .)
@@ -109,9 +111,17 @@ endif
 
 list_confs      = $(shell find '$(1)' -mindepth 1 -maxdepth 1 -name '*.conf' -exec basename {} \;)
 
-PIPELINE_CONF_ARGS = $(foreach conf,$(call list_confs,$(shell realpath ../..)),-c 'include.path=$(shell realpath ../..)/$(conf)')
-SUBJECT_CONF_ARGS  = $(foreach conf,$(call list_confs,$(shell realpath .)),-c 'include.path=$(shell realpath .)/$(conf)')
-ENV_CONF_ARGS      = $(foreach conf,$(call list_confs,$(ENGINE_LOCAL_DIR)),-c 'include.path=$(ENGINE_LOCAL_DIR)/$(conf)')
+ifeq ($(PIPELINE_CONF_ARGS),)
+PIPELINE_CONF_ARGS := $(foreach conf,$(call list_confs,$(shell realpath ../..)),-c 'include.path=$(shell realpath ../..)/$(conf)')
+endif
+
+ifeq ($(SUBJECT_CONF_ARGS),)
+SUBJECT_CONF_ARGS  := $(foreach conf,$(call list_confs,$(shell realpath .)),-c 'include.path=$(shell realpath .)/$(conf)')
+endif
+
+ifeq ($(ENV_CONF_ARGS),)
+ENV_CONF_ARGS      := $(foreach conf,$(call list_confs,$(ENGINE_LOCAL_DIR)),-c 'include.path=$(ENGINE_LOCAL_DIR)/$(conf)')
+endif
 
 ifneq ($(PIPELINE_CONF_ARGS),)
 GIT += $(PIPELINE_CONF_ARGS)

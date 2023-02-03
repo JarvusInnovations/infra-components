@@ -40,10 +40,17 @@
 #     * Non-empty if `virshDomain` is in a "running" state
 #     * Empty if `virshDomain` in any other state
 
-VIRSH ?= virsh
+ifeq ($(VIRSH),)
+VIRSH               := virsh
+endif
 
-VIRSH_DOMAIN        ?= $(call opt_pipeline_var,virshDomain)
-VIRSH_BASE_SNAPSHOT ?= $(call opt_pipeline_var,virshBaseSnapshot)
+ifeq ($(VIRSH_DOMAIN),)
+VIRSH_DOMAIN        := $(call opt_pipeline_var,virshDomain)
+endif
+
+ifeq ($(VIRSH_BASE_SNAPSHOT),)
+VIRSH_BASE_SNAPSHOT := $(call opt_pipeline_var,virshBaseSnapshot)
+endif
 
 virsh_domain_running = $(filter running,$(shell $(VIRSH) domstate '$(VIRSH_DOMAIN)'))
 

@@ -88,14 +88,29 @@ ifeq ($(KUBECTL),)
 $(error FATAL: helm: missing required module: kube)
 endif
 
-HELM             ?= KUBECONFIG='$(KUBECONFIG)' helm
-HELM_CHART       ?= $(call subject_config,helmChart)
-HELM_RELEASE     ?= $(call subject_config,helmRelease)
-HELM_NAMESPACE   ?= $(call subject_config,helmNamespace)
-HELM_DEPLOY_VERB ?= $(if $(helm_release_exists),upgrade,install)
+
+ifeq ($(HELM),)
+HELM             := KUBECONFIG='$(KUBECONFIG)' helm
+endif
 
 ifeq ($(HELM_CHART),)
-HELM_CHART := $(call subject_config_path,helmChartPath)
+HELM_CHART       := $(call subject_config,helmChart)
+endif
+
+ifeq ($(HELM_RELEASE),)
+HELM_RELEASE     := $(call subject_config,helmRelease)
+endif
+
+ifeq ($(HELM_NAMESPACE),)
+HELM_NAMESPACE   := $(call subject_config,helmNamespace)
+endif
+
+ifeq ($(HELM_DEPLOY_VERB),)
+HELM_DEPLOY_VERB := $(if $(helm_release_exists),upgrade,install)
+endif
+
+ifeq ($(HELM_CHART),)
+HELM_CHART       := $(call subject_config_path,helmChartPath)
 endif
 
 ifeq ($(HELM_VALUES),)
@@ -108,9 +123,9 @@ HELM_VALUES_PATHS := $(call subject_config,helmValuesPath,--get-all)
 HELM_VALUES_ARGS  += $(foreach subpath,$(HELM_VALUES_PATHS),--values '$(ENGINE_PROJECT_DIR)/$(subpath)')
 endif
 
-HELM_ARGS         = $(if $(HELM_NAMESPACE),--namespace '$(HELM_NAMESPACE)')
-
-HELM             += $(HELM_ARGS)
+ifneq ($(HELM_NAMESPACE),)
+HELM              += --namespace '$(HELM_NAMESPACE)'
+endif
 
 helm_release_exists        = $(shell if $(HELM) status '$(HELM_RELEASE)' >/dev/null 2>&1; then echo 1; else false; fi)
 helm_release_changed       = $(or $(filter 1,$(helm_diff_status)),$(if $(helm_diff_is_error),$(info NOTICE: helm_diff_status encountered an error in stage $(PIPELINE_NAME)/$(STAGE_NAME) for subject $(SUBJECT_NAME); deployment will be unchanged)))

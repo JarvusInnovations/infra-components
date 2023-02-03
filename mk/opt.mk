@@ -77,14 +77,18 @@
 # | STMT_SELECT          | Command to execute statement selection interface
 # |===================================
 
+# Internal
+
+list_optsfiles = $(shell find '$(1)' -mindepth 1 -maxdepth 1 -name '*.conf' -exec basename {} \;)
+
 # Context
 
-PIPELINE_OPTS_PATHS = $(foreach optsfile,$(call list_optsfiles,$(shell realpath ../..)),'$(shell realpath ../..)/$(optsfile)')
-SUBJECT_OPTS_PATHS  = $(foreach optsfile,$(call list_optsfiles,$(shell realpath .)),'$(shell realpath .)/$(optsfile)')
-LOCAL_OPTS_PATHS    = $(foreach optsfile,$(call list_optsfiles,$(ENGINE_LOCAL_DIR)),'$(ENGINE_LOCAL_DIR)/$(optsfile)')
-OPTSFILE_PATHS      = $(PIPELINE_OPTS_PATHS) $(SUBJECT_OPTS_PATHS) $(LOCAL_OPTS_PATHS)
+PIPELINE_OPTS_PATHS := $(foreach optsfile,$(call list_optsfiles,$(shell realpath ../..)),'$(shell realpath ../..)/$(optsfile)')
+SUBJECT_OPTS_PATHS  := $(foreach optsfile,$(call list_optsfiles,$(shell realpath .)),'$(shell realpath .)/$(optsfile)')
+LOCAL_OPTS_PATHS    := $(foreach optsfile,$(call list_optsfiles,$(ENGINE_LOCAL_DIR)),'$(ENGINE_LOCAL_DIR)/$(optsfile)')
+OPTSFILE_PATHS      := $(PIPELINE_OPTS_PATHS) $(SUBJECT_OPTS_PATHS) $(LOCAL_OPTS_PATHS)
 
-OPT_CONTEXT            = \
+OPT_CONTEXT         := \
   ENGINE_ENV='$(ENGINE_ENV)'                     \
   ENGINE_PROJECT_DIR='$(ENGINE_PROJECT_DIR)'     \
   ENGINE_LOCAL_DIR='$(ENGINE_LOCAL_DIR)'         \
@@ -92,7 +96,7 @@ OPT_CONTEXT            = \
   PIPELINE_NAME=$(PIPELINE_NAME)                 \
   SUBJECT_NAME=$(SUBJECT_NAME)                   \
   SUBJECT_DIR='$(SUBJECT_DIR)'
-STMT_SELECT = $(OPT_CONTEXT) $(LIB)/sh/stmt-select.sh
+STMT_SELECT := $(OPT_CONTEXT) $(LIB)/sh/stmt-select.sh
 
 # Methods
 
@@ -106,7 +110,3 @@ artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r all  $(
 
 filter_artifacts_opt_eq_val = $(sort $(basename $(shell $(STMT_SELECT) -t artifactOpts -c keys -r all $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(foreach val,$(3),-v '$(val)') $(OPTSFILE_PATHS))))
 filter_artifacts_opt_ne_val = $(sort $(filter-out $(call filter_artifacts_opt_eq_val,$(1),$(2),$(3)),$(1)))
-
-# Internal
-
-list_optsfiles = $(shell find '$(1)' -mindepth 1 -maxdepth 1 -name '*.conf' -exec basename {} \;)
