@@ -20,8 +20,13 @@
 #     * Non-empty if the specified namespace exists
 #     * Empty if the specified namespace does not exist
 
-KUBECONFIG ?= $(call opt_pipeline_var,kubeconfig)
-KUBECTL    ?= KUBECONFIG='$(KUBECONFIG)' kubectl
+ifeq ($(KUBECONFIG),)
+KUBECONFIG := $(call opt_pipeline_var,kubeconfig)
+endif
+
+ifeq ($(KUBECTL),)
+KUBECTL    := KUBECONFIG='$(KUBECONFIG)' kubectl
+endif
 
 kube_ns_exists = $(if $(shell $(KUBECTL) get ns '$(1)' 2>/dev/null),1)
 

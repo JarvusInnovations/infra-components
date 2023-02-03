@@ -9,8 +9,13 @@
 # | gcpProject    | var               | The name of the Google Cloud project to operate on
 # |================================================
 
-GCLOUD      ?= gcloud
-GCP_PROJECT ?= $(call opt_pipeline_var,gcpProject)
+ifeq ($(GCLOUD),)
+GCLOUD      := gcloud
+endif
+
+ifeq ($(GCP_PROJECT),)
+GCP_PROJECT := $(call opt_pipeline_var,gcpProject)
+endif
 
 GCLOUD += --quiet
 ifneq ($(GCP_PROJECT),)
