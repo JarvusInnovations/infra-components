@@ -1,10 +1,5 @@
 include ../../../../content/mk/case.mk
 
-subject: assert-portable-realpath
-subject: assert-portable-basename
-subject: assert-portable-dirname
-subject: assert-no-deferred-context
-
 assert-portable-realpath:
 	$(call assert_noopt,realpath,mk/config.mk)
 	$(call assert_noopt,realpath,mk/engine.mk)
@@ -27,7 +22,11 @@ assert-no-deferred-context:
 
 assert_noopt = if git -C '$(ENGINE_SYSTEM_DIR)' grep -n -E -- '$(1)[[:space:]]+-' $(2); then exit 1; else true; fi \# MUST NOT use options with $(1)
 
-.PHONY: assert-portable-realpath
-.PHONY: assert-portable-basename
-.PHONY: assert-portable-dirname
-.PHONY: assert-no-deferred-context
+subject : assert-portable-realpath
+subject : assert-portable-basename
+subject : assert-portable-dirname
+subject : assert-no-deferred-context
+.PHONY  : assert-portable-realpath
+.PHONY  : assert-portable-basename
+.PHONY  : assert-portable-dirname
+.PHONY  : assert-no-deferred-context
