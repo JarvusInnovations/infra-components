@@ -91,6 +91,11 @@ ifneq ($(TERRAFORM_ENV_VAR_FILES),)
 TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_LOCAL_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
 endif
 
+ifneq ($(KUBECONFIG),)
+KUBE_CONFIG_PATH=$(KUBECONFIG)
+export KUBE_CONFIG_PATH
+endif
+
 TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(shell realpath --relative-to=. '$(TERRAFORM_ROOT_MODULE)')/.terraform,.terraform)
 
 tf_plan_status    = $(shell $(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILES) &>/dev/null; echo $$?)
