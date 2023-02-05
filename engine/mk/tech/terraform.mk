@@ -2,16 +2,14 @@
 #
 # The Infrastructure as Code tool by Hashicorp
 #
-# == Inputs ==
+# == Options ==
 #
-# |==================================================
-# | Section       | Name                | Description
-# | engineSubject | tfRootModulePath    | Project subpath to Terraform project
-# | engineSubject | tfVarFilePath [...] | Project subpath to a subject-local variable file
-# | engineSubject | tfBackendPath       | Project subpath to a subject-local backend config. This is used by any implicit `terraform init` commands.
-# | engineEnv     | tfVarFilePath [...] | Env subpath to a pipeline-global var file. Extends `engineSubject.tfVarFilePath`.
-# | engineEnv     | tfBackendPath       | Env subpath to a pipeline-global backend config. Overrides `engineSubject.tfBackendPath`.
-# |================================================
+# |======================================================
+# | Name                | Reference Type    | Description
+# | tfRootModule        | var               | Terraform root module source
+# | tfBackendConfig     | var               | A terraform backend-config source. This is used by any implicit `terraform init` commands.
+# | tfVarFileItem       | list              | A sequence of var-file sources
+# |======================================================
 #
 # == Steps ==
 #
@@ -19,31 +17,28 @@
 #   description:::
 #     Runs a `terraform plan` on the specified project
 #   inputs:::
-#     * engineSubject.tfRootModulePath
-#     * engineSubject.tfVarFilePath
-#     * engineEnv.tfVarFilePath
+#     * tfRootModule
+#     * tfVarFileItem
 #
 # `terraform-apply`::
 #   description:::
 #     Runs a `terraform apply` on the specified project
 #   inputs:::
-#     * engineSubject.tfRootModulePath
-#     * engineSubject.tfVarFilePath
-#     * engineEnv.tfVarFilePath
+#     * tfRootModule
+#     * tfVarFileItem
 #
 # `terraform-validate`::
 #   description:::
 #     Runs a `terraform validate` on the specified project
 #   inputs:::
-#     * engineSubject.tfRootModulePath
+#     * tfRootModule
 #
 # == Methods ==
 #
 # `tf_plan_status`::
 #   inputs:::
-#     * engineSubject.tfRootModulePath
-#     * engineSubject.tfVarFilePath
-#     * engineEnv.tfVarFilePath
+#     * tfRootModule
+#     * tfVarFileItem
 #   return:::
 #     * Detailed exit code of `terraform plan`
 
@@ -52,62 +47,42 @@ TERRAFORM                   := terraform
 endif
 
 ifeq ($(TERRAFORM_ROOT_MODULE),)
-TERRAFORM_ROOT_MODULE       := $(call subject_config_path,tfRootModulePath)
+TERRAFORM_ROOT_MODULE       := $(call opt_pipeline_var,tfRootModule)
 endif
 
-ifeq ($(TERRAFORM_SUBJECT_VAR_FILES),)
-TERRAFORM_SUBJECT_VAR_FILES := $(call subject_config,tfVarFilePath,--get-all)
+ifeq ($(TERRAFORM_VAR_FILES),)
+TERRAFORM_VAR_FILES         := $(call opt_pipeline_list,tfVarFileItem)
 endif
 
-ifeq ($(TERRAFORM_ENV_VAR_FILES),)
-TERRAFORM_ENV_VAR_FILES     := $(call env_config,tfVarFilePath,--get-all)
-endif
-
-ifeq ($(TERRAFORM_SUBJECT_BACKEND),)
-TERRAFORM_SUBJECT_BACKEND   := $(call subject_config_path,tfBackendPath)
-endif
-
-ifeq ($(TERRAFORM_ENV_BACKEND),)
-TERRAFORM_ENV_BACKEND       := $(call env_config_path,tfBackendPath)
-endif
-
-ifneq ($(TERRAFORM_SUBJECT_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_SUBJECT_BACKEND)
-endif
-
-ifneq ($(TERRAFORM_ENV_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_ENV_BACKEND)
+ifeq ($(TERRAFORM_BACKEND_CONFIG),)
+TERRAFORM_BACKEND_CONFIG    := $(call opt_pipeline_var,tfBackendConfig)
 endif
 
 ifneq ($(TERRAFORM_ROOT_MODULE),)
 TERRAFORM                   += '-chdir=$(TERRAFORM_ROOT_MODULE)'
 endif
 
-ifneq ($(TERRAFORM_SUBJECT_VAR_FILES),)
-TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_PROJECT_DIR)/%',$(TERRAFORM_SUBJECT_VAR_FILES))
-endif
-
-ifneq ($(TERRAFORM_ENV_VAR_FILES),)
-TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_LOCAL_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
+ifneq ($(TERRAFORM_VAR_FILES),)
+TERRAFORM_VAR_FILE_ARGS     := $(foreach varfile,$(TERRAFORM_VAR_FILES),-var-file '$(varfile)')
 endif
 
 ifneq ($(KUBECONFIG),)
-KUBE_CONFIG_PATH=$(KUBECONFIG)
+KUBE_CONFIG_PATH := $(KUBECONFIG)
 export KUBE_CONFIG_PATH
 endif
 
-TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(shell realpath --relative-to=. '$(TERRAFORM_ROOT_MODULE)')/.terraform,.terraform)
+TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(call path_relto,$(TERRAFORM_ROOT_MODULE),.)/.terraform,.terraform)
 
-tf_plan_status    = $(shell $(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILES) &>/dev/null; echo $$?)
+tf_plan_status    = $(shell $(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILE_ARGS) >/dev/null 2>&1; echo $$?)
 
 $(TERRAFORM_DOTDIR):
 	$(TERRAFORM) init $(if $(TERRAFORM_BACKEND_CONFIG),'-backend-config=$(TERRAFORM_BACKEND_CONFIG)')
 
 terraform-plan: $(TERRAFORM_DOTDIR)
-	$(TERRAFORM) plan -compact-warnings $(TERRAFORM_VAR_FILES)
+	$(TERRAFORM) plan -compact-warnings $(TERRAFORM_VAR_FILE_ARGS)
 
 terraform-apply: $(TERRAFORM_DOTDIR)
-	$(TERRAFORM) apply -auto-approve $(TERRAFORM_VAR_FILES)
+	$(TERRAFORM) apply -auto-approve $(TERRAFORM_VAR_FILE_ARGS)
 
 terraform-validate: $(TERRAFORM_DOTDIR)
 	$(TERRAFORM) validate

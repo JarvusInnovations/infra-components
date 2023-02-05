@@ -4,7 +4,7 @@ include $(MK)/tech/terraform.mk
 
 subject:
 ifneq ($(KUBE_CONFIG_PATH),)
-	test 2 -eq `$(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILES) >/dev/null; echo $$?` # assert pending change
+	test 2 -eq `$(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILE_ARGS) >&2; echo $$?` # assert pending change
 	$(call run_step,terraform-apply)
 else
 	$(call test_skip_opt,kubeconfig)

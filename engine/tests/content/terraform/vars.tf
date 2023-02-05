@@ -5,5 +5,5 @@ variable "kube_app_val" {
 
 variable "kube_app_namespace" {
   type    = string
-  default = "engine-tests-terraform"
+  default = ""
 }
