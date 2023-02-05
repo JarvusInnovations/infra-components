@@ -11,6 +11,13 @@
 # | tfVarFileItem       | list              | A sequence of var-file sources
 # |======================================================
 #
+# == Artifacts ==
+#
+# |============================================================
+# | Option              | Value                   | Description
+# | producer            | terraform-plan          | Artifacts with this value will be used by terraform-plan-artifacts-produce
+# |============================================================
+#
 # == Steps ==
 #
 # `terraform-plan`::
@@ -33,6 +40,22 @@
 #   inputs:::
 #     * tfRootModule
 #
+# `terraform-plan-artifacts-produce`::
+#   description:::
+#     Writes terraform plan output to `<artifact>.path`
+#   artifacts:::
+#     * producer=terraform-plan
+#   inputs:::
+#     * <artifact>.path
+#
+# `terraform-plan-artifacts-clean`::
+#   description:::
+#     Deletes all produced artifacts
+#   artifacts:::
+#     * producer=terraform-plan
+#   inputs:::
+#     * <artifact>.path
+#
 # == Methods ==
 #
 # `tf_plan_status`::
@@ -43,27 +66,35 @@
 #     * Detailed exit code of `terraform plan`
 
 ifeq ($(TERRAFORM),)
-TERRAFORM                   := terraform
+TERRAFORM                     := terraform
 endif
 
 ifeq ($(TERRAFORM_ROOT_MODULE),)
-TERRAFORM_ROOT_MODULE       := $(call opt_pipeline_var,tfRootModule)
+TERRAFORM_ROOT_MODULE         := $(call opt_pipeline_var,tfRootModule)
 endif
 
 ifeq ($(TERRAFORM_VAR_FILES),)
-TERRAFORM_VAR_FILES         := $(call opt_pipeline_list,tfVarFileItem)
+TERRAFORM_VAR_FILES           := $(call opt_pipeline_list,tfVarFileItem)
 endif
 
 ifeq ($(TERRAFORM_BACKEND_CONFIG),)
-TERRAFORM_BACKEND_CONFIG    := $(call opt_pipeline_var,tfBackendConfig)
+TERRAFORM_BACKEND_CONFIG      := $(call opt_pipeline_var,tfBackendConfig)
+endif
+
+ifeq ($(TERRAFORM_PLAN_ARTIFACTS),)
+TERRAFORM_PLAN_ARTIFACTS      := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,terraform-plan)
 endif
 
 ifneq ($(TERRAFORM_ROOT_MODULE),)
-TERRAFORM                   += '-chdir=$(TERRAFORM_ROOT_MODULE)'
+TERRAFORM                     += '-chdir=$(TERRAFORM_ROOT_MODULE)'
 endif
 
 ifneq ($(TERRAFORM_VAR_FILES),)
-TERRAFORM_VAR_FILE_ARGS     := $(foreach varfile,$(TERRAFORM_VAR_FILES),-var-file '$(varfile)')
+TERRAFORM_VAR_FILE_ARGS       := $(foreach varfile,$(TERRAFORM_VAR_FILES),-var-file '$(varfile)')
+endif
+
+ifneq ($(TERRAFORM_PLAN_ARTIFACTS),)
+TERRAFORM_PLAN_ARTIFACT_PATHS := $(foreach id,$(TERRAFORM_PLAN_ARTIFACTS),$(call artifact_path,$(id)))
 endif
 
 ifneq ($(KUBECONFIG),)
@@ -90,7 +121,17 @@ terraform-validate: $(TERRAFORM_DOTDIR)
 terraform-clean:
 	rm -vrf $(TERRAFORM_DOTDIR)
 
+terraform-plan-artifacts-produce: $(TERRAFORM_PLAN_ARTIFACT_PATHS)
+$(TERRAFORM_PLAN_ARTIFACT_PATHS):
+	$(TERRAFORM) plan -compact-warnings -no-color $(TERRAFORM_VAR_FILE_ARGS) > '$@'
+
+terraform-plan-artifacts-clean:
+	rm -vf $(TERRAFORM_PLAN_ARTIFACT_PATHS)
+
 .PHONY: terraform-plan
 .PHONY: terraform-apply
 .PHONY: terraform-validate
 .PHONY: terraform-clean
+.PHONY: terraform-plan-artifacts-produce
+.PHONY: terraform-plan-artifacts-clean
+.PHONY: $(TERRAFORM_PLAN_ARTIFACT_PATHS)
