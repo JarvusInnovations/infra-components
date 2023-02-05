@@ -5,6 +5,7 @@ include $(MK)/tech/terraform.mk
 subject:
 ifneq ($(KUBE_CONFIG_PATH),)
 	$(call run_step,terraform-plan)
+	$(call run_step,terraform-plan-artifacts-produce)
 	$(call run_step,terraform-apply)
 	test 0 -eq `$(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILE_ARGS) >&2; echo $$?` # assert no change after first apply
 else
