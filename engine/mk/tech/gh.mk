@@ -2,42 +2,58 @@
 #
 # The GitHub API CLI interface
 #
-# == Inputs ==
+# == Options ==
 #
-# |================================================
-# | Section       | Name              | Description
-# | [None]        | GH_PR_NUMBER      | The number of a pull request to operate on
-# |================================================
+# |======================================================
+# | Name                | Reference Type    | Description
+# | ghPullRequestEnvVar | var               | Name of environment variable which contains GitHub Pull Request identifier
+# |======================================================
+#
+# == Artifacts ==
+#
+# |============================================================
+# | Option              | Value                   | Description
+# | publisherItem       | github-pr               | Artifacts with this value will be published to `GH_PR_NUMBER`
+# |============================================================
 #
 # == Steps ==
 #
-# `gh-pr-comment-terraform-plan`::
+# `gh-pr-artifacts-publish`::
 #   description:::
-#     Posts a formatted comment with the output of `terraform plan`
+#     Post artifact contents to a comment on the pull request identified in the
+#     enironment variable `ghPullRequestEnvVar`
+#   artifacts:::
+#     * publisherItem=github-pr
 #   inputs:::
-#     * See: terraform
-#
-# == Methods ==
-#
-# `gh_pr_comment_tf`::
-#   positionals:::
-#     1. PR number to post comment to
-#   inputs:::
-#     * See: terraform
+#     * ghPullRequestEnvVar
+#     * `<artifact>.ghCommentTemplate`
 
-ifneq ($(TERRAFORM),)
-
-gh_pr_comment_tf  = $(TERRAFORM) plan -compact-warnings -no-color $(TERRAFORM_VAR_FILES) | printf '\#\# Terraform Changes\n```hcl\n%s\n```\n' "`cat /dev/stdin`" | gh pr comment '$(1)' --body-file -
-
-gh-pr-comment-terraform-plan:
-ifneq ($(GH_PR_NUMBER),)
-	$(if $(filter 2,$(tf_plan_status)),$(call gh_pr_comment_tf,$(GH_PR_NUMBER)))
-else
-	$(error GH_PR_NUMBER is not defined)
+ifeq ($(GH_PR_ENVVAR),)
+GH_PR_ENVVAR := $(call opt_pipeline_var,ghPullRequestEnvVar)
 endif
 
-else
-gh-pr-comment-terraform-plan:
+ifeq ($(GH_PR_ARTIFACTS),)
+GH_PR_ARTIFACTS := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),publisherItem,github-pr)
 endif
 
-.PHONY: gh-pr-comment-terraform-plan
+ifeq ($(GH_PR_ARTIFACT_PATHS),)
+GH_PR_ARTIFACT_PATHS := $(foreach id,$(GH_PR_ARTIFACTS),$(call artifact_path,$(id)))
+endif
+
+ifneq ($(GH_PR_ENVVAR),)
+GH_PR_ARG := $(value $(GH_PR_ENVVAR))
+endif
+
+gh-pr-artifacts-publish: $(GH_PR_ARTIFACT_PATHS)
+$(GH_PR_ARTIFACT_PATHS):
+ifneq ($(GH_PR_ENVVAR),)
+ifneq ($(GH_PR_ARG),)
+	printf '$(or $(call opt_artifact_var,$(call artifact_frompath,$@),ghCommentTemplate),%s\n)' "`cat $@`" | gh pr comment '$(GH_PR_ARG)' --body-file -
+else
+	$(error required environment variable is not defined: $(GH_PR_ENVVAR))
+endif
+else
+	$(error required option is not defined: ghPullRequestEnvVar)
+endif
+
+.PHONY: $(GH_PR_ARTIFACT_PATHS)
