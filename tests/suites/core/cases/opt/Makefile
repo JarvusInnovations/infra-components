@@ -22,6 +22,10 @@ test-artifacts:
 	test tests-publisher-2 = `printf '%s\n' '$(call opt_artifact_list,baz,publishersItem)' | awk '{print $$2}'` # opt_artifact_list(baz,publishersItem)
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_LOCAL_DIR) / | sed s,^.,,)/baz-input.conf' = '$(call opt_artifact_var,baz,config,abs)' # opt_artifact_var(baz,config,abs)
 	test 'tests' = '$(call opt_artifact_var,foo,path producer)' # opt_artifact_var(foo,path producer)
+	test '' = '$(call filter_artifacts_var_eq_val,baz,optSrc,from-pipeline)' # filter_artifacts_var_eq_val(baz,optSrc,from-pipeline)
+	test 'baz' = '$(call filter_artifacts_var_eq_val,baz,optSrc,from-subject)' # filter_artifacts_var_eq_val(baz,optSrc,from-subject)
+	test '' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-subject)' # filter_artifacts_var_ne_val(baz,optSrc,from-subject)
+	test 'baz' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-pipeline)' # filter_artifacts_var_ne_val(baz,optSrc,from-pipeline)
 
 test-pipeline-opts:
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
@@ -30,8 +34,8 @@ test-pipeline-opts:
 	test 'bazs-item-3' = `printf '%s\n' '$(call opt_pipeline_list,optBazsItem optFoosItem)' | awk '{print $$NF}'` # opt_pipeline_list(optBazsItem optFoosItem)
 
 test-filter-artifacts:
-	test 'bar foo skipped' = '$(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,tests)' # filter_artifacts_opt_eq_val(*,producer,tests)
-	test baz = $(call filter_artifacts_opt_ne_val,$(call artifacts_matching,.+),producer,tests) # filter_artifacts_opt_ne_val(*,producer,tests)
+	test 'bar foo skipped' = '$(call filter_artifacts_list_has_val,$(call artifacts_matching,.+),producer,tests)' # filter_artifacts_list_has_val(*,producer,tests)
+	test baz = $(call filter_artifacts_list_hasno_val,$(call artifacts_matching,.+),producer,tests) # filter_artifacts_list_hasno_val(*,producer,tests)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts

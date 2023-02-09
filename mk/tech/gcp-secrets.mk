@@ -44,11 +44,11 @@ include $(MK)/tech/gcloud.mk
 endif
 
 ifeq ($(GCP_SECRETS_PRODUCE_ARTIFACTS),)
-GCP_SECRETS_PRODUCE_ARTIFACTS  := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,gcp-secrets)
+GCP_SECRETS_PRODUCE_ARTIFACTS  := $(call filter_artifacts_var_eq_val,$(call artifacts_matching,.+),producer,gcp-secrets)
 endif
 
 ifeq ($(GCP_SECRETS_PUBLISH_ARTIFACTS),)
-GCP_SECRETS_PUBLISH_ARTIFACTS  := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),publisherItem,gcp-secrets)
+GCP_SECRETS_PUBLISH_ARTIFACTS  := $(call filter_artifacts_list_has_val,$(call artifacts_matching,.+),publisherItem,gcp-secrets)
 endif
 
 ifeq ($(GCP_SECRETS_PATHS),)
