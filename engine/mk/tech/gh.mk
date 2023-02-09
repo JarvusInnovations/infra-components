@@ -33,7 +33,7 @@ GH_PR_ENVVAR := $(call opt_pipeline_var,ghPullRequestEnvVar)
 endif
 
 ifeq ($(GH_PR_ARTIFACTS),)
-GH_PR_ARTIFACTS := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),publisherItem,github-pr)
+GH_PR_ARTIFACTS := $(call filter_artifacts_list_has_val,$(call artifacts_matching,.+),publisherItem,github-pr)
 endif
 
 ifeq ($(GH_PR_ARTIFACT_PATHS),)

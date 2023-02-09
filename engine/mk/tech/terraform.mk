@@ -82,7 +82,7 @@ TERRAFORM_BACKEND_CONFIG      := $(call opt_pipeline_var,tfBackendConfig)
 endif
 
 ifeq ($(TERRAFORM_PLAN_ARTIFACTS),)
-TERRAFORM_PLAN_ARTIFACTS      := $(call filter_artifacts_opt_eq_val,$(call artifacts_matching,.+),producer,terraform-plan)
+TERRAFORM_PLAN_ARTIFACTS      := $(call filter_artifacts_var_eq_val,$(call artifacts_matching,.+),producer,terraform-plan)
 endif
 
 ifneq ($(TERRAFORM_ROOT_MODULE),)
