@@ -1,17 +1,8 @@
 include ../../../../content/mk/case.mk
 
-assert-portable-realpath:
-	$(call assert_noopt,realpath,mk/config.mk)
-	$(call assert_noopt,realpath,mk/engine.mk)
-	$(call assert_noopt,realpath,mk/pipeline.mk)
-	$(call assert_noopt,realpath,mk/stage.mk)
-	$(call assert_noopt,realpath,mk/subject.mk)
-	$(call assert_noopt,realpath,Makefile)
-
-assert-portable-basename:
+assert-portable-usage:
+	$(call assert_noopt,realpath)
 	$(call assert_noopt,basename)
-
-assert-portable-dirname:
 	$(call assert_noopt,dirname)
 
 assert-no-deferred-context:
@@ -22,11 +13,7 @@ assert-no-deferred-context:
 
 assert_noopt = if git -C '$(ENGINE_SYSTEM_DIR)' grep -n -E -- '$(1)[[:space:]]+-' $(2); then exit 1; else true; fi \# MUST NOT use options with $(1)
 
-subject : assert-portable-realpath
-subject : assert-portable-basename
-subject : assert-portable-dirname
+subject : assert-portable-usage
 subject : assert-no-deferred-context
-.PHONY  : assert-portable-realpath
-.PHONY  : assert-portable-basename
-.PHONY  : assert-portable-dirname
+.PHONY  : assert-portable-usage
 .PHONY  : assert-no-deferred-context
