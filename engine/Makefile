@@ -3,8 +3,8 @@ ENGINE_PROJECT_DIR   ?= ..
 -include $(ENGINE_PROJECT_DIR)/.engine-project.mk
 ENGINE_SYSTEM_DIR    ?= .
 ENGINE_PIPELINES_DIR ?= $(ENGINE_PROJECT_DIR)/pipelines
-ENGINE_LOCAL_DIR     ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/local
-ENGINE_ARTIFACTS_DIR ?= $(shell git -C '$(ENGINE_PIPELINES_DIR)' rev-parse --absolute-git-dir)/engine/artifacts
+ENGINE_LOCAL_DIR     ?= $(shell git -C '$(ENGINE_PROJECT_DIR)' rev-parse --absolute-git-dir)/engine/local
+ENGINE_ARTIFACTS_DIR ?= $(shell git -C '$(ENGINE_PROJECT_DIR)' rev-parse --absolute-git-dir)/engine/artifacts
 LIB                  ?= $(ENGINE_SYSTEM_DIR)/lib
 
 PIPELINE ?=
@@ -26,18 +26,12 @@ help:
 	@echo
 	@echo 'Actions:                                                                                                                    '
 	@echo '                                                                                                                            '
-	@echo '    init                                        - setup a new engine project                                                '
 	@echo '    lsmod                                       - list module names                                                         '
 	@echo '    printdoc     (MOD=)                         - print module documentation                                                '
 	@echo '    new-pipeline (PIPELINE=, PATTERN=)          - create a new pipeline from a pattern template ($(VALID_PATTERNS_HELPSTR)) '
 	@echo '    new-stage    (PIPELINE=, STAGE=)            - create a new stage within the specified pipeline                          '
 	@echo '    new-subject  (PIPELINE=, STAGES=, SUBJECT=) - create a new subject within the specified pipeline stages                 '
 	@echo
-
-init:
-	mkdir -pv '$(ENGINE_PIPELINES_DIR)'
-	mkdir -pv '$(ENGINE_LOCAL_DIR)'
-	mkdir -pv '$(ENGINE_ARTIFACTS_DIR)'
 
 lsmod:
 	@printf '%s\n' $(VALID_MODS)
@@ -57,11 +51,6 @@ ifdef PIPELINE
 
 ifeq ($(shell echo '$(SYSTEM_RELTO_PIPELINE)' | head -c 1),/)
 $(error FATAL: BUG: SYSTEM_RELTO_PIPELINE must be a relative path; got the absolute path $(SYSTEM_RELTO_PIPELINE))
-endif
-
-# wrap these checks in dir function because the pipeline dir may not yet exist
-ifeq ($(shell cd '$(dir $(PIPELINE_DIR))' && stat '$(dir $(SYSTEM_RELTO_PIPELINE))'),)
-$(error FATAL: cannot stat $(SYSTEM_RELTO_PIPELINE) from $(dir $(PIPELINE_DIR)))
 endif
 
 endif
@@ -89,7 +78,7 @@ PATTERN_STAGE_MAKEFILES    := $(if $(PATTERN_STAGES),$(patsubst %,%/Makefile,$(P
 STAGE_MAKEFILES            := $(sort $(NEW_STAGE_MAKEFILE) $(PATTERN_STAGE_MAKEFILES) $(SUBJECT_STAGE_MAKEFILES))
 STAGE_DIRS                 := $(sort $(NEW_STAGE_DIR) $(PATTERN_STAGE_DIRS) $(SUBJECT_STAGE_DIRS))
 
-ALL_DIRS                   := $(sort $(PIPELINE_DIR) $(STAGE_DIRS) $(SUBJECT_DIRS))
+ALL_DIRS                   := $(sort $(ENGINE_PIPELINES_DIR) $(ENGINE_LOCAL_DIR) $(ENGINE_ARTIFACTS_DIR) $(PIPELINE_DIR) $(STAGE_DIRS) $(SUBJECT_DIRS))
 
 new-pipeline:
 ifndef PIPELINE
@@ -124,7 +113,7 @@ new-subject: $(SUBJECT_MAKEFILES)
 endif
 endif
 
-$(PIPELINE_DIR)      : | $(ENGINE_PIPELINES_DIR)
+$(PIPELINE_DIR)      : | $(ENGINE_PIPELINES_DIR) $(ENGINE_LOCAL_DIR) $(ENGINE_ARTIFACTS_DIR)
 $(PIPELINE_MAKEFILE) : | $(PIPELINE_DIR)
 $(STAGE_MAKEFILES)   : $(PIPELINE_MAKEFILE) | $(STAGE_DIRS)
 $(SUBJECT_MAKEFILES) : $(STAGE_MAKEFILES)   | $(SUBJECT_DIRS)

@@ -88,6 +88,8 @@ ifeq ($(LIB),)
 LIB                  := $(MK)/../lib
 endif
 
+path_relto            = $(shell $(LIB)/sh/path-relto.sh '$(1)' '$(2)')
+
 ifeq ($(ENGINE_SYSTEM_DIR),)
 ENGINE_SYSTEM_DIR    := $(shell realpath '$(MK)/..')
 endif
@@ -100,19 +102,20 @@ ifeq ($(ENGINE_ENV),)
 ENGINE_ENV           := dev
 endif
 
+# These abspaths are resolved using path_relto because realpath will fail if
+# multiple path components do not exist
+
 ifeq ($(ENGINE_LOCAL_DIR),)
-ENGINE_LOCAL_DIR     := $(shell realpath `git rev-parse --git-path engine/local`)
+ENGINE_LOCAL_DIR     := $(shell echo $(call path_relto,$(shell git rev-parse --git-path engine/local),/) | sed 's,^\.,,')
 endif
 
 ifeq ($(ENGINE_ARTIFACTS_DIR),)
-ENGINE_ARTIFACTS_DIR := $(shell realpath `git rev-parse --git-path engine/artifacts`)
+ENGINE_ARTIFACTS_DIR := $(shell echo $(call path_relto,$(shell git rev-parse --git-path engine/artifacts),/) | sed 's,^\.,,')
 endif
 
 ifeq ($(ENGINE_PIPELINES_DIR),)
 ENGINE_PIPELINES_DIR := $(ENGINE_PROJECT_DIR)/pipelines
 endif
-
-path_relto         = $(shell $(LIB)/sh/path-relto.sh '$(1)' '$(2)')
 
 env_pathjoin       = $(ENGINE_LOCAL_DIR)/$(1)
 env_pathstrip      = $(patsubst $(ENGINE_LOCAL_DIR)/%,%,$(1))
