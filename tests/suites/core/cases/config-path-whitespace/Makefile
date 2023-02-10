@@ -2,5 +2,4 @@ ENGINE_LOCAL_DIR := $(shell realpath '../../../../content/core/local dir whitesp
 include ../../../../content/mk/case.mk
 
 subject:
-	$(info INFO GIT=$(GIT))
-	test '$(call subject_config,pass)' = true # engineSubject.$(PIPELINE_NAME)/$(SUBJECT_NAME).pass = true
+	test '$(call opt_pipeline_var,pass)' = true # opt_pipeline_var(pass) = true

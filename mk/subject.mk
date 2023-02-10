@@ -44,5 +44,4 @@ subject:
 
 .PHONY: subject
 
-include $(MK)/config.mk
 include $(MK)/opt.mk

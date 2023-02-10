@@ -23,58 +23,6 @@
 #     2. start dir
 #   returns:::
 #     * A relative path from <start-dir> to <dest-path> on the current system
-#
-# `env_pathjoin`::
-#   positionals:::
-#     1. subpath
-#   returns:::
-#     * <ENGINE_LOCAL_DIR>/<subpath>
-#
-# `env_pathstrip`::
-#   positionals:::
-#     1. abspath
-#   returns:::
-#     * A subpath with ENGINE_LOCAL_DIR stripped from the beginning
-#     * <abspath> if it does not start with ENGINE_LOCAL_DIR
-#
-# `project_pathjoin`::
-#   positionals:::
-#     1. subpath
-#   returns:::
-#     * <ENGINE_PROJECT_DIR>/<subpath>
-#
-# `project_pathstrip`::
-#   positionals:::
-#     1. abspath
-#   returns:::
-#     * A subpath with ENGINE_PROJECT_DIR stripped from the beginning
-#     * <abspath> if it does not start with ENGINE_PROJECT_DIR
-#
-# `artifact_pathjoin`::
-#   positionals:::
-#     1. subpath
-#   returns:::
-#     * <ENGINE_ARTIFACTS_DIR>/<subpath>
-#
-# `artifact_pathstrip`::
-#   positionals:::
-#     1. abspath
-#   returns:::
-#     * A subpath with ENGINE_ARTIFACTS_DIR stripped from the beginning
-#     * <abspath> if it does not start with ENGINE_ARTIFACTS_DIR
-#
-# `artifact_relpathjoin`::
-#   positionals:::
-#     1. subpath
-#   returns:::
-#     * {relative path to ENGINE_ARTIFACTS_DIR}/<subpath>
-#
-# `artifact_relpathstrip`::
-#   positionals:::
-#     1. relpath
-#   returns:::
-#     * A subpath with the relative path to ENGINE_ARTIFACTS_DIR stripped from the beginning
-#     * <relpath> if it does not start with a relative path to ENGINE_ARTIFACTS_DIR
 
 -include local.mk
 
@@ -116,18 +64,6 @@ endif
 ifeq ($(ENGINE_PIPELINES_DIR),)
 ENGINE_PIPELINES_DIR := $(ENGINE_PROJECT_DIR)/pipelines
 endif
-
-env_pathjoin       = $(ENGINE_LOCAL_DIR)/$(1)
-env_pathstrip      = $(patsubst $(ENGINE_LOCAL_DIR)/%,%,$(1))
-
-project_pathjoin   = $(ENGINE_PROJECT_DIR)/$(1)
-project_pathstrip  = $(patsubst $(ENGINE_PROJECT_DIR)/%,%,$(1))
-
-artifact_pathjoin  = $(ENGINE_ARTIFACTS_DIR)/$(1)
-artifact_pathstrip = $(patsubst $(ENGINE_ARTIFACTS_DIR)/%,%,$(1))
-
-artifact_relpathjoin  = $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/$(1)
-artifact_relpathstrip = $(patsubst $(call path_relto,$(ENGINE_ARTIFACTS_DIR),.)/%,%,$(1))
 
 export ENGINE_SYSTEM_DIR
 export ENGINE_PROJECT_DIR
