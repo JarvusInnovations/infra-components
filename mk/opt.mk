@@ -124,7 +124,7 @@ artifact_path      = $(shell $(STMT_SELECT) -t artifactRefs -c values -r last $(
 artifact_frompath  = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r last $(foreach val,$(1),-v '$(val)') $(OPTSFILE_PATHS))
 artifacts_matching = $(shell $(STMT_SELECT) -t artifactRefs -c keys   -r all  $(foreach key,$(1),-k '$(key)') $(OPTSFILE_PATHS))
 
-filter_artifacts_var_eq_val     = $(sort $(basename $(shell $(STMT_SELECT) -t artifactOpts -r last $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(OPTSFILE_PATHS) | awk -v 'key_patterns=.*' -v "val_items=`printf '%s\n' $(3)`" -f '$(LIB)/awk/stmt-table-select-keyseq.awk')))
+filter_artifacts_var_eq_val     = $(sort $(basename $(foreach aid,$(1),$(shell $(STMT_SELECT) -t artifactOpts -r last -a '$(aid)' $(foreach key,$(2),-k '$(key)') $(OPTSFILE_PATHS) | awk -v 'key_patterns=.*' -v "val_items=`printf '%s\n' $(3)`" -f '$(LIB)/awk/stmt-table-select-keyseq.awk'))))
 filter_artifacts_var_ne_val     = $(sort $(filter-out $(call filter_artifacts_var_eq_val,$(1),$(2),$(3)),$(1)))
 filter_artifacts_list_has_val   = $(sort $(basename $(shell $(STMT_SELECT) -t artifactOpts -c keys -r all $(foreach aid,$(1),-a '$(aid)') $(foreach key,$(2),-k '$(key)') $(foreach val,$(3),-v '$(val)') $(OPTSFILE_PATHS))))
 filter_artifacts_list_hasno_val = $(sort $(filter-out $(call filter_artifacts_list_has_val,$(1),$(2),$(3)),$(1)))
