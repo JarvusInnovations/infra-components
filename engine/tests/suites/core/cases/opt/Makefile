@@ -26,6 +26,7 @@ test-artifacts:
 	test 'baz' = '$(call filter_artifacts_var_eq_val,baz,optSrc,from-subject)' # filter_artifacts_var_eq_val(baz,optSrc,from-subject)
 	test '' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-subject)' # filter_artifacts_var_ne_val(baz,optSrc,from-subject)
 	test 'baz' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-pipeline)' # filter_artifacts_var_ne_val(baz,optSrc,from-pipeline)
+	test 'bar foo' = '$(call filter_artifacts_var_eq_val,foo bar baz,producer,tests)' # filter_artifacts_var_eq_val(foo bar baz,producer,tests)
 
 test-pipeline-opts:
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
