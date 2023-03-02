@@ -27,6 +27,7 @@ test-artifacts:
 	test '' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-subject)' # filter_artifacts_var_ne_val(baz,optSrc,from-subject)
 	test 'baz' = '$(call filter_artifacts_var_ne_val,baz,optSrc,from-pipeline)' # filter_artifacts_var_ne_val(baz,optSrc,from-pipeline)
 	test 'bar foo' = '$(call filter_artifacts_var_eq_val,foo bar baz,producer,tests)' # filter_artifacts_var_eq_val(foo bar baz,producer,tests)
+	test 'bar foo' = '$(call filter_artifacts_var_eq_val,foo bar baz,testsContent)' # filter_artifacts_var_eq_val(foo bar baz,testsContent)
 
 test-pipeline-opts:
 	test '$(shell $(LIB)/sh/path-relto.sh $(ENGINE_ARTIFACTS_DIR) / | sed s,^.,,)/baz.txt' = '$(call opt_pipeline_var,optBaz,abs)' # opt_pipeline_var(optBaz,abs)
@@ -37,6 +38,7 @@ test-pipeline-opts:
 test-filter-artifacts:
 	test 'bar foo skipped' = '$(call filter_artifacts_list_has_val,$(call artifacts_matching,.+),producer,tests)' # filter_artifacts_list_has_val(*,producer,tests)
 	test baz = $(call filter_artifacts_list_hasno_val,$(call artifacts_matching,.+),producer,tests) # filter_artifacts_list_hasno_val(*,producer,tests)
+	test 'bar foo' = '$(call filter_artifacts_list_has_val,foo bar baz,testsContent)' # filter_artifacts_list_has_val(foo bar baz,testsContent)
 
 .PHONY: test-stmt-select
 .PHONY: test-artifacts
