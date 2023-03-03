@@ -27,8 +27,17 @@ GIT_PUSH_ARTIFACTS  := $(filter $(GIT_ARTIFACT_FILTERS),$(GIT_PUSH_ARTIFACTS))
 endif
 endif
 
+ifeq ($(GIT_TREE_ARTIFACTS),)
+GIT_TREE_ARTIFACTS  := $(call filter_artifacts_var_eq_val,$(call artifacts_matching,.+),producer,git-tree)
+GIT_TREE_ARTIFACTS  := $(call filter_artifacts_var_eq_val,$(GIT_TREE_ARTIFACTS),gitRef)
+ifneq ($(GIT_ARTIFACT_FILTERS),)
+GIT_TREE_ARTIFACTS  := $(filter $(GIT_ARTIFACT_FILTERS),$(GIT_TREE_ARTIFACTS))
+endif
+endif
+
 GIT_FETCH_ARTIFACT_TARGETS := $(patsubst %,git-fetch-artifacts-produce-%,$(GIT_FETCH_ARTIFACTS))
 GIT_PUSH_ARTIFACT_TARGETS  := $(patsubst %,git-push-artifacts-publish-%,$(GIT_PUSH_ARTIFACTS))
+GIT_TREE_ARTIFACT_TARGETS  := $(patsubst %,git-tree-artifacts-produce-%,$(GIT_TREE_ARTIFACTS))
 
 git_force_flag = $(if $(filter-out 0 false,$(shell echo $(call opt_artifact_var,$(2),$(1)) | tr '[:upper:]' '[:lower:]')),+)
 
@@ -48,3 +57,7 @@ git-fetch-artifacts-produce-%:
 git-push-artifacts-publish: $(GIT_PUSH_ARTIFACT_TARGETS)
 git-push-artifacts-publish-%:
 	$(foreach remote,$(call opt_artifact_list,$*,gitPushRemoteItem),$(call git_push_artifact_to_remote,$*,$(remote)))
+
+git-tree-artifacts-produce: $(GIT_TREE_ARTIFACT_TARGETS)
+git-tree-artifacts-produce-%:
+	$(GIT) --work-tree=$(call artifact_path,$*) restore --worktree --source=$(call opt_artifact_var,$*,gitRef) .
