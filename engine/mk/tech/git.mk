@@ -72,7 +72,7 @@ GIT_WORKDIR := $(call path_relto,$(ENGINE_PROJECT_DIR),.)
 endif
 
 ifeq ($(GIT),)
-GIT := git $(if $(GIT_WORKDIR),-C '$(GIT_WORKDIR)')
+GIT := git -C '$(GIT_WORKDIR)'
 endif
 
 ifeq ($(GIT_ARTIFACT_FILTERS),)
