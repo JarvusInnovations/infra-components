@@ -84,7 +84,7 @@ endif
 endif
 
 ifeq ($(GIT_PUSH_ARTIFACTS),)
-GIT_PUSH_ARTIFACTS  := $(call filter_artifacts_var_eq_val,$(call artifacts_matching,.+),publisherItem,git-push)
+GIT_PUSH_ARTIFACTS  := $(call filter_artifacts_list_has_val,$(call artifacts_matching,.+),publisherItem,git-push)
 GIT_PUSH_ARTIFACTS  := $(call filter_artifacts_var_eq_val,$(GIT_PUSH_ARTIFACTS),gitRef)
 ifneq ($(GIT_ARTIFACT_FILTERS),)
 GIT_PUSH_ARTIFACTS  := $(filter $(GIT_ARTIFACT_FILTERS),$(GIT_PUSH_ARTIFACTS))
