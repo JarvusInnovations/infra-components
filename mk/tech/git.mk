@@ -1,3 +1,67 @@
+# = git =
+#
+# Manage git branches and git-derived content as artifacts
+#
+# == Options ==
+#
+# |========================================================
+# | Name                  | Reference Type    | Description
+# | gitWorkDir            | var               | Path to directory that git commands are run in. Defaults to ENGINE_PROJECT_DIR.
+# | gitArtifactFilterItem | list              | Limits the scope of selected artifacts to those names in this list
+# |========================================================
+#
+# == Artifacts ==
+#
+# |=========================================================
+# | Option                 | Value             | Description
+# | producer               | git-fetch         | Defines a branch as being a product of git-fetch
+# | producer               | git-tree          | Defines a path as being a git tree content output
+# | publisherItem          | git-push          | Defines a branch as wanting to be pushed to a remote
+# | path                   | [required*]       | Output path for tree content. Required when producer=git-tree.
+# | gitRef                 | [required]        | Defines the output ref for producers, input ref for publishers
+# | gitFetchRemote         | [required*]       | Remote from which to fetch `<artifact>.gitRef`. Required when producer=git-fetch.
+# | gitFetchRef            | [optional]        | Ref name on the remote side to fetch. Defaults to `<artifact>.gitRef`.
+# | gitForceFetch          | [optional]        | Performs git fetch using --force when true
+# | gitPushRemoteItem      | [required*]       | List of remotes to which to push `<artifact>.gitRef`. Required when publisher=git-push.
+# | gitPushRef             | [optional]        | Ref name to push to the remote side. Defaults to `<artifact>.gitRef`.
+# | gitForcePush           | [optional]        | Performs git push using --force when true
+# |=========================================================
+#
+# == Steps ==
+#
+# `git-fetch-artifacts-produce`::
+#   description:::
+#     Fetches a remote ref into a local ref
+#   selectors:::
+#     * producer=git-fetch
+#     * gitRef=<nonempty>
+#   inputs:::
+#     * <artifact>.gitRef
+#     * <artifact>.gitFetchRemote
+#     * <artifact>.gitFetchRef
+#     * <artifact>.gitForceFetch
+#
+# `git-tree-artifacts-produce`::
+#   description:::
+#     Outputs the contents of a local tree to a local directory
+#   selectors:::
+#     * producer=git-tree
+#     * gitRef=<nonempty>
+#   inputs:::
+#     * <artifact>.path
+#     * <artifact>.gitRef
+#
+# `git-push-artifacts-publish`::
+#   description:::
+#     Pushes a local ref to a remote
+#   selectors:::
+#     * publisherItem=git-push
+#     * gitRef=<nonempty>
+#   inputs:::
+#     * <artifact>.gitRef
+#     * <artifact>.gitPushRemoteItem
+#     * <artifact>.gitPushRef
+#     * <artifact>.gitForcePush
 
 ifeq ($(GIT_WORKDIR),)
 GIT_WORKDIR := $(call opt_pipeline_var,gitWorkDir)
