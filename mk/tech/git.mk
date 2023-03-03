@@ -34,7 +34,7 @@ git_force_flag = $(if $(filter-out 0 false,$(shell echo $(call opt_artifact_var,
 
 git_fetch_args = \
   $(call opt_artifact_var,$(1),gitFetchRemote) \
-	$(if $(call opt_artifact_var,$(1),gitFetchRef),$(call opt_artifact_var,$(1),gitFetchRef):)$(call opt_artifact_var,$(1),gitRef)
+	$(call git_force_flag,gitForceFetch,$(1))$(if $(call opt_artifact_var,$(1),gitFetchRef),$(call opt_artifact_var,$(1),gitFetchRef):)$(call opt_artifact_var,$(1),gitRef)
 
 define git_push_artifact_to_remote
 $(GIT) push $(2) $(call git_force_flag,gitForcePush,$(1))$(call opt_artifact_var,$(1),gitRef)$(if $(call opt_artifact_var,$(1),gitPushRef),:$(call opt_artifact_var,$(1),gitPushRef))
