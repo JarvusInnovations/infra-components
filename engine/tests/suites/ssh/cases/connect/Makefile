@@ -1,9 +1,9 @@
-include ../../../../../mk/subject.mk
-include $(ENGINE_SYSTEM)/tests/content/mk/case.mk
+include ../../../../content/mk/case.mk
+include $(MK)/tech/ssh.mk
 
-stage:
+subject:
 ifneq ($(SSH_CONFIG),)
-	$(SSH) test-machine true
+	$(SSH) tests-connect true
 else
-	$(call test_skip_env,sshConfig)
+	$(call test_skip_opt,sshConfig)
 endif

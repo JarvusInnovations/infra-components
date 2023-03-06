@@ -1,11 +1,11 @@
-PIPELINE_DIR   := $(shell realpath .)
-ENGINE_HOME    := $(shell realpath ../..)
-ENGINE_SYSTEM  := $(shell realpath ../../..)
+ENGINE_PROJECT_DIR := $(shell realpath ../..)
+ENGINE_SYSTEM_DIR  := $(shell realpath ../../..)
+ENGINE_ENV         := tests
 include ../../../mk/pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                             '
+	@echo 'Actions:                                                                    '
 	@echo '                                                                            '
 	@echo '    run - execute test suite                                                '
 	@echo '                                                                            '

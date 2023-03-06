@@ -1,31 +1,22 @@
 include $(dir $(lastword $(MAKEFILE_LIST)))/engine.mk
 
-DOING_ALL ?=
-
-ifeq ($(STAGE_NAME),)
-STAGE_NAME    := $(shell basename "`realpath .`")
-endif
-
-ifeq ($(PIPELINE_NAME),)
-PIPELINE_NAME := $(shell basename "`realpath ..`")
-endif
-
 ifeq ($(DO_SUBJECTS),)
 DO_SUBJECTS  := $(shell find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
-DOING_ALL    := 1
 endif
 
-export STAGE_NAME
-export PIPELINE_NAME
-export DOING_ALL
-
-SUBJECT_TARGETS := $(patsubst %,subject-%,$(DO_SUBJECTS))
+SUBJECT_TARGET_NAMES := $(foreach name,$(DO_SUBJECTS),subject-$(name))
+SUBJECT_TARGET_GOALS := $(filter-out stage,$(MAKECMDGOALS))
 
 subject_exists = $(shell find . -mindepth 1 -maxdepth 1 -type d -name $(1) 2>/dev/null)
 
-$(MAKECMDGOALS): $(SUBJECT_TARGETS)
+ifeq ($(SUBJECT_TARGET_GOALS),)
+SUBJECT_TARGET_GOALS := subject
+endif
+
+stage                   : $(SUBJECT_TARGET_NAMES)
+$(SUBJECT_TARGET_GOALS) : $(SUBJECT_TARGET_NAMES)
 
 subject-%:
-	$(if $(call subject_exists,$*),$(MAKE) -C '$*' $(MAKECMDGOALS))
+	$(if $(call subject_exists,$*),$(MAKE) -C '$*' $(SUBJECT_TARGET_GOALS))
 
 .PHONY: $(MAKECMDGOALS)

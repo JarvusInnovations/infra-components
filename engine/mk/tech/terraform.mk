@@ -1,54 +1,119 @@
+# = terraform =
 #
-# Config:
+# The Infrastructure as Code tool by Hashicorp
 #
-# [subject "<name>"]
-# tfRootModule = <subject-subpath>
-# tfVarFile    = <subject-subpath>
-# tfBackend    = <subject-subpath>
-# [env     "<name>"]
-# tfVarFile    = <env-subpath>
-# tfBackend    = <env-subpath>
+# == Options ==
 #
+# |======================================================
+# | Name                | Reference Type    | Description
+# | tfRootModule        | var               | Terraform root module source
+# | tfBackendConfig     | var               | A terraform backend-config source. This is used by any implicit `terraform init` commands.
+# | tfVarFileItem       | list              | A sequence of var-file sources
+# |======================================================
+#
+# == Artifacts ==
+#
+# |============================================================
+# | Option              | Value                   | Description
+# | producer            | terraform-plan          | Artifacts with this value will be used by terraform-plan-artifacts-produce
+# |============================================================
+#
+# == Steps ==
+#
+# `terraform-plan`::
+#   description:::
+#     Runs a `terraform plan` on the specified project
+#   inputs:::
+#     * tfRootModule
+#     * tfVarFileItem
+#
+# `terraform-apply`::
+#   description:::
+#     Runs a `terraform apply` on the specified project
+#   inputs:::
+#     * tfRootModule
+#     * tfVarFileItem
+#
+# `terraform-validate`::
+#   description:::
+#     Runs a `terraform validate` on the specified project
+#   inputs:::
+#     * tfRootModule
+#
+# `terraform-plan-artifacts-produce`::
+#   description:::
+#     Writes terraform plan output to `<artifact>.path`
+#   artifacts:::
+#     * producer=terraform-plan
+#   inputs:::
+#     * <artifact>.path
+#
+# `terraform-plan-artifacts-clean`::
+#   description:::
+#     Deletes all produced artifacts
+#   artifacts:::
+#     * producer=terraform-plan
+#   inputs:::
+#     * <artifact>.path
+#
+# == Methods ==
+#
+# `tf_plan_status`::
+#   inputs:::
+#     * tfRootModule
+#     * tfVarFileItem
+#   return:::
+#     * Detailed exit code of `terraform plan`
 
-TERRAFORM                   ?= terraform
-TERRAFORM_ROOT_MODULE       ?= $(call subject_config_path,tfRootModule)
-TERRAFORM_SUBJECT_VAR_FILES ?= $(call subject_config,tfVarFile,--get-all)
-TERRAFORM_ENV_VAR_FILES     ?= $(call env_config,tfVarFile,--get-all)
-TERRAFORM_SUBJECT_BACKEND   ?= $(call subject_config_path,tfBackend)
-TERRAFORM_ENV_BACKEND       ?= $(call env_config_path,tfBackend)
-
-ifneq ($(TERRAFORM_SUBJECT_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_SUBJECT_BACKEND)
+ifeq ($(TERRAFORM),)
+TERRAFORM                     := terraform
 endif
 
-ifneq ($(TERRAFORM_ENV_BACKEND),)
-TERRAFORM_BACKEND_CONFIG    := $(TERRAFORM_ENV_BACKEND)
+ifeq ($(TERRAFORM_ROOT_MODULE),)
+TERRAFORM_ROOT_MODULE         := $(call opt_pipeline_var,tfRootModule)
+endif
+
+ifeq ($(TERRAFORM_VAR_FILES),)
+TERRAFORM_VAR_FILES           := $(call opt_pipeline_list,tfVarFileItem)
+endif
+
+ifeq ($(TERRAFORM_BACKEND_CONFIG),)
+TERRAFORM_BACKEND_CONFIG      := $(call opt_pipeline_var,tfBackendConfig)
+endif
+
+ifeq ($(TERRAFORM_PLAN_ARTIFACTS),)
+TERRAFORM_PLAN_ARTIFACTS      := $(call filter_artifacts_var_eq_val,$(call artifacts_matching,.+),producer,terraform-plan)
 endif
 
 ifneq ($(TERRAFORM_ROOT_MODULE),)
-TERRAFORM += '-chdir=$(TERRAFORM_ROOT_MODULE)'
+TERRAFORM                     += '-chdir=$(TERRAFORM_ROOT_MODULE)'
 endif
 
-ifneq ($(TERRAFORM_SUBJECT_VAR_FILES),)
-TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_HOME)/%',$(TERRAFORM_SUBJECT_VAR_FILES))
+ifneq ($(TERRAFORM_VAR_FILES),)
+TERRAFORM_VAR_FILE_ARGS       := $(foreach varfile,$(TERRAFORM_VAR_FILES),-var-file '$(varfile)')
 endif
 
-ifneq ($(TERRAFORM_ENV_VAR_FILES),)
-TERRAFORM_VAR_FILES += $(patsubst %,'-var-file=$(ENGINE_ENV_DIR)/%',$(TERRAFORM_ENV_VAR_FILES))
+ifneq ($(TERRAFORM_PLAN_ARTIFACTS),)
+TERRAFORM_PLAN_ARTIFACT_PATHS := $(foreach id,$(TERRAFORM_PLAN_ARTIFACTS),$(call artifact_path,$(id)))
 endif
 
-TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(shell realpath --relative-to=. '$(TERRAFORM_ROOT_MODULE)')/.terraform,.terraform)
+ifneq ($(KUBECONFIG),)
+KUBE_CONFIG_PATH := $(KUBECONFIG)
+export KUBE_CONFIG_PATH
+endif
 
-tf_plan_status    = $(shell $(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILES) &>/dev/null; echo $$?)
+TERRAFORM_DOTDIR := $(if $(TERRAFORM_ROOT_MODULE),$(call path_relto,$(TERRAFORM_ROOT_MODULE),.)/.terraform,.terraform)
+
+tf_plan_status    = $(shell $(TERRAFORM) plan -detailed-exitcode $(TERRAFORM_VAR_FILE_ARGS) >/dev/null 2>&1; echo $$?)
 
 $(TERRAFORM_DOTDIR):
 	$(TERRAFORM) init $(if $(TERRAFORM_BACKEND_CONFIG),'-backend-config=$(TERRAFORM_BACKEND_CONFIG)')
 
 terraform-plan: $(TERRAFORM_DOTDIR)
-	$(TERRAFORM) plan -compact-warnings $(TERRAFORM_VAR_FILES)
+	$(TERRAFORM) plan -compact-warnings $(TERRAFORM_VAR_FILE_ARGS)
 
 terraform-apply: $(TERRAFORM_DOTDIR)
-	$(TERRAFORM) apply -auto-approve $(TERRAFORM_VAR_FILES)
+	$(TERRAFORM) apply -auto-approve $(TERRAFORM_VAR_FILE_ARGS)
 
 terraform-validate: $(TERRAFORM_DOTDIR)
 	$(TERRAFORM) validate
@@ -56,7 +121,17 @@ terraform-validate: $(TERRAFORM_DOTDIR)
 terraform-clean:
 	rm -vrf $(TERRAFORM_DOTDIR)
 
+terraform-plan-artifacts-produce: $(TERRAFORM_PLAN_ARTIFACT_PATHS)
+$(TERRAFORM_PLAN_ARTIFACT_PATHS):
+	$(TERRAFORM) plan -compact-warnings -no-color $(TERRAFORM_VAR_FILE_ARGS) > '$@'
+
+terraform-plan-artifacts-clean:
+	rm -vf $(TERRAFORM_PLAN_ARTIFACT_PATHS)
+
 .PHONY: terraform-plan
 .PHONY: terraform-apply
 .PHONY: terraform-validate
 .PHONY: terraform-clean
+.PHONY: terraform-plan-artifacts-produce
+.PHONY: terraform-plan-artifacts-clean
+.PHONY: $(TERRAFORM_PLAN_ARTIFACT_PATHS)

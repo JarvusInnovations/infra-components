@@ -1,14 +1,24 @@
+# = ssh =
 #
-# Config:
+# OpenSSH remote management client
 #
-# [env "<env-name>"]
-# sshConfig = <env-subpath>
+# == Options ==
+#
+# |================================================
+# | Name          | Reference Type    | Description
+# | sshConfig     | var               | Path to ssh_config file
+# |================================================
 
-SSH        ?= ssh
-SSH_CONFIG ?= $(call env_config_path,sshConfig)
+ifeq ($(SSH),)
+SSH        := ssh
+endif
+
+ifeq ($(SSH_CONFIG),)
+SSH_CONFIG := $(call opt_pipeline_var,sshConfig)
+endif
 
 ifneq ($(SSH_CONFIG),)
-SSH += -F $(shell realpath '$(SSH_CONFIG)')
+SSH        += -F '$(SSH_CONFIG)'
 endif
 
 GIT_SSH_COMMAND := $(SSH)

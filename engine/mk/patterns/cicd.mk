@@ -1,8 +1,8 @@
-include ../../.engine/mk/pipeline.mk
+include $(dir $(lastword $(MAKEFILE_LIST)))../pipeline.mk
 
 help:
 	@echo
-	@echo 'Orchestrations:                                                             '
+	@echo 'Actions:                                                                    '
 	@echo '                                                                            '
 	@echo '    pipeline - run full ci/cd pipeline over selections                      '
 	@echo '    ci       - package & test selections                                    '
@@ -18,13 +18,13 @@ pipeline:
 	$(MAKE) ci cd
 
 ci:
-	$(call run_stage,accept)
-	$(call run_stage,build)
-	$(call run_stage,test)
+	$(call run_stage,1-accept)
+	$(call run_stage,2-build)
+	$(call run_stage,3-test)
 
 cd:
-	$(call run_stage,deliver)
-	$(call run_stage,deploy)
+	$(call run_stage,4-deliver)
+	$(call run_stage,5-deploy)
 
 .PHONY: ci
 .PHONY: cd
