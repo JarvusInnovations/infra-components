@@ -70,11 +70,11 @@ stmt_table_select_keyseq()
 stmt_table_pipelineopts_load()
 {
   _raw_table=$(
-  git config --file - --get-regexp "^(engineSubject\\.$PIPELINE_NAME/$SUBJECT_NAME\\.|include\\.path)" <<EOF
+  git config --file - --get-regexp "^(subject\\.$PIPELINE_NAME/$SUBJECT_NAME\\.|include\\.path)" <<EOF
 [include]
 $(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
 EOF
-  git config --file - --get-regexp "^(engineEnv\\.$ENGINE_ENV\\.|include\\.path)" <<EOF
+  git config --file - --get-regexp "^(env\\.$ENGINE_ENV\\.|include\\.path)" <<EOF
 [include]
 $(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
 EOF
@@ -91,7 +91,7 @@ stmt_table_artifactrefs_load()
 {
   _awk_prog=$LIB/awk/stmt-table-format-artifactrefs.awk
   _raw_table=$(
-  git config --file - --get-regexp "^(engineArtifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
+  git config --file - --get-regexp "^(artifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
 [include]
 $(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
 EOF
@@ -105,7 +105,7 @@ EOF
 stmt_table_artifactopts_load()
 {
   _raw_table=$(
-  git config --file - --get-regexp "^(engineArtifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
+  git config --file - --get-regexp "^(artifact\\.[^.]+\\.[^[:space:]]+|include\\.path)" <<EOF
 [include]
 $(for optsfile in "$@"; do printf 'path = %s\n' "$(realpath "$optsfile")"; done)
 EOF

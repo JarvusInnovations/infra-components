@@ -9,9 +9,9 @@
 # | MK                   | Relative path to the engine module (mk) directory. This is the only value which is not exported (since it is a relative path).
 # | ENGINE_SYSTEM_DIR    | Absolute path to engine runtime directory
 # | ENGINE_PROJECT_DIR   | Absolute path to engine consumer project
-# | ENGINE_ENV           | Name of engineEnv to be used when querying engine configs
-# | ENGINE_LOCAL_DIR     | Absolute path to directory which engineEnv paths are relative to and from which highest precedence .conf files are collected
-# | ENGINE_ARTIFACTS_DIR | Absolute path to directory which engineArtifact paths are relative to
+# | ENGINE_ENV           | Name of env to be used when querying engine configs
+# | ENGINE_LOCAL_DIR     | Absolute path to directory which env paths are relative to and from which highest precedence .conf files are collected
+# | ENGINE_ARTIFACTS_DIR | Absolute path to directory which artifact paths are relative to
 # | ENGINE_PIPELINES_DIR | Absolute path to directory which contains project pipelines
 # |===================================
 #
