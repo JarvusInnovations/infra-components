@@ -3,8 +3,14 @@
 
 # get latest release tag
 latest_release=$(git describe --tags --abbrev=0 "origin/${RELEASE_BRANCH}")
-latest_release_bumped=$(echo "${latest_release}" | awk -F. -v OFS=. '{$NF++;print}')
 
+
+# generate next patch release tag
+if [ -n "${latest_release}" ]; then
+    latest_release_bumped=$(echo "${latest_release}" | awk -F. -v OFS=. '{$NF++;print}')
+else
+    latest_release_bumped='v0.1.0'
+fi
 
 # create or update PR
 pr_body="$(cat <<EOF
