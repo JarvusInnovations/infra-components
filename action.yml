@@ -1,0 +1,25 @@
+name: 'Release: Prepare PR'
+description: 'Prepare a new release by staging a pull request'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  release-branch:
+    description: 'Name of branch to merge releases into'
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+
+  - name: Create/update pull request
+    shell: bash
+    run: ${{ github.action_path }}/pull-request.sh
+    env:
+      RELEASE_BRANCH: ${{ inputs.release-branch }}
+      GITHUB_TOKEN: ${{ inputs.github-token }}
