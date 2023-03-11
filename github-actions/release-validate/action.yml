@@ -1,0 +1,16 @@
+name: 'Release: Validate PR'
+description: "Validate a release PR's title"
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+  - name: Validate release pull request title
+    shell: bash
+    run: ${{ github.action_path }}/validate.sh
+    env:
+      GITHUB_TOKEN: ${{ inputs.github-token }}
