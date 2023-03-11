@@ -1,0 +1,51 @@
+name: 'Habitat: Publish Package'
+description: 'Build and publish a Habitat package'
+inputs:
+  hab-origin-key-secret:
+    description: 'Secret key for Habitat origin'
+    required: true
+  hab-origin-key-public:
+    description: 'Public key for Habitat origin'
+    required: true
+  hab-auth-token:
+    description: 'Personal access token for Habitat CLI'
+    required: true
+  checkout:
+    description: 'Whether to check out the repository'
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+
+  - name: 'Initialize Chef Habitat environment'
+    uses: JarvusInnovations/habitat-action@action/v1
+    with:
+      deps: core/hab-plan-build
+
+  - name: Import origin key
+    shell: bash
+    run: |
+      hab origin key import <<END_OF_KEY
+      ${{ inputs.hab-origin-key-secret }}
+      END_OF_KEY
+
+      hab origin key import <<END_OF_KEY
+      ${{ inputs.hab-origin-key-public }}
+      END_OF_KEY
+
+  - uses: actions/checkout@v3
+    if: ${{ inputs.checkout == 'true' }}
+
+  - name: Build Habitat package
+    shell: bash
+    run: hab pkg exec core/hab-plan-build hab-plan-build .
+
+  - name: Upload Habitat package
+    shell: bash
+    env:
+      HAB_AUTH_TOKEN: '${{ inputs.hab-auth-token }}'
+    run: |
+      source results/last_build.env
+      hab pkg upload "results/${pkg_artifact}" -c stable
