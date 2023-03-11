@@ -1,0 +1,39 @@
+name: 'Release: Publish PR'
+description: 'Publish a new release after a release PR gets merged'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+outputs:
+  release-tag:
+    description: "Name of release tag"
+    value: ${{ steps.configure.outputs.release-tag }}
+  release-body:
+    description: "Body of release tag"
+    value: ${{ steps.configure.outputs.release-body }}
+  release-prerelease:
+    description: "Whether release tag is a prerelease"
+    value: ${{ steps.configure.outputs.release-prerelease }}
+
+runs:
+  using: composite
+  steps:
+
+  - name: Configure release
+    id: configure
+    if: github.event.pull_request.merged == true
+    shell: bash
+    run: ${{ github.action_path }}/configure.sh
+    env:
+      GITHUB_TOKEN: ${{ inputs.github-token }}
+
+  - name: Create release
+    if: github.event.pull_request.merged == true
+    uses: ncipollo/release-action@v1
+    with:
+      token: ${{ inputs.github-token }}
+      commit: '${{ github.sha }}'
+      tag: '${{ steps.configure.outputs.release-tag }}'
+      body: '${{ steps.configure.outputs.release-body }}'
+      draft: false
+      prerelease: ${{ steps.configure.outputs.release-prerelease }}
