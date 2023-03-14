@@ -14,6 +14,22 @@ inputs:
     description: 'Whether to check out the repository'
     required: false
     default: 'true'
+outputs:
+  pkg_origin:
+    description: "Origin of built package"
+    value: ${{ steps.build.outputs.pkg_origin }}
+  pkg_name:
+    description: "Name of built package"
+    value: ${{ steps.build.outputs.pkg_name }}
+  pkg_ident:
+    description: "Full identifier for built package"
+    value: ${{ steps.build.outputs.pkg_ident }}
+  pkg_artifact:
+    description: "Filename for built package archive"
+    value: ${{ steps.build.outputs.pkg_artifact }}
+  pkg_version:
+    description: "Full version number for built package"
+    value: ${{ steps.build.outputs.pkg_version }}
 
 runs:
   using: composite
@@ -39,10 +55,14 @@ runs:
     if: ${{ inputs.checkout == 'true' }}
 
   - name: Build Habitat package
+    id: build
     shell: bash
-    run: hab pkg exec core/hab-plan-build hab-plan-build .
+    run: |
+      hab pkg exec core/hab-plan-build hab-plan-build .
+      cat results/last_build.env >> "${GITHUB_OUTPUT}"
 
   - name: Upload Habitat package
+    id: upload
     shell: bash
     env:
       HAB_AUTH_TOKEN: '${{ inputs.hab-auth-token }}'
