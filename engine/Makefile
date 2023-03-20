@@ -16,11 +16,11 @@ SUBJECT  ?=
 STAGES_cicd    := 1-accept 2-build 3-test 4-deliver 5-deploy
 STAGES_bins    := pull push
 
-COMMA                 := ,
-VALID_PATTERNS        := $(notdir $(basename $(wildcard mk/patterns/*.mk)))
-VALID_PATTERNS_HELPST := $(patsubst %,%$(COMMA),$(filter-out $(lastword $(VALID_PATTERNS)),$(VALID_PATTERNS))) $(lastword $(VALID_PATTERNS))
-VALID_MODS            := $(patsubst mk/%,%,$(wildcard mk/*.mk mk/tech/*.mk))
-MODS_PATHS            := $(if $(MOD),$(foreach mod,$(MOD),mk/$(mod)))
+COMMA                  := ,
+VALID_PATTERNS         := $(notdir $(basename $(wildcard mk/patterns/*.mk)))
+VALID_PATTERNS_HELPSTR := $(patsubst %,%$(COMMA),$(filter-out $(lastword $(VALID_PATTERNS)),$(VALID_PATTERNS))) $(lastword $(VALID_PATTERNS))
+VALID_MODS             := $(patsubst mk/%,%,$(wildcard mk/*.mk mk/tech/*.mk))
+MODS_PATHS             := $(if $(MOD),$(foreach mod,$(MOD),mk/$(mod)))
 
 help:
 	@echo
