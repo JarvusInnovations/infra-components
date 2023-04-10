@@ -12,3 +12,5 @@ endif
 
 include ../../../../../mk/subject.mk
 test_skip_opt     = $(info SKIP: $(ENGINE_ENV) $(PIPELINE_NAME)/$(SUBJECT_NAME) ($(STAGE_NAME)): needs option: $(1))
+test_skip_cmd     = $(info SKIP: $(ENGINE_ENV) $(PIPELINE_NAME)/$(SUBJECT_NAME) ($(STAGE_NAME)): needs command: $(1))
+test_find_cmd     = $(wildcard $(patsubst %,%/$(1),$(subst :, ,$(PATH))))
