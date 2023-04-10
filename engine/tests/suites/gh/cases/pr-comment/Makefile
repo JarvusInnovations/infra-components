@@ -7,7 +7,7 @@ endif
 include $(MK)/tech/gh.mk
 
 subject:
-ifneq ($(GH_PR_ENVVAR),)
+ifneq ($(GH_PR_URL),)
 	$(call run_step,gh-pr-artifacts-publish)
 else
 	$(call skip_test_opt,ghPullRequest)
