@@ -13,9 +13,8 @@ else
 fi
 
 # create or update PR
+pr_title="Release: ${latest_release_bumped}"
 pr_body="$(cat <<EOF
-Release: ${latest_release_bumped}
-
 ## Improvements
 
 ## Technical
@@ -23,15 +22,20 @@ Release: ${latest_release_bumped}
 EOF
 )"
 
-pr_number=$(hub pr list -h "${GITHUB_REF_NAME}" -f '%I')
+pr_number=$(gh pr view "helm-chart" --json number --jq '.number')
 
 if [ -n "${pr_number}" ]; then
     echo "Updating PR #${pr_number}"
-    existing_comment_id=$(hub api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" | jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
+    existing_comment_id=$(gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" --jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
 else
     echo "Opening PR"
-    hub pull-request -b "${RELEASE_BRANCH}" -h "${GITHUB_REF_NAME}" -F <(echo "${pr_body}") > /tmp/pr.json
-    pr_number=$(hub pr list -h "${GITHUB_REF_NAME}" -f '%I')
+    pr_url=$(gh pr create \
+        --base "${RELEASE_BRANCH}" \
+        --head "${GITHUB_REF_NAME}" \
+        --title "${pr_title}" \
+        --body "${pr_body}"
+    )
+    pr_number="${pr_url##*/}"
     echo "Opened PR #${pr_number}"
 fi
 
@@ -52,18 +56,18 @@ while read -r commit; do
     line=""
 
     if [[ "${subject}" =~ Merge\ pull\ request\ \#([0-9]+) ]]; then
-    line="$(hub pr show -f '%t [%i] @%au' "${BASH_REMATCH[1]}" || true)"
+        line="$(gh pr view "${BASH_REMATCH[1]}" --json title,number,author --template '{{.title}} [#{{.number}}] @{{.author.login}}' || true)"
     fi
 
     if [ -z "${line}" ]; then
-    author="$(hub api "/repos/${GITHUB_REPOSITORY}/commits/${commit}" -H Accept:application/vnd.github.v3+json | jq -r '.author.login')"
-    if [ -n "${author}" ]; then
-        author="@${author}"
-    else
-        author="$(git show -s --format=%ae "${commit}")"
-    fi
+        author="$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${commit}" | jq -r '.author.login')"
+        if [ -n "${author}" ]; then
+            author="@${author}"
+        else
+            author="$(git show -s --format=%ae "${commit}")"
+        fi
 
-    line="${subject} ${author}"
+        line="${subject} ${author}"
     fi
 
     # move ticket number prefix into to existing square brackets at end
@@ -91,8 +95,8 @@ EOF
 
 if [ -n "${existing_comment_id}" ]; then
     echo "Updating comment #${existing_comment_id}"
-    hub api "/repos/${GITHUB_REPOSITORY}/issues/comments/${existing_comment_id}" -f body="${comment_body}"
+    gh api "/repos/${GITHUB_REPOSITORY}/issues/comments/${existing_comment_id}" -f body="${comment_body}"
 else
     echo "Creating comment"
-    hub api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" -f body="${comment_body}"
+    gh pr comment "${pr_number}" --body "${comment_body}"
 fi
