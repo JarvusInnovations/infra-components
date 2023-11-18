@@ -2,17 +2,21 @@
 
 
 # get latest release tag
+echo "Looking for last tag..."
 latest_release=$(git describe --tags --abbrev=0 "origin/${RELEASE_BRANCH}")
 
 
 # generate next patch release tag
 if [ -n "${latest_release}" ]; then
+    echo "Found tag: ${latest_release}"
     latest_release_bumped=$(echo "${latest_release}" | awk -F. -v OFS=. '{$NF++;print}')
 else
+    echo "No tag found, defaulting to v0.1.0"
     latest_release_bumped='v0.1.0'
 fi
 
-# create or update PR
+
+# prepare PR text
 pr_title="Release: ${latest_release_bumped}"
 pr_body="$(cat <<EOF
 ## Improvements
@@ -22,13 +26,16 @@ pr_body="$(cat <<EOF
 EOF
 )"
 
+
+# create or update PR
+echo "Looking for existing PR..."
 pr_number=$(gh pr view "${GITHUB_REF_NAME}" --json number --jq '.number')
 
 if [ -n "${pr_number}" ]; then
-    echo "Updating PR #${pr_number}"
+    echo "Found existing PR #${pr_number}, looking for existing comment..."
     existing_comment_id=$(gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" --jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
 else
-    echo "Opening PR"
+    echo "Opening PR..."
     pr_url=$(gh pr create \
         --base "${RELEASE_BRANCH}" \
         --head "${GITHUB_REF_NAME}" \
@@ -41,6 +48,7 @@ fi
 
 
 # build changelog
+echo "Getting list of commits in range ${RELEASE_BRANCH}..${GITHUB_REF_NAME}..."
 commits=$(
     git log \
     --first-parent \
@@ -51,6 +59,7 @@ commits=$(
 
 changelog=()
 
+echo "Generating changelog lines..."
 while read -r commit; do
     subject="$(git show -s --format=%s "${commit}")"
     line=""
