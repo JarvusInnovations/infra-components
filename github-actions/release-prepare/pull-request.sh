@@ -22,7 +22,7 @@ pr_body="$(cat <<EOF
 EOF
 )"
 
-pr_number=$(gh pr view "helm-chart" --json number --jq '.number')
+pr_number=$(gh pr view "${GITHUB_REF_NAME}" --json number --jq '.number')
 
 if [ -n "${pr_number}" ]; then
     echo "Updating PR #${pr_number}"
