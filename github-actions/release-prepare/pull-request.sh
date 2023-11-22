@@ -42,11 +42,12 @@ if [ -n "${pr_number}" ]; then
     existing_comment_id=$(gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" --jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
 else
     echo "Opening PR..."
-    pr_url=$(gh pr create \
-        --base "${RELEASE_BRANCH}" \
-        --head "${GITHUB_REF_NAME}" \
-        --title "${pr_title}" \
-        --body "${pr_body}"
+    pr_url=$(
+        gh pr create \
+            --base "${RELEASE_BRANCH}" \
+            --head "${GITHUB_REF_NAME}" \
+            --title "${pr_title}" \
+            --body "${pr_body}"
     )
     pr_number="${pr_url##*/}"
     echo "Opened PR #${pr_number}"
