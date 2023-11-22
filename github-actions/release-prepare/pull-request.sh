@@ -29,18 +29,25 @@ EOF
 
 # create or update PR
 echo "Looking for existing PR..."
-pr_number=$(gh pr view "${GITHUB_REF_NAME}" --json number --jq '.number')
+pr_number=$(
+    gh pr view "${GITHUB_REF_NAME}" \
+        --json number,state \
+        --template '{{.number}}{{"\t"}}{{.state}}' \
+    | grep OPEN \
+    | awk '{print $1}'
+)
 
 if [ -n "${pr_number}" ]; then
     echo "Found existing PR #${pr_number}, looking for existing comment..."
     existing_comment_id=$(gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" --jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
 else
     echo "Opening PR..."
-    pr_url=$(gh pr create \
-        --base "${RELEASE_BRANCH}" \
-        --head "${GITHUB_REF_NAME}" \
-        --title "${pr_title}" \
-        --body "${pr_body}"
+    pr_url=$(
+        gh pr create \
+            --base "${RELEASE_BRANCH}" \
+            --head "${GITHUB_REF_NAME}" \
+            --title "${pr_title}" \
+            --body "${pr_body}"
     )
     pr_number="${pr_url##*/}"
     echo "Opened PR #${pr_number}"
