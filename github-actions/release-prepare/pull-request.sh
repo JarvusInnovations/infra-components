@@ -30,11 +30,13 @@ EOF
 # create or update PR
 echo "Looking for existing PR..."
 pr_number=$(
-    gh pr view "${GITHUB_REF_NAME}" \
-        --json number,state \
-        --template '{{.number}}{{"\t"}}{{.state}}' \
-    | grep OPEN \
-    | awk '{print $1}'
+    gh pr list \
+        --base "${RELEASE_BRANCH}" \
+        --head "${GITHUB_REF_NAME}" \
+        --state open \
+        --limit 1 \
+        --json number \
+        --jq '.[0].number'
 )
 
 if [ -n "${pr_number}" ]; then
