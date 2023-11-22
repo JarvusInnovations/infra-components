@@ -29,7 +29,13 @@ EOF
 
 # create or update PR
 echo "Looking for existing PR..."
-pr_number=$(gh pr view "${GITHUB_REF_NAME}" --json number --jq '.number')
+pr_number=$(
+    gh pr view "${GITHUB_REF_NAME}" \
+        --json number,state \
+        --template '{{.number}}{{"\t"}}{{.state}}' \
+    | grep OPEN \
+    | awk '{print $1}'
+)
 
 if [ -n "${pr_number}" ]; then
     echo "Found existing PR #${pr_number}, looking for existing comment..."
