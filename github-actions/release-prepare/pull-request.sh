@@ -18,13 +18,11 @@ fi
 
 # prepare PR text
 pr_title="Release: ${latest_release_bumped}"
-pr_body="$(cat <<EOF
-## Improvements
-
-## Technical
-
-EOF
-)"
+if ! [ -f .github/release-pr-template.md ]; then
+  pr_body="$(cat ".github/release-pr-template.md")"
+else
+  pr_body="$(cat "${GITHUB_ACTION_PATH}/release-pr-template.md")"
+fi
 
 
 # create or update PR
