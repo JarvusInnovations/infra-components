@@ -18,9 +18,11 @@ fi
 
 # prepare PR text
 pr_title="Release: ${latest_release_bumped}"
-if ! [ -f .github/release-pr-template.md ]; then
+if [ -f .github/release-pr-template.md ]; then
+  echo "Using custom PR template"
   pr_body="$(cat ".github/release-pr-template.md")"
 else
+  echo "Using default PR template"
   pr_body="$(cat "${GITHUB_ACTION_PATH}/release-pr-template.md")"
 fi
 
