@@ -1,0 +1,90 @@
+{{- if .Values.backups.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.backups.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: {{ .Values.images.backup.src }}
+            envFrom:
+            - configMapRef:
+                name: database-config
+            - secretRef:
+                name: {{ .Values.backups.secretName }}
+            env:
+            - name: PGHOST
+              value: database
+            - name: PGPORT
+              value: {{ .Values.workloads.database.port | quote }}
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_DB
+            {{- if .Values.backups.healthchecksUrl }}
+            - name: HEALTHCHECKS_URL
+              value: {{ .Values.backups.healthchecksUrl }}
+            {{- end }}
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Starting backup job..."
+
+              # Handle Google credentials if needed
+              if [ ! -z "$GOOGLE_APPLICATION_CREDENTIALS" ] && [[ "$GOOGLE_APPLICATION_CREDENTIALS" != *.json ]]; then
+                echo "Writing Google credentials..."
+                CREDS_JSON="/tmp/google-creds-$$.json"
+                echo "$GOOGLE_APPLICATION_CREDENTIALS" > "$CREDS_JSON"
+                export GOOGLE_APPLICATION_CREDENTIALS="$CREDS_JSON"
+              fi
+
+              {{- if .Values.backups.healthchecksUrl }}
+              echo "Pinging healthcheck start..."
+              curl -fsS -m 10 --retry 5 -o /dev/null $HEALTHCHECKS_URL/start
+              {{- end }}
+
+              # Backup database
+              echo "Starting database backup..."
+              pg_dump \
+              | restic backup \
+                --host {{ .Release.Namespace }}-database-backup \
+                --stdin \
+                --stdin-filename db-dump.sql
+
+              # Prune old backups
+              echo "Starting backup pruning..."
+              restic forget \
+                --keep-last {{ .Values.backups.prune.keepLast }} \
+                --keep-daily {{ .Values.backups.prune.keepDaily }} \
+                --keep-weekly {{ .Values.backups.prune.keepWeekly }} \
+                --prune
+
+              {{- if .Values.backups.healthchecksUrl }}
+              echo "Pinging healthcheck completion..."
+              curl -fsS -m 10 --retry 5 -o /dev/null $HEALTHCHECKS_URL
+              {{- end }}
+
+              echo "Backup job completed successfully"
+          restartPolicy: OnFailure
+{{- end }}
