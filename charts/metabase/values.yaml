@@ -64,7 +64,7 @@ volumes:
 
 backups:
   enabled: false
-  schedule: "40 * * * *"
+  schedule: "40 4 * * *"
   healthchecksUrl: ~
   secretName: "restic"
   prune:
