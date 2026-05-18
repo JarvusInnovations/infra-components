@@ -39,7 +39,22 @@ pr_number=$(
 
 if [ -n "${pr_number}" ]; then
     echo "Found existing PR #${pr_number}, looking for existing comment..."
-    existing_comment_id=$(gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" --jq '.[] | select(.body | startswith("## Changelog\n\n")) | .id')
+
+    # If two release-prepare runs raced (e.g. two PRs merged within seconds), each
+    # may have created its own changelog comment. Keep the oldest match and delete
+    # any extras so we have exactly one comment to update from here on.
+    existing_comment_id=""
+    while IFS= read -r comment_id; do
+        if [ -z "${existing_comment_id}" ]; then
+            existing_comment_id="${comment_id}"
+        else
+            echo "Deleting duplicate changelog comment #${comment_id}"
+            gh api -X DELETE "/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
+        fi
+    done < <(
+        gh api "/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" \
+            --jq '[.[] | select(.body | startswith("## Changelog\n\n"))] | sort_by(.created_at) | .[].id'
+    )
 else
     echo "Opening PR..."
     pr_url=$(
