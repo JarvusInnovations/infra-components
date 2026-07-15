@@ -2,8 +2,18 @@
 
 
 # get latest release tag
+# When RELEASE_TAG_MATCH is set, only tags matching that glob are considered, so
+# a repo with multiple prefix-namespaced tag tracks sharing one git tag space
+# (e.g. `v*` for a JS package plus `foo-v*` for a native binding) computes the
+# next version from its own track rather than whatever tag is topologically
+# nearest. A no-match (a brand-new track) falls through to the v0.1.0 default.
 echo "Looking for last tag..."
-latest_release=$(git describe --tags --abbrev=0 "origin/${RELEASE_BRANCH}")
+if [ -n "${RELEASE_TAG_MATCH}" ]; then
+    echo "Restricting to tags matching: ${RELEASE_TAG_MATCH}"
+    latest_release=$(git describe --tags --abbrev=0 --match "${RELEASE_TAG_MATCH}" "origin/${RELEASE_BRANCH}" 2>/dev/null || true)
+else
+    latest_release=$(git describe --tags --abbrev=0 "origin/${RELEASE_BRANCH}" 2>/dev/null || true)
+fi
 
 
 # generate next patch release tag
