@@ -28,6 +28,10 @@ workloads:
   metabase:
     replicas: 1
     port: 3000
+    # Names of existing Secrets (e.g. SealedSecrets) to load as environment
+    # variables alongside the metabase-config ConfigMap. Use for values that
+    # must not live in values.yaml, e.g. MB_ENCRYPTION_SECRET_KEY.
+    envFromSecrets: []
     podAnnotations: {}
     nodeSelector: {}
     affinity: {}
