@@ -28,6 +28,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: metabase-config
+          {{- range .Values.workloads.metabase.envFromSecrets }}
+            - secretRef:
+                name: {{ . }}
+          {{- end }}
           ports:
           - containerPort: {{ .Values.workloads.metabase.port }}
             name: metabase
